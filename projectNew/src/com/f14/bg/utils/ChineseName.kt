@@ -1,0 +1,216 @@
+package com.f14.bg.utils
+
+import java.util.*
+
+
+/**
+ * Created by 吹风奈奈 on 2019/4/26.
+ */
+object ChineseName {
+    internal var sName = arrayOfNulls<String>(95)
+    internal var rName = arrayOfNulls<String>(79)
+    private val random = Random()
+
+    val name: String
+        get() {
+            val i = random.nextInt(94)
+            var mName = sName[i]!!.split("[|]".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()[0]
+            mName += nameKey
+            if (random.nextInt(2) == 1) {
+                mName += nameKey
+            }
+            return mName
+        }
+
+    private val nameKey: String?
+        get() {
+            val i = random.nextInt(78)
+            return getKey(rName[i]!!.split("[|]".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()[1])
+        }
+
+    init {
+        sName[0] = "白|bai"
+        sName[1] = "白|bai"
+        sName[2] = "蔡|cai"
+        sName[3] = "曹|cao"
+        sName[4] = "陈|chen"
+        sName[5] = "戴|dai"
+        sName[6] = "窦|dou"
+        sName[7] = "邓|deng"
+        sName[8] = "狄|di"
+        sName[9] = "杜|du"
+        sName[10] = "段|duan"
+        sName[11] = "范|fan"
+        sName[12] = "樊|fan"
+        sName[13] = "房|fang"
+        sName[14] = "风|feng"
+        sName[15] = "符|fu"
+        sName[16] = "福|fu"
+        sName[17] = "高|gao"
+        sName[18] = "古|gu"
+        sName[19] = "关|guan"
+        sName[20] = "郭|guo"
+        sName[21] = "毛|mao"
+        sName[22] = "韩|han"
+        sName[23] = "胡|hu"
+        sName[24] = "花|hua"
+        sName[25] = "洪|hong"
+        sName[26] = "侯|hou"
+        sName[27] = "黄|huang"
+        sName[28] = "贾|jia"
+        sName[29] = "蒋|jiang"
+        sName[30] = "金|jin"
+        sName[31] = "廖|liao"
+        sName[32] = "梁|liang"
+        sName[33] = "李|li"
+        sName[34] = "林|lin"
+        sName[35] = "刘|liu"
+        sName[36] = "龙|long"
+        sName[37] = "陆|lu"
+        sName[38] = "卢|lu"
+        sName[39] = "罗|luo"
+        sName[40] = "马|ma"
+        sName[41] = "牛|niu"
+        sName[42] = "庞|pang"
+        sName[43] = "裴|pei"
+        sName[44] = "彭|peng"
+        sName[45] = "戚|qi"
+        sName[46] = "齐|qi"
+        sName[47] = "钱|qian"
+        sName[48] = "乔|qiao"
+        sName[49] = "秦|qin"
+        sName[50] = "邱|qiu"
+        sName[51] = "裘|qiu"
+        sName[52] = "仇|qiu"
+        sName[53] = "沙|sha"
+        sName[54] = "商|shang"
+        sName[55] = "尚|shang"
+        sName[56] = "邵|shao"
+        sName[57] = "沈|shen"
+        sName[58] = "师|shi"
+        sName[59] = "施|shi"
+        sName[60] = "宋|song"
+        sName[61] = "孙|sun"
+        sName[62] = "童|tong"
+        sName[63] = "万|wan"
+        sName[64] = "王|wang"
+        sName[65] = "魏|wei"
+        sName[66] = "卫|wei"
+        sName[67] = "吴|wu"
+        sName[68] = "武|wu"
+        sName[69] = "萧|xiao"
+        sName[70] = "肖|xiao"
+        sName[71] = "项|xiang"
+        sName[72] = "许|xu"
+        sName[73] = "徐|xu"
+        sName[74] = "薛|xue"
+        sName[75] = "杨|yang"
+        sName[76] = "羊|yang"
+        sName[77] = "阳|yang"
+        sName[78] = "易|yi"
+        sName[79] = "尹|yin"
+        sName[80] = "俞|yu"
+        sName[81] = "赵|zhao"
+        sName[82] = "钟|zhong"
+        sName[83] = "周|zhou"
+        sName[84] = "郑|zheng"
+        sName[85] = "朱|zhu"
+        sName[86] = "东方|dongfang"
+        sName[87] = "独孤|dugu"
+        sName[88] = "慕容|murong"
+        sName[89] = "欧阳|ouyang"
+        sName[90] = "司马|sima"
+        sName[91] = "西门|ximen"
+        sName[92] = "尉迟|yuchi"
+        sName[93] = "长孙|zhangsun"
+        sName[94] = "诸葛|zhuge"
+
+        rName[0] = "ai|皑艾哀"
+        rName[1] = "an|安黯谙"
+        rName[2] = "ao|奥傲敖骜翱"
+        rName[3] = "ang|昂盎"
+        rName[4] = "ba|罢霸"
+        rName[5] = "bai|白佰"
+        rName[6] = "ban|斑般"
+        rName[7] = "bang|邦"
+        rName[8] = "bei|北倍贝备"
+        rName[9] = "biao|表标彪飚飙"
+        rName[10] = "bian|边卞弁忭"
+        rName[11] = "bu|步不"
+        rName[12] = "cao|曹草操漕"
+        rName[13] = "cang|苍仓"
+        rName[14] = "chang|常长昌敞玚"
+        rName[15] = "chi|迟持池赤尺驰炽"
+        rName[16] = "ci|此次词茨辞慈"
+        rName[17] = "du|独都"
+        rName[18] = "dong|东侗"
+        rName[19] = "dou|都"
+        rName[20] = "fa|发乏珐"
+        rName[21] = "fan|范凡反泛帆蕃"
+        rName[22] = "fang|方访邡昉"
+        rName[23] = "feng|风凤封丰奉枫峰锋"
+        rName[24] = "fu|夫符弗芙"
+        rName[25] = "gao|高皋郜镐"
+        rName[26] = "hong|洪红宏鸿虹泓弘"
+        rName[27] = "hu|虎忽湖护乎祜浒怙"
+        rName[28] = "hua|化花华骅桦"
+        rName[29] = "hao|号浩皓蒿浩昊灏淏"
+        rName[30] = "ji|积极济技击疾及基集记纪季继吉计冀祭际籍绩忌寂霁稷玑芨蓟戢佶奇诘笈畿犄"
+        rName[31] = "jian|渐剑见建间柬坚俭"
+        rName[32] = "kan|刊戡"
+        rName[33] = "ke|可克科刻珂恪溘牁"
+        rName[34] = "lang|朗浪廊琅阆莨"
+        rName[35] = "li|历离里理利立力丽礼黎栗荔沥栎璃"
+        rName[36] = "lin|临霖林琳"
+        rName[37] = "ma|马"
+        rName[38] = "mao|贸冒貌冒懋矛卯瑁"
+        rName[39] = "miao|淼渺邈"
+        rName[40] = "nan|楠南"
+        rName[41] = "pian|片翩"
+        rName[42] = "qian|潜谦倩茜乾虔千"
+        rName[43] = "qiang|强羌锖玱"
+        rName[44] = "qin|亲琴钦沁芩矜"
+        rName[45] = "qing|清庆卿晴"
+        rName[46] = "ran|冉然染燃"
+        rName[47] = "ren|仁刃壬仞"
+        rName[48] = "sha|沙煞"
+        rName[49] = "shang|上裳商"
+        rName[50] = "shen|深审神申慎参莘"
+        rName[51] = "shi|师史石时十世士诗始示适炻"
+        rName[52] = "shui|水"
+        rName[53] = "si|思斯丝司祀嗣巳"
+        rName[54] = "song|松颂诵"
+        rName[55] = "tang|堂唐棠瑭"
+        rName[56] = "tong|统通同童彤仝"
+        rName[57] = "tian|天田忝"
+        rName[58] = "wan|万宛晚"
+        rName[59] = "wei|卫微伟维威韦纬炜惟玮为"
+        rName[60] = "wu|吴物务武午五巫邬兀毋戊"
+        rName[61] = "xi|西席锡洗夕兮熹惜"
+        rName[62] = "xiao|潇萧笑晓肖霄骁校"
+        rName[63] = "xiong|熊雄"
+        rName[64] = "yang|羊洋阳漾央秧炀飏鸯"
+        rName[65] = "yi|易意依亦伊夷倚毅义宜仪艺译翼逸忆怡熠沂颐奕弈懿翊轶屹猗翌"
+        rName[66] = "yin|隐因引银音寅吟胤訚烟荫"
+        rName[67] = "ying|映英影颖瑛应莹郢鹰"
+        rName[68] = "you|幽悠右忧猷酉"
+        rName[69] = "yu|渔郁寓于余玉雨语预羽舆育宇禹域誉瑜屿御渝毓虞禺豫裕钰煜聿"
+        rName[70] = "zhi|制至值知质致智志直治执止置芝旨峙芷挚郅炙雉帜"
+        rName[71] = "zhong|中忠钟衷"
+        rName[72] = "zhou|周州舟胄繇昼"
+        rName[73] = "zhu|竹主驻足朱祝诸珠著竺"
+        rName[74] = "zhuo|卓灼灼拙琢濯斫擢焯酌"
+        rName[75] = "zi|子资兹紫姿孜梓秭"
+        rName[76] = "zong|宗枞"
+        rName[77] = "zu|足族祖卒"
+        rName[78] = "zuo|作左佐笮凿"
+    }
+
+    private fun getKey(name: String?): String? {
+        if (name == null) return null
+        val counti = name.length
+        val random = Random()
+        val i = random.nextInt(counti)
+        return name.substring(i, i + 1)
+    }
+}
