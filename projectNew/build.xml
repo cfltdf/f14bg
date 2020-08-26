@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="jar">
+    <property name="appName" value="F14bg"/>
+    <property name="src.dir" value="src"/>
+    <property name="bin.dir" value="bin"/>
+    <property name="target.dir" value="C:/F14bgServerNew"/>
+    <property name="target.lib.dir" value="${target.dir}/lib"/>
+    <property name="target.game.dir" value="${target.dir}/game"/>
+    <property name="target.conf.dir" value="${target.dir}/conf"/>
+    <property name="target.confgame.dir" value="${target.conf.dir}/game"/>
+    <property name="target.confver.dir" value="${target.conf.dir}/version"/>
+
+    <property name="PuertoRico" value="PuertoRico"/>
+    <property name="RFTG" value="RFTG"/>
+    <property name="TTA" value="TTA"/>
+    <property name="TS" value="TS"/>
+    <property name="Innovation" value="Innovation"/>
+    <property name="LoveLetter" value="LoveLetter"/>
+    <property name="Tichu" value="Tichu"/>
+
+    <target name="server">
+        <jar jarfile="${target.dir}/F14bgServer.jar">
+            <fileset dir="${bin.dir}">
+                <include name="com/f14/bg/**/*.*"/>
+                <include name="com/f14/F14bg/**/*.*"/>
+                <include name="com/f14/f14bgdb/**/*.*"/>
+                <include name="com/f14/framework/**/*.*"/>
+                <include name="com/f14/net/**/*.*"/>
+                <include name="com/f14/utils/**/*.*"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="tta">
+        <jar jarfile="${target.game.dir}/${TTA}.jar">
+            <fileset dir="${bin.dir}">
+                <include name="com/f14/TTA/**/*.*"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="jar">
+        <echo message="打包jar文件..."/>
+        <jar jarfile="${target.dir}/F14bgServer.jar">
+            <fileset dir="${bin.dir}">
+                <include name="com/f14/bg/**/*.*"/>
+                <include name="com/f14/F14bg/**/*.*"/>
+                <include name="com/f14/f14bgdb/**/*.*"/>
+                <include name="com/f14/framework/**/*.*"/>
+                <include name="com/f14/net/**/*.*"/>
+                <include name="com/f14/utils/**/*.*"/>
+            </fileset>
+        </jar>
+
+        <jar jarfile="${target.game.dir}/${TTA}.jar">
+            <fileset dir="${bin.dir}">
+                <include name="com/f14/TTA/**/*.*"/>
+            </fileset>
+        </jar>
+
+        <jar jarfile="${target.game.dir}/TS.jar">
+            <fileset dir="${bin.dir}">
+                <include name="com/f14/TS/**/*.*"/>
+            </fileset>
+        </jar>
+
+        <jar jarfile="${target.game.dir}/Innovation.jar">
+            <fileset dir="${bin.dir}">
+                <include name="com/f14/innovation/**/*.*"/>
+            </fileset>
+        </jar>
+
+        <jar jarfile="${target.game.dir}/${PuertoRico}.jar">
+            <fileset dir="${bin.dir}">
+                <include name="com/f14/PuertoRico/**/*.*"/>
+            </fileset>
+        </jar>
+
+        <jar jarfile="${target.game.dir}/${RFTG}.jar">
+            <fileset dir="${bin.dir}">
+                <include name="com/f14/RFTG/**/*.*"/>
+            </fileset>
+        </jar>
+
+        <jar jarfile="${target.game.dir}/LoveLetter.jar">
+            <fileset dir="${bin.dir}">
+                <include name="com/f14/loveletter/**/*.*"/>
+            </fileset>
+        </jar>
+
+
+        <jar jarfile="${target.game.dir}/${Tichu}.jar">
+            <fileset dir="${bin.dir}">
+                <include name="com/f14/tichu/**/*.*"/>
+            </fileset>
+        </jar>
+
+    </target>
+</project>

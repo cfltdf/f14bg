@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<InnoConfirmWindow xmlns="com.f14.F14bgGame.Innovation.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="450" height="220">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.Innovation.consts.InnoColor;
+			import mx.containers.HBox;
+			import mx.controls.Button;
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import mx.controls.HRule;
+			
+			private var buttons:Array = new Array();
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				//创建分割线...
+				var rule:HRule = new HRule;
+				rule.width = this.width*0.8;
+				rule.x = (this.width-rule.width)/2;
+				rule.y = 80;
+				this.addChild(rule);
+				
+				var hbox:HBox = new HBox();
+				hbox.width=310;
+				for each(var desc:String in InnoColor.COLORS_DESC){
+					var button:Button = new Button();
+					button.label = desc;
+					button.toggle = true;
+					hbox.addChild(button);
+					buttons.push(button);
+				}
+				hbox.x = (this.width-hbox.width)/2;
+				hbox.y = 100;
+				this.addChild(hbox);
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				for each(var button:Button in buttons){
+					button.selected = false;
+				}
+			}
+			
+			/**
+			 * 创建确认时的参数
+			 */
+			override protected function createConfirmParam():Object{
+				var colors:String = "";
+				for each(var button:Button in buttons){
+					if(button.selected){
+						colors += InnoColor.getColorCode(button.label) + ",";
+					}
+				}
+				if(colors.length>0){
+					colors = colors.substr(0, colors.length-1);
+				}
+				var param:Object = {};
+				param.colors = colors;
+				return param;
+			}
+			
+		]]>
+	</mx:Script>
+</InnoConfirmWindow>

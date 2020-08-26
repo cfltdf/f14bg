@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="300" title="选择交易" xmlns:simple="com.f14.F14bgGame.PuertoRico.ui.simple.*" backgroundColor="#EEEEEE" xmlns:ui="com.f14.F14bgGame.PuertoRico.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			import com.f14.F14bgGame.PuertoRico.components.ResourcePart;
+			import com.f14.F14bgGame.PuertoRico.event.PrEvent;
+			
+			/**
+			 * 设置是否可以使用贸易站进行交易
+			 */
+			public function set canSelfTrade(selfTrade:Boolean):void{
+				this.resource_selecter.reset();
+				
+				this.cb_selfTrade.selected = false;
+				this.cb_selfTrade.enabled = selfTrade;
+				this.cb_selfTrade.visible = selfTrade;
+			}
+			
+			/**
+			 * 重置面板输入信息
+			 */
+			public function reset():void{
+				this.cb_selfTrade.selected = false;
+			}
+			
+			/**
+			 * 初始化所有输入组件
+			 */
+			public function initInputs():void{
+				this.tradeHouseBoard.createGoodPart();
+				
+				this.resource_selecter.initResourceImage();
+				this.resource_selecter.callBackFunction = onResourceClick;
+				this.resource_selecter.setResourceSelectable(true);
+			}
+			
+			/**
+			 * 装载交易所信息
+			 */
+			public function loadTradeHouseInfo():void{
+				//与游戏面板上的交易所信息同步
+				this.tradeHouseBoard.clear();
+				for each(var part:ResourcePart in PRUtil.mainBoard.tradeHouseBoard.goods){
+					this.tradeHouseBoard.addGood(part.type);
+				}
+			}
+			
+			/**
+			 * 点击资源时触发的方法
+			 */
+			public function onResourceClick(evt:PrEvent):void{
+				var part:ResourcePart = evt.part as ResourcePart;
+				PRUtil.actionManager.trader(part.type, this.cb_selfTrade.selected);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%" horizontalAlign="center">
+		<mx:Canvas height="5">
+		</mx:Canvas>
+		<ui:TradeHouseBoard id="tradeHouseBoard" width="200" />
+		<simple:ResourceSelecter id="resource_selecter" />
+		<mx:CheckBox id="cb_selfTrade" label="使用交易所进行交易"/>
+		<mx:Button label="结 束" click="PRUtil.actionManager.doPass()"/>
+		<mx:Canvas height="5">
+		</mx:Canvas>
+	</mx:VBox>
+</FloatWindow>

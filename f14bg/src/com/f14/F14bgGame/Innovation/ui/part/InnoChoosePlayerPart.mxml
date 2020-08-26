@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" height="60" horizontalScrollPolicy="auto" verticalScrollPolicy="off" xmlns:component="com.f14.F14bgGame.bg.component.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Innovation.player.InnoPlayer;
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoPlayerPart;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import com.f14.f14bg.components.ComponentOption;
+			
+			protected var option:ComponentOption = new ComponentOption();
+			protected var _parts:Array = new Array();
+			protected var _selectable:Boolean;
+			protected var _multiSelection:Boolean;
+			
+			public function init():void{
+			}
+			
+			public function clear():void{
+				this.option.removeAllComponent();
+				//移除所有监听器
+				for each(var part:InnoPlayerPart in this._parts){
+					if(part!=null){
+						part.removeEventListener(MouseEvent.CLICK, onClick);
+					}
+				}
+				this._parts = new Array();
+				this.canvas_parts.removeAllChildren();
+			}
+			
+			/**
+			 * 设置是否可选
+			 */
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				var part:InnoPlayerPart;
+				for each(part in this.canvas_parts.getChildren()){
+					part.selectable = selectable;
+				}
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function set multiSelection(multiSelection:Boolean):void{
+				this.option.multiSelection = multiSelection;
+			}
+			
+			/**
+			 * 取得所有的卡牌对象
+			 */
+			public function getAllParts():Array{
+				return this._parts;
+			}
+			
+			/**
+			 * 装载玩家信息
+			 */
+			public function loadPlayers():void{
+				for each(var player:InnoPlayer in InnoUtil.gameManager.players){
+					var part:InnoPlayerPart = new InnoPlayerPart();
+					this.canvas_parts.addChild(part);
+					part.init();
+					part.player = player;
+					part.addEventListener(MouseEvent.CLICK, onClick);
+				}
+			}
+			
+			/**
+			 * 点击卡牌时触发的方法
+			 */
+			protected function onClick(evt:MouseEvent):void{
+				var part:InnoPlayerPart = evt.currentTarget as InnoPlayerPart;
+				if(part.selectable){
+					if(this.option.trigOnSelected){
+						if(InnoUtil.stateManager.currentConfirmWindow!=null){
+							//如果不是,则直接由该窗口返回指令参数
+							var param:Object = {};
+							param.choosePosition = part.player.position;
+							InnoUtil.stateManager.currentConfirmWindow.doConfirm(param);
+						}else{
+						}
+					}
+				}
+			}
+			
+			/**
+			 * 取得选中的组件
+			 */
+			public function getSelectedPart():InnoPlayerPart{
+				return this.option.selectedComponent as InnoPlayerPart;
+			}
+			
+			/**
+			 * 取得选中的卡牌
+			 */
+			public function getSelection():Array{
+				return this.option.getSelection();
+			}
+			
+			/**
+			 * 设置是否在选择时就触发事件
+			 */
+			public function setEventTrigOnSelected(trigOnSelected:Boolean):void{
+				if(this.option!=null){
+					this.option.trigOnSelected = trigOnSelected;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<component:CardCanvas id="canvas_parts" width="100%" height="100%" gap="4" />
+</mx:Canvas>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MainBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:part="com.f14.F14bgGame.Eclipse.ui.part.*" xmlns:ui="com.f14.F14bgGame.Eclipse.ui.*" width="1000" height="910">
+<mx:Script>
+	<![CDATA[
+		import com.f14.F14bgGame.Eclipse.consts.EclipseInputState;
+		import com.f14.F14bgGame.Eclipse.consts.EclipseGameCmd;
+		import com.f14.F14bgGame.Eclipse.ui.simple.Planet;
+		import com.f14.F14bgGame.Eclipse.ui.window.EclipsePlayerWindow;
+		import com.f14.F14bgGame.Eclipse.player.EclipsePlayer;
+		import com.f14.F14bgGame.Eclipse.EclipseUtil;
+		import com.f14.core.util.ApplicationUtil;
+		import com.f14.F14bgGame.bg.player.Player;
+		import com.f14.F14bgGame.bg.consts.InputState;
+		
+		public var origWidth:int = 1000;
+		public var origHeight:int = 910;
+		
+		/**
+		 * 初始化
+		 */
+		override public function init():void{
+			super.init();
+			
+			this.spaceMap.init();
+			this.roundPanel.init();
+			this.buttonPanel.init();
+			this.disableAllInput();
+		}
+		
+		override public function clear():void{
+			super.clear();
+			
+			this.spaceMap.clear();
+			this.roundPanel.clear();
+			this.vbox_playerSummary.removeAllChildren();
+			this.influenceTrack.clear();
+			this.messageBoard.clear();
+			
+			EclipseUtil.stateManager.clear();
+			EclipseUtil.stateManager.hideGameBoard();
+		}
+		
+		/**
+		 * 创建指定玩家的面板
+		 */
+		override public function createPlayerBoard(player:Player):void{
+			var gamePlayer:EclipsePlayer = player as EclipsePlayer;
+			
+			//创建玩家面板
+			var win:EclipsePlayerWindow = EclipseUtil.stateManager.getPlayerWindow(gamePlayer.position);
+			player.playerBoard = win.playerBoard;
+			//创建玩家概述面板
+			var info:EclipsePlayerInfoBoard = new EclipsePlayerInfoBoard();
+			this.vbox_playerSummary.addChild(info);
+			player.playerInfoBoard = info;
+			info.init();
+		}
+		
+		/**
+		 * 禁止所有的输入
+		 */
+		override public function disableAllInput():void{
+			super.disableAllInput();
+			
+			this.messageBoard.clear();
+			this.spaceMap.selectable = false;
+			this.buttonPanel.disableAllInput();
+		}
+		
+		/**
+		 * 设置界面输入的状态
+		 */
+		/*override public function setInputState(code:int):void{
+			var state:String = InputState.DEFAULT;
+			switch(code){
+				case EclipseGameCmd.GAME_CODE_ROUND:
+					state = EclipseInputState.ROUND_ACTION;
+					break;
+			}
+			this.buttonPanel.setInputState(state);
+		}*/
+		
+		/**
+		 * 刷新主游戏界面的大小
+		 */
+		override public function refreshMainBoardSize():void{
+			super.refreshMainBoardSize();
+		}
+		
+		/**
+		 * 显示本地玩家的面板
+		 */
+		public function showLocalPlayerWindow():void{
+			var player:EclipsePlayer = EclipseUtil.getLocalPlayer();
+			EclipseUtil.stateManager.trigPlayerWindow(player.position);
+		}
+		
+	]]>
+</mx:Script>
+<mx:HBox width="100%" height="100%" horizontalGap="0">
+	<mx:VBox width="250" height="100%" styleName="bgrepeat" verticalGap="0">
+		<mx:Canvas width="250" height="50" styleName="eclipseLogo">
+		</mx:Canvas>
+		<part:EclipseRoundBoard id="roundPanel" />
+		<mx:VBox id="vbox_playerSummary" width="250" height="100%" verticalGap="0">
+		</mx:VBox>
+	</mx:VBox>
+	<mx:VBox width="100%" height="100%" verticalGap="0">
+		<part:SpaceMap id="spaceMap" width="100%" height="100%" />
+		<mx:VBox width="100%" styleName="bgrepeat" verticalGap="0">
+			<part:MessageBoard id="messageBoard" />
+			<part:ButtonPanel id="buttonPanel" />
+			<part:InfluenceTrack id="influenceTrack" />
+		</mx:VBox>		
+	</mx:VBox>
+</mx:HBox>
+</MainBoard>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.manager.EclipseUIManager;
+			import com.f14.F14bgGame.Eclipse.consts.EclipsePlayerColor;
+			import com.f14.F14bgGame.bg.component.LinkLine;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			import com.f14.F14bgGame.Eclipse.ui.simple.Unit;
+			
+			public function clear():void{
+				this.removeAllChildren();
+			}
+			
+			public function loadParam(param:Object):void{
+				this.clear();
+				var object:Object = param.unit;
+				var unit:Unit = EclipseUtil.resourceManager.createUnit(object);
+				
+				//取得起点板块的坐标
+				var point:Point = this.convertToPoint(param.positions[0]);
+				//取得中点
+				var p:Point = this.getMapPoint(point);
+				//计算出unit的左上角坐标
+				unit.x = p.x - unit.width/2;
+				unit.y = p.y - unit.height/2;
+				this.addChild(unit);
+				
+				if(param.positions.length>1){
+					//如果选择的板块数量大于1个,则画出所有轨迹
+					for(var i:int=0;i<param.positions.length-1;i++){
+						var p1:Point = this.convertToPoint(param.positions[i]);
+						var p2:Point = this.convertToPoint(param.positions[i+1]);
+						this.drawLine(p1, p2);
+					}
+				}
+			}
+			
+			/**
+			 * 转换成point对象
+			 */
+			protected function convertToPoint(object:Object):Point{
+				return new Point(object.x, object.y);
+			}
+			
+			/**
+			 * 将板块的位置坐标转换成星图上的实际坐标
+			 */
+			protected function getMapPoint(point:Point):Point{
+				var hex:EclipseHex = EclipseUtil.mainBoard.spaceMap.getHex(point);
+				//取得中点
+				var p:Point = new Point(hex.x + hex.width/2, hex.y + hex.height/2);
+				return p;
+			}
+			
+			/**
+			 * 画线
+			 */
+			public function drawLine(p1:Point, p2:Point):void{
+				var mp1:Point = this.getMapPoint(p1);
+				var mp2:Point = this.getMapPoint(p2);
+				
+				var line:LinkLine = new LinkLine();
+				this.addChild(line);
+				line.setStartPoint(mp1);
+				line.setEndPoint(mp2);
+				line.setLineColor(EclipsePlayerColor.COLORS[EclipseUtil.getLocalPlayer().position]);
+				line.drawLine();
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

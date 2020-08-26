@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="200" verticalGap="2">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import mx.collections.ArrayCollection;
+			import com.f14.F14bgGame.PuertoRico.player.PrPlayer;
+			import com.f14.F14bgGame.PuertoRico.components.PartTile;
+			import com.f14.F14bgGame.PuertoRico.event.PrEvent;
+			import com.f14.F14bgGame.PuertoRico.components.ColonistPart;
+			import com.f14.F14bgGame.PuertoRico.components.ImageTile;
+			import com.f14.F14bgGame.PuertoRico.components.BigBuildingTile;
+			import com.f14.F14bgGame.PuertoRico.components.BuildingTile;
+			import com.f14.F14bgGame.PuertoRico.components.PlantationTile;
+			
+			public var player:PrPlayer;
+			protected var _plantations:ArrayCollection = new ArrayCollection();
+			protected var _buildings:Array = new Array(12);
+			
+			public function clear():void{
+				this._plantations = new ArrayCollection();
+				//建筑为空的12个
+				this._buildings = new Array(12);
+				
+				this.canvas_building.removeAllChildren();
+				this.canvas_plantation.removeAllChildren();
+			}
+		
+			/**
+			 * 添加种植园板块
+			 */
+			public function addPlantation(obj:Object):void{
+				var tile:PlantationTile = new PlantationTile();
+				tile.object = obj;
+				tile.x = int(this._plantations.length%4)*(PlantationTile.IMAGE_WIDTH + 3) + 3;
+				tile.y = int(this._plantations.length/4)*(PlantationTile.IMAGE_HEIGHT + 3) + 3;
+				this.canvas_plantation.addChild(tile);
+				this._plantations.addItem(tile);
+				//创建移民配件
+				this.createColonists(tile);
+			}
+			
+			/**
+			 * 移除种植园板块
+			 */
+			public function removePlantation(id:String):void{
+				var tile:PlantationTile = this.getPlantation(id);
+				if(tile!=null){
+					this.canvas_plantation.removeChild(tile);
+					var i:int = this._plantations.getItemIndex(tile);
+					this._plantations.removeItemAt(i);
+				}
+			}
+			
+			/**
+			 * 按照id取得种植园板块
+			 */
+			public function getPlantation(id:String):PlantationTile{
+				for each(var tile:PlantationTile in this._plantations.toArray()){
+					if(tile.id==id){
+						return tile;
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * 添加建筑板块
+			 */
+			public function addBuilding(obj:Object):void{
+				var position:Object = this.getBuildingEmptyPosition();
+				if(position==null){
+					//ApplicationUtil.debug("未能取到空闲的建筑位置!");
+					return;
+				}
+				var tile:BuildingTile;
+				if(obj.buildingType==BuildingTile.LARGE_BUILDING){
+					//大建筑,需要判断空位是否可以放置
+					if(position.i==(_buildings.length-1)){
+						//如果空位是最后一格...则其他都已经满了
+						//ApplicationUtil.debug("没有可以放置大建筑的位置!");
+						return;
+					}
+					if(position.i==(_buildings.length-2) && _buildings[_buildings.length-1]!=null){
+						//如果空位是倒数第二格...并且最后一个已经满了...则也不能放置大建筑
+						//ApplicationUtil.debug("没有可以放置大建筑的位置!");
+						return;
+					}
+					if(position.i==(_buildings.length-2) && _buildings[_buildings.length-1]==null){
+						//如果空位是倒数第二格...并且最后一个空着...则最后该大建筑占据最后2个位置
+						//将倒数第3个建筑移动到倒数第2个位置
+						//this.moveBuilding(_buildings.length-3, _buildings.length-2);
+						//将放置的位置设置为倒数第3格
+						//position.i = _buildings.length-3;
+						position.i2 = position.i + 1;
+					}else{
+						//正常情况就占据本格的下面一个位置
+						position.i2 = position.i + 2;
+					}
+					tile = new BigBuildingTile();
+				}else{
+					//普通建筑
+					tile = new BuildingTile();
+				}
+				tile.object = obj;
+				tile.x = position.x;
+				tile.y = position.y;
+				this.canvas_building.addChild(tile);
+				if(obj.buildingType==BuildingTile.LARGE_BUILDING){
+					//大建筑需要占据2格位置
+					this._buildings[position.i] = tile;
+					this._buildings[position.i2] = tile;
+				}else{
+					this._buildings[position.i] = tile;
+				}
+				//创建移民配件
+				this.createColonists(tile);
+			}
+			
+			/**
+			 * 取得当前空闲的建筑位置
+			 */
+			public function getBuildingEmptyPosition():Object{
+				for(var i:int=0;i<this._buildings.length;i++){
+					if(this._buildings[i]==null){
+						var obj:Object = {};
+						obj.i = i;
+						obj.x = int(i%2)*(BuildingTile.IMAGE_WIDTH + 5) + 5;
+						obj.y = int(i/2)*(BuildingTile.IMAGE_HEIGHT + 5) + 5;
+						return obj;
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * 移动建筑板块
+			 */
+			public function moveBuilding(from:int, too:int):void{
+				_buildings[too] = _buildings[from];
+				_buildings[from] = null;
+				_buildings[too].x = int(too%2)*(BuildingTile.IMAGE_WIDTH + 5) + 5;
+				_buildings[too].y = int(too/2)*(BuildingTile.IMAGE_HEIGHT + 5) + 5;
+			}
+			
+			/**
+			 * 为板块创建移民配件
+			 */
+			public function createColonists(tile:ImageTile):void{
+				tile.createColonists();
+				for each(var c:ColonistPart in tile.colonists){
+					if(c!=null){
+						c.addEventListener(PrEvent.COLONIST_CLICK, onColonistClick);
+					}
+				}
+			}
+			
+			/**
+			 * 移民点击时触发的事件
+			 */
+			public function onColonistClick(evt:PrEvent):void{
+				var pt:PartTile = evt.part as PartTile;
+				if(pt.selectable){
+					if(pt.selected){
+						player.colonist += 1;
+						pt.selected = false;
+					}else{
+						if(player.colonist>0){
+							player.colonist -= 1;
+							pt.selected = true;
+						}else{
+							ApplicationUtil.alert("没有空闲的移民!");
+						}
+					}
+				}
+			}
+			
+			/**
+			 * 设置移民是否可选
+			 */
+			public function setColonistSelectable(selectable:Boolean):void{
+				var tile:ImageTile;
+				var part:PartTile;
+				for each(tile in this._plantations.toArray()){
+					for each(part in tile.colonists){
+						part.selectable = selectable;
+					}
+				}
+				for each(tile in this._buildings){
+					if(tile!=null){
+						for each(part in tile.colonists){
+							part.selectable = selectable;
+						}
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Canvas id="canvas_building" width="200" height="330" borderStyle="solid" styleName="prBoard">
+	</mx:Canvas>
+	<mx:Canvas id="canvas_plantation" width="200" height="150" borderStyle="solid" styleName="prBoard">
+	</mx:Canvas>
+</mx:VBox>

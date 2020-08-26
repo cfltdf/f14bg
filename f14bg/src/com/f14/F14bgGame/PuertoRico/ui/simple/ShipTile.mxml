@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="240" height="30" styleName="prBoard">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			import mx.effects.IEffectInstance;
+			import mx.effects.effectClasses.GlowInstance;
+			import com.f14.F14bgGame.PuertoRico.components.ResourcePart;
+			
+			[Bindable]
+			public var shipName:String;
+			public var selectable:Boolean;
+			protected var _selected:Boolean;
+			protected var _size:int;
+			protected var _maxSize:int;
+			protected var _goodType:String;
+			protected var parts:Array = new Array();
+			protected var _selectedEffect:IEffectInstance;
+			
+			public function init():void{
+				//给板块添加是否可选的事件判断
+				this.initEvent();
+				_selectedEffect = PRUtil.effectManager.selectEffect.createInstance(this);
+			}
+			
+			public function clear():void{
+				this._size = 0;
+				this._maxSize = 0;
+				this._goodType = null;
+				this.parts = new Array();
+				this.hbox_good.removeAllChildren();
+			}
+			
+			public function set maxSize(maxSize:int):void{
+				this.clear();
+				this._maxSize = maxSize;
+				var part:ResourcePart;
+				for(var i:int=0;i<this._maxSize;i++){
+					part = new ResourcePart();
+					part.color = false;
+					this.parts.push(part);
+					this.hbox_good.addChild(part);
+				}
+			}
+			
+			public function get maxSize():int{
+				return this._maxSize;
+			}
+			
+			public function set goodType(goodType:String):void{
+				this._goodType = goodType;
+				for each(var part:ResourcePart in this.parts){
+					part.type = goodType;
+				}
+			}
+			
+			public function get goodType():String{
+				return this._goodType;
+			}
+			
+			public function set size(size:int):void{
+				this._size = size;
+				for(var i:int=0;i<this.parts.length;i++){
+					if(i<size){
+						this.parts[i].color = true;
+					}else{
+						this.parts[i].color = false;
+					}
+				}
+			}
+			
+			public function get size():int{
+				return this._size;
+			}
+			
+			public function set selected(selected:Boolean):void{
+				this._selected = selected;
+				this._selectedEffect.end();
+				if(selected){
+					this._selectedEffect.play();
+				}
+			}
+			
+			public function get selected():Boolean{
+				return this._selected;
+			}
+			
+			/**
+			 * 初始化事件监听
+			 */
+			protected function initEvent():void{
+				this.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+				this.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			}
+			
+			protected function onMouseOver(evt:MouseEvent):void{
+				if(selectable){
+					PRUtil.effectManager.glowEffect.end();
+					PRUtil.effectManager.glowEffect.target = this;
+					PRUtil.effectManager.glowEffect.play();
+				}
+			}
+			
+			protected function onMouseOut(evt:MouseEvent):void{
+				PRUtil.effectManager.glowEffect.end();
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Label text="{shipName}" textAlign="center" fontSize="16" fontWeight="bold" verticalCenter="0" left="10"/>
+	<mx:HBox id="hbox_good" horizontalGap="2" verticalAlign="middle" verticalCenter="0" x="57" horizontalAlign="left">
+	</mx:HBox>
+</mx:Canvas>

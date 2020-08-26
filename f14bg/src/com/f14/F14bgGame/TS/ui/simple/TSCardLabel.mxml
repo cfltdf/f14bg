@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SimpleCard xmlns="com.f14.F14bgGame.bg.ui.simple.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="120" height="30" alpha="1.0">
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import com.f14.F14bgGame.TS.TSUtil;
+			import mx.core.FlexBitmap;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.TS.consts.TSPhase;
+			import mx.formatters.SwitchSymbolFormatter;
+			import com.f14.F14bgGame.TS.consts.TSColor;
+			import com.f14.F14bgGame.TS.consts.SuperPower;
+			
+			/**
+			 * 设置显示样式
+			 */
+			override protected function refreshStyle():void{
+				if(this.object!=null && this.object.object!=null){
+					var card:Object = this.object.object;
+					//按照卡牌的类型设置显示的背景
+					this.loadLabelStyle();
+					this._name = "#" + card.tsCardNo + "-" + card.name;
+				}
+			}
+			
+			/**
+			 * 装载卡牌的样式
+			 */
+			protected function loadLabelStyle():void{
+				var card:Object = this.object.object;
+				//装载背景
+				var bitmap:FlexBitmap = new FlexBitmap();
+				var index:int = this.getLabelIndex(card);
+				bitmap.bitmapData = TSUtil.imageManager.getLabelImage(index);
+				var uc:UIComponent = new UIComponent();
+				uc.addChild(bitmap);
+				uc.y = 5;
+				this.addChildAt(uc, 0);
+				//装载星星
+				bitmap = new FlexBitmap();
+				index = this.getStarIndex(card);
+				bitmap.bitmapData = TSUtil.imageManager.getStarImage(index);
+				var uc:UIComponent = new UIComponent();
+				uc.addChild(bitmap);
+				this.addChildAt(uc, 1);
+				var color:String = (card.superPower=="USSR")?"#ffffff":"#000000";
+				//装载OP显示值
+				if(card.op>0){
+					var op:Label = new Label();
+					op.text = card.op;
+					op.x = 8;
+					op.y = 5;
+					op.width = 30;
+					op.setStyle("fontWeight", "bold");
+					op.setStyle("color", color);
+					this.addChild(op);
+				}
+			}
+			
+			/**
+			 * 取得卡牌对应的背景图片序号
+			 */
+			protected function getLabelIndex(card:Object):int{
+				if(card.cardType=="SCORING"){
+					//计分牌用特定的背景
+					switch(card.tsCardNo){
+						case 1: //亚洲
+							return 3;
+						case 2: //欧洲
+							return 4;
+						case 3: //中东
+							return 5;
+						case 38: //东南亚
+							return 6;
+						case 37: //中美洲
+							return 7;
+						case 35: //南美洲
+							return 8;
+						case 79: //非洲
+							return 9;
+					}
+				}else{
+					switch(card.phase){
+						case "EARLY":
+							return 0;
+						case "MID":
+							return 1;
+						case "LATE":
+							return 2;
+					}
+				}
+				return 0;
+			}
+			
+			/**
+			 * 取得卡牌对应的星星图片序号
+			 */
+			protected function getStarIndex(card:Object):int{
+				switch(card.superPower){
+					case "USA":
+						return 2;
+					case "USSR":
+						return 1;
+				}
+				return 0;
+			}
+		]]>
+	</mx:Script>
+	<mx:Label x="30" verticalCenter="0" text="{this._name}" width="90" fontWeight="bold" color="#ffffff"/>
+</SimpleCard>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="510" height="290" title="确认换牌结果" xmlns:ns1="com.f14.F14bgGame.Tichu.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Tichu.components.TichuCard;
+			import com.f14.F14bgGame.Tichu.TichuUtil;
+			
+			protected var canvases:Array = new Array();
+			protected var infos:Array = new Array();
+			
+			override public function init():void{
+				super.init();
+				canvases.push(canvas1);
+				canvases.push(canvas2);
+				canvases.push(canvas3);
+				
+				infos.push(info1);
+				infos.push(info2);
+				infos.push(info3);
+			}
+		
+			override public function clear():void{
+				super.clear();
+				this.info1.clear();
+				this.info2.clear();
+				this.info3.clear();
+				this.canvas1.removeAllChildren();
+				this.canvas2.removeAllChildren();
+				this.canvas3.removeAllChildren();
+			}
+			
+			/**
+			 * 装载换牌的信息
+			 */
+			public function loadExchangeParam(param:Object):void{
+				this.clear();
+				this.info1.player = TichuUtil.mainBoard.playerBoard1.player;
+				this.info2.player = TichuUtil.mainBoard.playerBoard2.player;
+				this.info3.player = TichuUtil.mainBoard.playerBoard3.player;
+				
+				for(var i:int=0;i<infos.length;i++){
+					var info:TichuPlayerInfoBoard = infos[i] as TichuPlayerInfoBoard;
+					var canvas:Canvas = canvases[i] as Canvas;
+					var cardId:String = param["card"+info.player.position];
+					var card:TichuCard = TichuUtil.resourceManager.createTichuCard(cardId);
+					canvas.addChild(card);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<ns1:TichuPlayerInfoBoard id="info3" x="10" y="10" />
+	<ns1:TichuPlayerInfoBoard id="info2" x="170" y="10" />
+	<ns1:TichuPlayerInfoBoard id="info1" x="330" y="10" />
+	<mx:Canvas id="canvas3" width="84" left="45" top="75" height="128"/>
+	<mx:Canvas id="canvas2" width="84" horizontalCenter="0" top="75" height="128"/>
+	<mx:Canvas id="canvas1" width="84" right="45" top="75" height="128"/>
+	<mx:HBox horizontalCenter="0" bottom="10">
+		<mx:Button label="确 定" width="80" click="TichuUtil.actionManager.sendCurrentCommand('confirm')"/>
+	</mx:HBox>
+</NewConfirmWindow>

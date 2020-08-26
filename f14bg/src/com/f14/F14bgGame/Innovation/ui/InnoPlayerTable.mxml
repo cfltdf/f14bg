@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerInfoBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="930" height="160" xmlns:part="com.f14.F14bgGame.Innovation.ui.part.*" styleName="gameBoard" xmlns:components="com.f14.F14bgGame.TS.components.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import com.f14.f14bg.components.ComponentOption;
+			import com.f14.F14bgGame.Innovation.consts.InnoColor;
+			import com.f14.F14bgGame.Innovation.ui.part.InnoCardStack;
+			import com.f14.F14bgGame.bg.consts.PlayerColor;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgGame.Innovation.player.InnoPlayer;
+			[Bindable]
+			protected var _innoPlayer:InnoPlayer;
+			[Bindable]
+			public var totalCardNum:int;
+			[Bindable]
+			public var totalScoreNum:int;
+			
+			protected var option:ComponentOption;
+			protected var _cardStacks:Array = new Array();
+			protected var _selectable:Boolean = false;
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				for each(var cardStack:InnoCardStack in this._cardStacks){
+					cardStack.selectable = selectable;
+				}
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			override public function set player(player:Player):void{
+				super.player = player;
+				this._innoPlayer = player as InnoPlayer;
+				if(player!=null){
+					this.setStyle("backgroundColor", PlayerColor.COLORS[player.position]);
+				}else{
+					this.setStyle("backgroundColor", null);
+				}
+				for each(var stack:InnoCardStack in this._cardStacks){
+					stack.player = this._innoPlayer;
+				}
+			}
+			
+			/**
+			 * 得到效果的目标对象
+			 */
+			override protected function get effectTarget():Object{
+				return this.label_name;
+			}
+			
+			override public function init():void{
+				super.init();
+				this.option = new ComponentOption();
+				this.hand_cards_info.init();
+				this.score_cards_info.init();
+				//为每种颜色创建一个stack对象
+				for each(var color:String in InnoColor.COLORS){
+					var stack:InnoCardStack = new InnoCardStack();
+					//设置该牌堆所属的控制组
+					stack.option = option;
+					this.hbox_stack.addChild(stack);
+					stack.init();
+					this._cardStacks[color] = stack;
+				}
+				this.totalIconsPart.init();
+			}
+			
+			public function getCardStack(color:String):InnoCardStack{
+				return this._cardStacks[color] as InnoCardStack;
+			}
+			
+			/**
+			 * 设置是否在选择时就触发事件
+			 */
+			public function setEventTrigOnSelected(trigOnSelected:Boolean):void{
+				if(this.option!=null){
+					this.option.trigOnSelected = trigOnSelected;
+				}
+			}
+			
+			/**
+			 * 设置本地玩家的部件
+			 */
+			public function setLocalParts():void{
+				InnoUtil.effectManager.addHighlight(this.score_cards_info);
+				this.score_cards_info.selectable = true;
+				this.score_cards_info.addEventListener(MouseEvent.CLICK, trigCheckWindow);
+			}
+			
+			/**
+			 * 触发计分区窗口
+			 */
+			private function trigCheckWindow(evt:Event):void{
+				InnoUtil.stateManager.trigCheckScoreWindow();
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" height="100%">
+		<mx:VBox width="100%" height="100%">
+			<mx:Spacer/>
+			<mx:HBox width="100%" verticalAlign="middle">
+				<mx:Spacer/>
+				<mx:Label id="label_name" text="{_innoPlayer.name}" width="150" styleName="blackBoldText"/>
+				<part:InnoActionPointPart id="actionPointPart" />
+				<mx:Canvas width="40" height="100%" styleName="backHand">
+					<mx:Label id="label_cardNum" text="{this.totalCardNum}" width="100%" textAlign="center" horizontalCenter="0" verticalCenter="0" styleName="whiteBoldText"/>
+				</mx:Canvas>
+				<part:InnoCardsInfo id="hand_cards_info" />
+				<mx:Canvas width="40" height="100%" styleName="backScore">
+					<mx:Label id="label_scoreNum" text="{this.totalScoreNum}" width="100%" textAlign="center" horizontalCenter="0" verticalCenter="0" styleName="whiteBoldText"/>
+				</mx:Canvas>
+				<part:InnoCardsInfo id="score_cards_info" />
+			</mx:HBox>
+			<mx:HBox width="100%">
+				<mx:Spacer width="10"/>
+				<part:InnoTotalIconsPart id="totalIconsPart" />
+				<mx:HBox id="hbox_stack" width="100%" verticalAlign="middle">
+				</mx:HBox>
+			</mx:HBox>
+		</mx:VBox>
+		<mx:VBox>
+			<mx:Spacer/>
+			<part:InnoPlayerAchieve id="playerAchieve" />
+		</mx:VBox>
+		<mx:Spacer width="5"/>
+	</mx:HBox>
+</PlayerInfoBoard>

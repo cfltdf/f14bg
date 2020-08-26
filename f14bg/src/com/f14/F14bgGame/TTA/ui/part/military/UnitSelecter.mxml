@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.F14bgGame.TTA.ui.part.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.event.TTAAuctionAdjustEvent;
+			import com.f14.F14bgGame.TTA.event.TTAEvent;
+			[Bindable]
+			protected var _num:int = 0;
+			protected var _inputable:Boolean = false;
+			
+			public function set num(num:int):void{
+				var max:int = this.getMaxValue();
+				num = Math.min(num, max);
+				num = Math.max(num, 0);
+				this._num = num;
+			}
+			
+			public function get num():int{
+				return this._num;
+			}
+			
+			public function set inputable(inputable:Boolean):void{
+				this._inputable = inputable;
+				this.checkStyle();
+			}
+			
+			public function get inputable():Boolean{
+				return this._inputable;
+			}
+			
+			/**
+			 * 取得允许选择的最大值
+			 */
+			protected function getMaxValue():int{
+				if(this.ttaLabel.card==null){
+					return 0;
+				}else{
+					return this.ttaLabel.card.yellow;
+				}
+			}
+			
+			/**
+			 * 增加数量
+			 */
+			protected function increase():void{
+				if(this.inputable){
+					var i:int = this.num;
+					this.num += 1;
+					if(i != this.num){
+						//数值变化时,才发送部队数量变化的事件
+						var evt:TTAAuctionAdjustEvent = new TTAAuctionAdjustEvent();
+						evt.card = this.ttaLabel.card;
+						evt.num = this.num;
+						this.dispatchEvent(evt);
+					}
+				}
+			}
+			
+			/**
+			 * 减少数量
+			 */
+			protected function decrease():void{
+				if(this.inputable){
+					var i:int = this.num;
+					this.num -= 1;
+					if(i != this.num){
+						//数值变化时,才发送部队数量变化的事件
+						var evt:TTAAuctionAdjustEvent = new TTAAuctionAdjustEvent();
+						evt.card = this.ttaLabel.card;
+						evt.num = this.num;
+						this.dispatchEvent(evt);
+					}
+				}
+			}
+			
+			/**
+			 * 检查显示的状态
+			 */
+			protected function checkStyle():void{
+				this.hbox_button.visible = this.inputable;
+				this.label_arrow.visible = !this.inputable;
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox horizontalGap="4">
+		<ns1:TTALabel id="ttaLabel">
+		</ns1:TTALabel>
+		<mx:Canvas width="66">
+			<mx:HBox id="hbox_button" horizontalGap="2" visible="false">
+				<mx:Button label="-" width="32" height="20" click="this.decrease()"/>
+				<mx:Button label="+" width="32" height="20" click="this.increase()"/>
+			</mx:HBox>
+			<mx:Label id="label_arrow" width="32" text="==>" horizontalCenter="0" visible="false" textAlign="center" fontWeight="bold"/>
+		</mx:Canvas>
+		<mx:Label text="{_num}" width="30" textAlign="center" fontWeight="bold"/>
+	</mx:HBox>
+</mx:Canvas>

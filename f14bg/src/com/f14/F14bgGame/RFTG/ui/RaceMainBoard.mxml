@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MainBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.core.controls.text.*" xmlns:ns2="com.f14.F14bgGame.RFTG.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.RFTG.RaceUtil;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgGame.RFTG.player.RacePlayer;
+			import mx.collections.ArrayCollection;
+			
+			override public function init():void{
+				super.init();
+				buttonBoard.init();
+				gameInfoBoard.init();
+			}
+			
+			override public function clear():void{
+				super.clear();
+				this.vbox_playerBoards.removeAllChildren();
+				this.playerBoard.clear();
+				this.handBoard.clear();
+				//清除所有游戏窗口
+				RaceUtil.stateManager.clear();
+			}
+			
+			/**
+			 * 创建玩家的面板
+			 */
+			override public function createPlayerBoard(player:Player):void{
+				var racePlayer:RacePlayer = player as RacePlayer;
+				if(RaceUtil.gameManager.isLocalPlayer(racePlayer)){
+					racePlayer.playerBoard = this.playerBoard;
+					racePlayer.controlBoard = this.handBoard;
+				}else{
+					var board:RacePlayerBoard = new RacePlayerBoard();
+					player.playerBoard = board;
+					this.vbox_playerBoards.addChild(board);
+				}
+				/*var board:RacePlayerBoard = this.getPlayerBoard(position);
+				if(board==null){
+					board = new RacePlayerBoard();
+					playerBoards.addItem(board);
+					this.vbox_playerBoards.addChild(board);
+				}else{
+					board.clear();
+				}*/
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox left="0" top="30">
+		<ns2:GoalBoard id="goalBoard">
+		</ns2:GoalBoard>
+		<ns2:GameInfoBoard id="gameInfoBoard">
+		</ns2:GameInfoBoard>
+	</mx:VBox>
+	<mx:VBox left="68" top="30">
+		<mx:Canvas horizontalScrollPolicy="off" minHeight="420">
+			<mx:VBox id="vbox_playerBoards">
+			</mx:VBox>
+		</mx:Canvas>
+		<ns2:RacePlayerBoard id="playerBoard">
+		</ns2:RacePlayerBoard>
+		<mx:HBox>
+			<ns2:ButtonBoard width="200" id="buttonBoard" height="155">
+			</ns2:ButtonBoard>
+			<ns2:ControlBoard id="handBoard">
+			</ns2:ControlBoard>
+		</mx:HBox>
+	</mx:VBox>
+</MainBoard>

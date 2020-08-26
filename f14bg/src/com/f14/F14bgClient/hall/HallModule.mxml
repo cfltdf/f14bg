@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module:F14module xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:module="com.f14.core.controls.module.*" layout="absolute" width="100%" height="100%" creationComplete="init()" xmlns:part="com.f14.F14bgClient.hall.ui.part.*">
+	<mx:Style>  
+        .donateButton {
+        	   upSkin:Embed(source="./images/donate.png");
+               overSkin:Embed(source="./images/donate-over.png");
+               downSkin:Embed(source="./images/donate-down.png");
+        }
+    </mx:Style>
+	<mx:Script>
+		<![CDATA[
+			import mx.events.IndexChangedEvent;
+			import com.f14.core.util.Version;
+			import com.f14.F14bgClient.hall.handler.HallCommandHandler;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.f14bg.manager.TooltipManager;
+			import flash.utils.setTimeout;
+			import com.f14.f14bg.manager.StateManager;
+			import com.f14.f14bg.manager.ActionManager;
+			import com.f14.F14bgClient.FlashHandler.HallHandler;
+			import mx.collections.ArrayCollection;
+			
+			public var hallHandler:HallHandler;
+			
+			/**
+			 * 创建version对象
+			 */
+			override protected function createVersion():Version{
+				var v:Version = super.createVersion();
+				v.descr = "感谢 礼拜六 对俺的大力支持!\n"
+					+ "感谢 老绿 提供论坛空间及服务器.\n"
+					+ "感谢 Raxel 提供服务器.\n"
+					+ "感谢 围城的轮回 为F14桌游平台设计的Logo.\n"
+					+ "感谢所有朋友的测试和支持.\n\n"
+					+ "论坛地址: <font color='#0000ff'><a href='http://joylink.me/bbs' target='blank'>http://joylink.me/bbs</a></font>";
+				return v;
+			}
+			
+			override public function init():void{
+				this.loadVersionInfo();
+				ApplicationUtil.commandHandler = new HallCommandHandler();
+				HallUtil.module = this;
+				HallUtil.init();
+				
+				hallHandler = new HallHandler();
+				this.onConnect();
+			}
+			
+			public function onConnect():void{
+				HallUtil.actionManager.loadGameTypes();
+				//读取大厅公告信息
+				HallUtil.actionManager.loadHallNotice();
+				//读取本地用户信息
+				HallUtil.actionManager.loadLocalUser();
+				//刷新用户和房间列表
+				HallUtil.actionManager.refreshRoomList();
+				HallUtil.actionManager.refreshUserList();
+				//检查用户是否需要断线重连
+				HallUtil.actionManager.reconnectCheck();
+			}
+			
+			/**
+			 * 标签页切换时触发的方法
+			 */
+			protected function onTabChange(evt:Event):void{
+				switch(this.main_tab.selectedIndex){
+					case 1:
+						//当首次点击排行榜时,执行刷新
+						if(!this.rankingList.inited){
+							this.rankingList.refresh();
+						}
+						break;
+				}
+			}
+			
+			/**
+			 * 捐赠,打开捐赠窗口!
+			 */
+			public function donate():void{
+				var url:String = ApplicationUtil.commonHandler.getCodeLabel("SYS_CONFIG", "DONATE_URL");
+				navigateToURL(new URLRequest(url),"_blank");
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox top="5" bottom="5" left="5" right="5">
+		<mx:VBox width="100%" height="100%">
+			<mx:TabNavigator id="main_tab" width="100%" height="100%" change="onTabChange(event)">
+				<part:RoomPart label="游戏大厅" id="roomPart" width="100%" height="100%" />
+				<part:RankingList id="rankingList" label="排行榜" width="100%" height="100%" />
+			</mx:TabNavigator>
+			<mx:Canvas width="100%">
+				<mx:HBox right="10">
+					<mx:Button label="创建房间" styleName="BigButton" click="HallUtil.stateManager.showCreateRoomWindow()"/>
+					<mx:Button label="进入房间" styleName="BigButton" click="roomPart.joinRoom()"/>
+					<mx:Button label="退出大厅" styleName="BigButton" click="HallUtil.actionManager.exit()"/>
+				</mx:HBox>
+			</mx:Canvas>
+			<part:ChatPart id="chatPart" width="100%" height="200" />
+		</mx:VBox>
+		<mx:VBox width="225" height="100%" horizontalAlign="right">
+			<mx:Button id="button_donate" styleName="donateButton" width="224" height="76" click="this.donate()" />
+			<part:UserPart id="userPart" width="100%" height="0" />
+			<part:UserList id="userList" width="100%" height="100%" />
+			<mx:LinkButton label="版本号: {this.version.version}" click="HallUtil.stateManager.showAboutWindow()" />
+		</mx:VBox>
+	</mx:HBox>
+</module:F14module>

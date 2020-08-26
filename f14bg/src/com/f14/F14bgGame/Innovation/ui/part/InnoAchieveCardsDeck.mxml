@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100" height="150" xmlns:component="com.f14.F14bgGame.bg.component.*" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.component.ImageObject;
+			import com.f14.F14bgGame.Innovation.components.DrawDeckCard;
+			import com.f14.F14bgGame.Innovation.components.InnoAchieveCard;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.f14bg.components.ComponentOption;
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import com.f14.F14bgGame.Innovation.components.InnoCard;
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoAchieveCardLabel;
+			protected var option:ComponentOption = new ComponentOption();
+			protected var _selectable:Boolean;
+			protected var _achieveCard:InnoAchieveCardLabel;
+			
+			/**
+			 * 设置是否可选
+			 */
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				if(this._achieveCard!=null){
+					this._achieveCard.selectable = selectable;
+				}
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function loadParam(param:Object):void{
+				this.clear();
+				if(param.cardId){
+					var card:ImageObject = InnoUtil.resourceManager.createAchieveCard(param.cardId);
+					this._achieveCard = new InnoAchieveCardLabel();
+					this.addChild(_achieveCard);
+					_achieveCard.x = (this.width - _achieveCard.width)/2;
+					_achieveCard.y = this.height - 5 - this._achieveCard.height;
+					_achieveCard.init();
+					_achieveCard.object = card;
+					_achieveCard.selectable = this.selectable;
+					_achieveCard.addEventListener(MouseEvent.CLICK, onClick);
+					//添加到选择组件中
+					option.addComponent(_achieveCard);
+				}
+				if(param.specialCardIds){
+					var ids:Array = param.specialCardIds.split(",");
+					for each(var id:String in ids){
+						this.addSpecialAchieveCard(id);
+					}
+				}
+			}
+			
+			public function clear():void{
+				option.removeAllComponent();
+				if(this._achieveCard!=null){
+					this.removeChild(this._achieveCard);
+					this._achieveCard = null;
+				}
+				this.vbox_specials.removeAllChildren();
+			}
+			
+			/**
+			 * 添加特殊成就牌
+			 */
+			private function addSpecialAchieveCard(cardId:String):void{
+				var card:ImageObject = InnoUtil.resourceManager.createAchieveCard(cardId);
+				var label:InnoAchieveCardLabel = new InnoAchieveCardLabel();
+				this.vbox_specials.addChild(label);
+				label.init();
+				label.object = card;
+			}
+			
+			/**
+			 * 点击卡牌时触发的方法
+			 */
+			protected function onClick(evt:MouseEvent):void{
+				var card:InnoAchieveCardLabel = evt.currentTarget as InnoAchieveCardLabel;
+				if(card.selectable){
+					if(this.option.trigOnSelected){
+						InnoUtil.actionManager.sendCurrentCommand("ACHIEVE");
+					}else{
+						
+					}
+				}
+			}
+			
+			/**
+			 * 设置是否在选择时就触发事件
+			 */
+			public function setEventTrigOnSelected(trigOnSelected:Boolean):void{
+				if(this.option!=null){
+					this.option.trigOnSelected = trigOnSelected;
+				}
+			}
+			
+			public function removeCard(cardId:String):void{
+				for each(var card:InnoAchieveCardLabel in this.vbox_specials.getChildren()){
+					if(card.object.object.id==cardId){
+						this.vbox_specials.removeChild(card);
+					}
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox id="vbox_specials" horizontalCenter="0" width="100" height="130" verticalGap="2">
+	</mx:VBox>
+</mx:Canvas>

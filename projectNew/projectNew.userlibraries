@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library chinese="KotlinJavaRuntime">
+    <archive path="C:/f14bg_server/projectNew/lib/kotlin-runtime.jar" />
+    <archive path="C:/f14bg_server/projectNew/lib/kotlin-reflect.jar" />
+  </library>
+</eclipse-userlibraries>
+

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    status : 这个用于设置log4j2自身内部的信息输出,可以不设置,当设置成trace时,会看到log4j2内部各种详细输出
+    monitorInterval : Log4j能够自动检测修改配置文件和重新配置本身, 设置间隔秒数。
+-->
+<Configuration status="WARN" monitorInterval="600">
+
+    <Properties>
+        <!-- 配置日志文件输出目录 -->
+        <Property name="LOG_HOME">logs</Property>
+    </Properties>
+
+    <Appenders>
+
+        <!--这个输出控制台的配置-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!-- 控制台只输出level及以上级别的信息(onMatch),其他的直接拒绝(onMismatch) -->
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <!-- 输出日志的格式 -->
+            <PatternLayout pattern="[%d] %p | %r |%m | [%t] %n"/>
+        </Console>
+
+        <!-- 设置日志格式并配置日志压缩格式(service.log.年份.gz) -->
+        <RollingRandomAccessFile append="true"
+                                 name="service_appender"
+                                 fileName="${LOG_HOME}/f14.log"
+                                 filePattern="${LOG_HOME}/f14%d{yyyy-MM-dd}.log.gz">
+            <!--
+                %d{yyyy-MM-dd HH:mm:ss, SSS} : 日志生产时间
+                %p : 日志输出格式
+                %c : logger的名称
+                %m : 日志内容，即 logger.info("message")
+                %n : 换行符
+                %C : Java类名
+                %L : 日志输出所在行数
+                %M : 日志输出所在方法名
+                hostName : 本地机器名
+                hostAddress : 本地ip地址
+             -->
+            <PatternLayout>
+                <pattern>[%d] %p | %r |%m | [%t] %n</pattern>
+            </PatternLayout>
+            <Policies>
+                <CronTriggeringPolicy schedule="0 0 0 */1 * ?" evaluateOnStartup="true" />
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="50"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- 配置日志的根节点 -->
+        <root level="info">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="service_appender"/>
+        </root>
+        <!-- 日志实例(info),其中'service-log'继承root,但是root将日志输出控制台,而'service-log'将日志输出到文件,通过属性'additivity="false"'将'service-log'的
+             的日志不再输出到控制台 -->
+        <!--logger name="service_log" level="info" includeLocation="true" additivity="true">
+        </logger-->
+    </Loggers>
+</Configuration>

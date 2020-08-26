@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="800" height="550" showCloseButton="true" title="调试窗口">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.formatters.DateFormatter;
+			protected var df:DateFormatter = new DateFormatter();
+			[Bindable]
+			protected var errors:ArrayCollection = new ArrayCollection();
+			
+			/**
+			 * 初始化
+			 */
+			override public function init():void{
+				super.init();
+				this.df.formatString = "JJ:NN:SS";
+			}
+			
+			override public function clear():void{
+				super.clear();
+				this.errors.removeAll();
+				this.text_descr.text = "";
+			}
+			
+			/**
+			 * 打印错误信息到调试窗口
+			 */
+			public function printError(e:Error, cmdstr:String):void{
+				var object:Object = new Object();
+				object.label = df.format(new Date());
+				object.title = e.message;
+				object.value = e.getStackTrace();
+				this.errors.addItemAt(object, 0);
+				this.grid_list.invalidateDisplayList();
+			}
+			
+			/**
+			 * 打印调试信息到调试窗口
+			 */
+			public function printDebug(msg:Object, title:String=null):void{
+				var object:Object = new Object();
+				object.label = df.format(new Date());
+				object.title = title;
+				object.value = msg;
+				this.errors.addItemAt(object, 0);
+				this.grid_list.invalidateDisplayList();
+			}
+			
+			/**
+			 * 显示详细的错误信息
+			 */
+			protected function showErrorDetail(evt:MouseEvent):void{
+				var object:Object = this.grid_list.selectedItem;
+				if(object){
+					this.text_descr.text = object.title + "\n------------------------\n" + object.value;
+				}else{
+					this.text_descr.text = "";
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox verticalAlign="middle" horizontalAlign="center" left="5" right="5" top="5" bottom="5">
+		<mx:HBox width="100%" height="100%">
+			<mx:DataGrid id="grid_list" height="100%" width="150" click="showErrorDetail(event)" dataProvider="{this.errors}">
+				<mx:columns>
+					<mx:DataGridColumn headerText="错误列表" dataField="label" sortable="false"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:TextArea id="text_descr" width="100%" height="100%" editable="false" wordWrap="false"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Button label="清 除" width="70" click="this.clear()"/>
+			<mx:Button label="关 闭" width="70" click="this.cancel()"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+</FloatWindow>

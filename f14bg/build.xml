@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="copy">
+	<property name="appName" value="F14bg" />
+	<property name="bin.dir" value="bin-debug" />
+	<property name="target.dir" value="D:/f14bg_client" />
+	<property name="target.mainapp.dir" value="${target.dir}/mainapp" />
+	<property name="target.module.dir" value="${target.dir}/module" />
+
+	<target name="mkdir">
+		<delete dir="${target.module.dir}">
+		</delete>
+		<mkdir dir="${target.module.dir}">
+		</mkdir>
+	</target>
+
+	<target name="copy" depends="mkdir">
+		<echo message="复制mainapp" />
+		<copy todir="${target.mainapp.dir}">
+			<fileset dir="${bin.dir}">
+				<include name="*.swf" />
+			</fileset>
+		</copy>
+		<copy todir="${target.mainapp.dir}">
+			<fileset dir="${bin.dir}/com/f14/F14bgClient/hall">
+				<include name="*.swf" />
+			</fileset>
+		</copy>
+		<copy todir="${target.mainapp.dir}">
+			<fileset dir="${bin.dir}/com/f14/F14bgClient/login">
+				<include name="*.swf" />
+			</fileset>
+		</copy>
+		<copy todir="${target.mainapp.dir}">
+			<fileset dir="${bin.dir}/com/f14/F14bgClient/update">
+				<include name="*.swf" />
+			</fileset>
+		</copy>
+		<copy todir="${target.mainapp.dir}">
+			<fileset dir="${bin.dir}/com/f14/F14bgClient/query">
+				<include name="*.swf" />
+			</fileset>
+		</copy>
+		<!--
+			copy todir="${target.mainapp.dir}/images"> <fileset
+			dir="${bin.dir}/images"> <exclude name="*.db" /> </fileset> </copy
+		-->
+		<copy todir="${target.dir}/images">
+			<fileset dir="${bin.dir}/images">
+				<exclude name="*.db" />
+			</fileset>
+		</copy>
+	</target>
+</project>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SimpleCard xmlns="com.f14.F14bgGame.bg.ui.simple.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="30" height="30">
+	<mx:Image width="30" height="30" source="@Embed('./com/f14/F14bgGame/TS/images/china.png')" />
+</SimpleCard>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.F14bgGame.RFTG.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.RFTG.component.RaceCard;
+			import com.f14.F14bgGame.RFTG.player.RacePlayer;
+			
+			[Bindable]
+			public var player:RacePlayer;
+			
+			public function init():void{
+			}
+			
+			public function clear():void{
+				this.cardBoard.clear();
+			}
+			
+		]]>
+	</mx:Script>
+	<ns1:CardBoard id="cardBoard" height="130">
+	</ns1:CardBoard>
+</mx:Canvas>

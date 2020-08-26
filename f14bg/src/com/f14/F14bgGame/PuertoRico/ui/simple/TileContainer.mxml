@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.component.ImageObject;
+			
+			[Bindable]
+			public var num:int = 0;
+			protected var _image:ImageObject;
+			
+			/**
+			 * 设置图像
+			 */
+			public function set image(image:ImageObject):void{
+				this.removeImage();
+				this._image = image;
+				this.addChildAt(image, 0);
+				this.width = image.width;
+				this.height = image.height;
+			}
+			
+			public function get image():ImageObject{
+				return this._image;
+			}
+			
+			/**
+			 * 移除图像
+			 */
+			public function removeImage():void{
+				if(this._image!=null){
+					this.removeChild(this._image);
+				}
+			}
+			
+			/**
+			 * 设置图像为黑白效果
+			 */
+			public function nocolor():void{
+				if(this._image!=null){
+					this._image.filters = [
+						new ColorMatrixFilter([
+						1,0,0,0,0,
+						1,0,0,0,0,
+						1,0,0,0,0,
+						0,0,0,1,0
+						])
+					];
+					//同时隐藏显示的数字
+					this.hbox_text.visible = false;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox id="hbox_text" right="0" bottom="0" horizontalGap="1" backgroundAlpha="0.7" backgroundColor="#DADADA" width="45" fontSize="16" fontWeight="bold">
+		<mx:Label text="x" fontWeight="bold" width="15"/>
+		<mx:Label text="{num}" fontWeight="bold" textAlign="right" width="20" />
+	</mx:HBox>
+</mx:Canvas>

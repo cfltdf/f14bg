@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="750" height="250" xmlns:ns1="com.f14.F14bgGame.Tichu.ui.part.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Tichu.consts.TichuPlayerColor;
+			import com.f14.F14bgGame.Tichu.TichuUtil;
+			[Bindable]
+			public var catchBoth1:String;
+			[Bindable]
+			public var catchBoth2:String;
+			[Bindable]
+			public var addScore1:String;
+			[Bindable]
+			public var addScore2:String;
+			[Bindable]
+			public var formula1:String;
+			[Bindable]
+			public var formula2:String;
+			[Bindable]
+			public var totalScore1:int;
+			[Bindable]
+			public var totalScore2:int;
+			
+			protected var playerResults:Array = new Array();
+			
+			override public function initComponents():void{
+				super.initComponents();
+				playerResults.push(this.result1);
+				playerResults.push(this.result2);
+				playerResults.push(this.result3);
+				playerResults.push(this.result4);
+				
+				this.canvas_group1.setStyle("backgroundColor", TichuPlayerColor.COLORS[0]);
+				this.canvas_group2.setStyle("backgroundColor", TichuPlayerColor.COLORS[1]);
+			}
+			
+			override public function clear():void{
+				super.clear();
+				this.catchBoth1 = null;
+				this.catchBoth2 = null;
+				this.addScore1 = null;
+				this.addScore2 = null;
+				this.formula1 = null;
+				this.formula2 = null;
+				this.totalScore1 = null;
+				this.totalScore2 = null;
+				
+				for each(var result:TichuPlayerResult in playerResults){
+					result.clear();
+				}
+			}
+			
+			public function set inputable(inputable:Boolean):void{
+				this.button_confirm.visible = inputable;
+			}
+			
+			/**
+			 * 装载回合结果参数
+			 */
+			public function loadResultParam(param:Object):void{
+				this.clear();
+				var i:int = 0;
+				for each(var player:Object in param.playerResults){
+					var result:TichuPlayerResult = this.playerResults[i] as TichuPlayerResult;
+					result.loadParam(player);
+					i++;
+				}
+				//装载1组的回合得分信息
+				var groupResult:Object = param.groupResults[0];
+				if(groupResult.bothCatchScore){
+					this.catchBoth1 = groupResult.bothCatchScore;
+				}
+				if(groupResult.addScore){
+					this.addScore1 = groupResult.addScore;
+				}
+				this.formula1 = groupResult.formula;
+				this.totalScore1 = groupResult.score;
+				//装载2组的回合得分信息
+				groupResult = param.groupResults[1];
+				if(groupResult.bothCatchScore){
+					this.catchBoth2 = groupResult.bothCatchScore;
+				}
+				if(groupResult.addScore){
+					this.addScore2 = groupResult.addScore;
+				}
+				this.formula2 = groupResult.formula;
+				this.totalScore2 = groupResult.score;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox id="hbox_title" top="20" horizontalCenter="0">
+		<mx:Label text="" width="120"/>
+		<mx:Label text="排 名" width="40" textAlign="center"/>
+		<mx:Label text="得 分" width="50" textAlign="center"/>
+		<mx:Label text="地 主" width="125" textAlign="center"/>
+		<mx:Label text="双 关" width="50" textAlign="center"/>
+		<mx:Label text="缴 获" width="50" textAlign="center"/>
+		<mx:Label text="总 分" width="170" textAlign="center"/>
+	</mx:HBox>
+	<mx:HBox top="50" horizontalCenter="0">
+		<mx:VBox x="53" y="74">
+			<ns1:TichuPlayerResult id="result1" />
+			<ns1:TichuPlayerResult id="result3" />
+			<ns1:TichuPlayerResult id="result2" />
+			<ns1:TichuPlayerResult id="result4" />
+		</mx:VBox>
+		<mx:VBox>
+			<mx:Canvas height="46">
+				<mx:Label text="{catchBoth1}" textAlign="center" width="50" verticalCenter="0"/>
+			</mx:Canvas>
+			<mx:Canvas height="46">
+				<mx:Label text="{catchBoth2}" textAlign="center" width="50" verticalCenter="0"/>
+			</mx:Canvas>
+		</mx:VBox>
+		<mx:VBox>
+			<mx:Canvas height="46">
+				<mx:Label text="{addScore1}" textAlign="center" width="50" verticalCenter="0"/>
+			</mx:Canvas>
+			<mx:Canvas height="46">
+				<mx:Label text="{addScore2}" textAlign="center" width="50" verticalCenter="0"/>
+			</mx:Canvas>
+		</mx:VBox>
+		<mx:VBox>
+			<mx:Canvas height="46">
+				<mx:Label text="{formula1}" textAlign="center" width="80" verticalCenter="0"/>
+			</mx:Canvas>
+			<mx:Canvas height="46">
+				<mx:Label text="{formula2}" textAlign="center" width="80" verticalCenter="0"/>
+			</mx:Canvas>
+		</mx:VBox>
+		<mx:VBox>
+			<mx:Canvas height="46">
+				<mx:Label text="=" textAlign="center" width="20" verticalCenter="0"/>
+			</mx:Canvas>
+			<mx:Canvas height="46">
+				<mx:Label text="=" textAlign="center" width="20" verticalCenter="0"/>
+			</mx:Canvas>
+		</mx:VBox>
+		<mx:VBox>
+			<mx:Canvas height="46">
+				<mx:Label text="{totalScore1}" textAlign="center" width="50" verticalCenter="0" fontWeight="bold"/>
+			</mx:Canvas>
+			<mx:Canvas height="46">
+				<mx:Label text="{totalScore2}" textAlign="center" width="50" verticalCenter="0" fontWeight="bold"/>
+			</mx:Canvas>
+		</mx:VBox>
+	</mx:HBox>
+	<mx:Button id="button_confirm" label="确 定" horizontalCenter="0" bottom="20" width="80" click="TichuUtil.actionManager.sendCurrentCommand('confirm')" visible="false"/>
+	<mx:Canvas id="canvas_title" y="20" width="680" height="20" left="25" backgroundAlpha="0.3" backgroundColor="#FCFF00">
+	</mx:Canvas>
+	<mx:Canvas id="canvas_group1" y="49" width="680" height="48" left="25" backgroundAlpha="0.3">
+	</mx:Canvas>
+	<mx:Canvas id="canvas_group2" y="101" width="680" height="48" left="25" backgroundAlpha="0.3">
+	</mx:Canvas>
+</NewConfirmWindow>

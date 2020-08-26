@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TSConfirmWindow xmlns="com.f14.F14bgGame.TS.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="300" height="250" xmlns:ns1="com.f14.F14bgGame.TS.ui.simple.*" title="#40-古巴导弹危机">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Button;
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				this.vbox_button.removeAllChildren();
+			}
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				this.cardMessage = this.local_cm;
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				if(param.countryList){
+					for each(var country:Object in param.countryList){
+						var button:Button = new Button();
+						button.width = 180;
+						button.label = country.name + " " + country.influenceString;
+						button.addEventListener(MouseEvent.CLICK, confirmParam(country.id));
+						this.vbox_button.addChild(button);
+					}
+				}
+			}
+			
+			protected function confirmParam(countryId):Function{
+				var func = function(e):void{
+					var param:Object = {};
+					param.countryId = countryId;
+					doConfirm(param);
+				}
+				return func;
+			}
+			
+			/*public function confirmParam(countryId:String):void{
+				var param:Object = {};
+				param.countryId = countryId;
+				this.doConfirm(param);
+			}*/
+			
+		]]>
+	</mx:Script>
+	<mx:VBox top="10" bottom="10" left="10" right="10" horizontalAlign="center">
+		<ns1:TSCardMessage id="local_cm" width="100%" />
+		<mx:Spacer height="5" />
+		<mx:VBox id="vbox_button">
+			
+		</mx:VBox>
+		<mx:VBox>
+			<mx:Button label="取 消" click="this.doCancel()" width="180" />
+		</mx:VBox>
+	</mx:VBox>
+</TSConfirmWindow>

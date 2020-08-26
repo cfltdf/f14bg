@@ -1,0 +1,37 @@
+/* CSS file */
+global
+{
+	backgroundSize: "100%";
+	backgroundGradientAlphas: 1, 1;
+	backgroundGradientColors: #865B00, #865B00;
+	fontSize: 12;
+	color: #000000;
+	theme-color: #DD8C00;
+}
+TichuMainBoard{
+	backgroundColor: #FFFFFF;
+	borderStyle:none;
+	background-size: "100%";
+	background-image: Embed("./images/bg.jpg");
+	background-alpha: 0.33;
+}
+.gameBoard{
+	backgroundAlpha: 0.2;
+}
+.playerInfoText{
+	color: #FFFFFF;
+	font-size: 14;
+	font-weight: bold;
+}
+NewConfirmWindow{
+	background-image: Embed("./images/small.jpg");
+	background-size: "100%";
+	background-alpha: 0.8;
+	borderAlpha: 0.7;
+}
+TichuGameInfoBoard{
+	background-image: Embed("./images/small.jpg");
+	background-size: "100%";
+	background-alpha: 0.8;
+	borderAlpha: 0.7;
+}

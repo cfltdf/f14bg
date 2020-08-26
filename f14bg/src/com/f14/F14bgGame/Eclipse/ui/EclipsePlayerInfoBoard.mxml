@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerInfoBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="250" height="190" backgroundAlpha="0.3" horizontalScrollPolicy="off" verticalScrollPolicy="off" xmlns:part="com.f14.F14bgGame.TTA.ui.part.*" click="this.onClick()">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.consts.EclipsePlayerColor;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.Eclipse.player.EclipsePlayer;
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			import com.f14.f14bg.event.BgEvent;
+			import mx.binding.utils.BindingUtils;
+			import com.f14.F14bgGame.bg.player.Player;
+			
+			[Bindable]
+			public var eclipsePlayer:EclipsePlayer;
+			
+			override public function set player(player:Player):void{
+				super.player = player;
+				this.eclipsePlayer = player as EclipsePlayer;
+				
+				this.setStyle("backgroundColor", EclipsePlayerColor.COLORS[player.position]);
+			}
+			
+			override public function init():void{
+				super.init();
+				//设置对象为可选高光
+				EclipseUtil.effectManager.addHighlight(this);
+			}
+			
+			/**
+			 * 清除内容
+			 */
+			override public function clear():void{
+				super.clear();
+			}
+			
+			/**
+			 * 判断该玩家信息是否可以选择
+			 */
+			public function get selectable():Boolean{
+				return true;
+			}
+			
+			/**
+			 * 点击玩家信息时触发的方法
+			 */
+			protected function onClick():void{
+				EclipseUtil.stateManager.trigPlayerWindow(this.player.position);
+			}
+			
+			/**
+			 * 得到效果的目标对象
+			 */
+			override protected function get effectTarget():Object{
+				return this.label_player;
+			}
+			
+			/**
+			 * 装载玩家状态的参数
+			 */
+			public function loadStatusParam(param:Object):void{
+				this.canvas_passed.visible = param.passed;
+				this.canvas_traitor.visible = param.traitor;
+				this.canvas_startPlayer.visible = param.startPlayer;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas id="canvas_passed" width="223" height="34" styleName="passedLabel" y="9" x="14" visible="false"/>
+	<mx:Canvas width="250" height="190" styleName="playerSummary" />
+	<mx:Image source="com/f14/F14bgGame/Eclipse/images/playerSummary.jpg" width="250" height="190" autoLoad="true" visible="false">
+	</mx:Image>
+	<mx:Label x="19" y="12" text="{this.eclipsePlayer.name}" width="136" height="28" id="label_player" styleName="textSmallCounter"/>
+	<mx:Label x="11" y="46" width="80" text="{this.eclipsePlayer.sumMoney}" id="label_money" styleName="textSummaryNumber" textAlign="center"/>
+	<mx:Label x="87" y="46" width="80" text="{this.eclipsePlayer.sumScience}" id="label_science" styleName="textSummaryNumber" textAlign="center"/>
+	<mx:Label x="159" y="46" width="80" text="{this.eclipsePlayer.sumMaterials}" id="label_materials" styleName="textSummaryNumber" textAlign="center"/>
+	<mx:Label x="54" y="72" text="{this.eclipsePlayer.sumInfluence}" id="label_influence" styleName="textSummaryNumber"/>
+	<mx:Label x="169" y="72" text="{this.eclipsePlayer.sumColonyShip}" width="62" id="label_colony" styleName="textSummaryNumber" textAlign="center"/>
+	<mx:Label x="60" y="98" text="{this.eclipsePlayer.numSciMilitary}" id="label_military" styleName="textSummaryNumber"/>
+	<mx:Label x="133" y="98" text="{this.eclipsePlayer.numSciGrid}" id="label_grid" styleName="textSummaryNumber"/>
+	<mx:Label x="208" y="98" text="{this.eclipsePlayer.numSciNano}" id="label_nano" styleName="textSummaryNumber"/>
+	<mx:Label x="60" y="124" text="{this.eclipsePlayer.numShipInterceptor}" id="label_interceptor" styleName="textSummaryNumber"/>
+	<mx:Label x="133" y="124" text="{this.eclipsePlayer.numShipCruiser}" id="label_cruiser" styleName="textSummaryNumber"/>
+	<mx:Label x="208" y="124" text="{this.eclipsePlayer.numShipDreadnought}" id="label_dreadnought" styleName="textSummaryNumber"/>
+	<mx:Label x="60" y="153" text="{this.eclipsePlayer.numShipStarbase}" id="label_starbase" styleName="textSummaryNumber"/>
+	<mx:Label x="133" y="153" text="{this.eclipsePlayer.numAmbassador}" id="label_ambassador" styleName="textSummaryNumber"/>
+	<mx:Canvas x="176" y="11" width="30" height="30" id="canvas_traitor" styleName="tokenTraitor" visible="false" />
+	<mx:Canvas x="206" y="11" width="30" height="30" id="canvas_startPlayer" styleName="tokenStartPlayer" visible="false" />
+</PlayerInfoBoard>

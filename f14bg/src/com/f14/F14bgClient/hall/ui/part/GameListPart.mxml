@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="380" xmlns:component="com.f14.F14bgGame.bg.component.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import mx.controls.Button;
+			
+			private var gameTypes:Array = new Array();
+			private var _selectedButton:Button = null;
+			
+			public function get selectedGameType():Object{
+				if(this._selectedButton==null){
+					return null;
+				}else{
+					return this.getGameTypeByButton(this._selectedButton);
+				}
+			}
+			
+			/**
+			 * 按照按钮取得游戏类型信息
+			 */
+			private function getGameTypeByButton(button:Button):Object{
+				return this.gameTypes[button.label];
+			}
+			
+			public function clear():void{
+				for each(var button:Button in this.canvas_game.getChildren()){
+					button.selected = false;
+				}
+				if(this._selectedButton!=null){
+					this._selectedButton.selected = true;
+				}
+			}
+		
+			/**
+			 * 添加游戏类型选项
+			 */
+			public function addGameType(gameType:Object):void{
+				var label:String = gameType.label;
+				var value:String = gameType.value;
+				var button:Button = new Button();
+				button.width = 120;
+				button.height = 40;
+				button.label = label;
+				button.toggle = true;
+				button.addEventListener(MouseEvent.CLICK, ApplicationUtil.createClickFunction(onClick));
+				//记录游戏对象信息
+				this.gameTypes[label] = gameType;
+				this.canvas_game.addChild(button);
+			}
+			
+			/**
+			 * 点击按钮时触发的方法
+			 */
+			protected function onClick(evt:MouseEvent):void{
+				var button:Button = evt.currentTarget as Button;
+				if(button==this._selectedButton){
+					button.selected = true;
+				}else{
+					if(this._selectedButton!=null){
+						this._selectedButton.selected = false;
+					}
+					this._selectedButton = button;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<component:FlowCanvas id="canvas_game" width="375" verticalGap="5" horizontalGap="5" horizontalCenter="0" />
+</mx:Canvas>

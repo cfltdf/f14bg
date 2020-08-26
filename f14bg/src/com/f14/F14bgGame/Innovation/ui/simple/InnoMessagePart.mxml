@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="340" height="70" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Innovation.components.InnoCard;
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			[Bindable]
+			private var msg:String;
+			private var card:InnoCardLabel;
+			
+			public function clear():void{
+				if(this.card!=null){
+					this.removeChild(card);
+					this.card = null;
+				}
+				this.msg = "";
+			}
+			
+			public function loadParam(param:Object):void{
+				this.clear();
+				this.msg = param.msg;
+				this.setCard(param.cardId);
+				if(this.card!=null){
+					this.card.x = 10;
+					this.card.y = (this.height-this.card.height)/2;
+					this.text_msg.x = 10+10+this.card.width;
+				}else{
+					this.text_msg.x = (this.width-this.text_msg.width)/2;
+				}
+			}
+			
+			private function setCard(cardId:String):void{
+				var card:InnoCard = InnoUtil.resourceManager.createInnoCard(cardId);
+				if(card!=null){
+					var sc:InnoCardLabel = new InnoCardLabel();
+					this.addChild(sc);
+					sc.init();
+					sc.object = card;
+					this.card = sc;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Text id="text_msg" text="{msg}" width="200" height="60" verticalCenter="0" styleName="confirmText" selectable="false" />
+</mx:Canvas>

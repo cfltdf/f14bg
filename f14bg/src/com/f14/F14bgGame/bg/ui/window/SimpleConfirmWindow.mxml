@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml"  minWidth="300" height="160" verticalScrollPolicy="off" horizontalScrollPolicy="off" xmlns:simple="com.f14.F14bgGame.bg.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				this.button_part.setConfirmWindow(this);
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				this.button_part.loadParam(param);
+			}
+		]]>
+	</mx:Script>
+	<mx:Label text="{msg}" horizontalCenter="0" top="30"/>
+	<simple:ConfirmButtonPart id="button_part" horizontalCenter="0" bottom="20" />
+</NewConfirmWindow>

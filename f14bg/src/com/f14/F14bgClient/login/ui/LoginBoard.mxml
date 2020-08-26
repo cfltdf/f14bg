@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.f14bg.manager.StateManager;
+			import com.f14.f14bg.manager.TooltipManager;
+			import mx.collections.ArrayCollection;
+			import cn.smartinvoke.executor.Executor;
+			import com.adobe.serialization.json.JSON;
+			import com.f14.F14bgClient.FlashHandler.SystemHandler;
+			import com.f14.f14bg.manager.ActionManager;
+			import com.f14.core.util.ApplicationUtil;
+			[Bindable]
+			public var hosts:ArrayCollection = new ArrayCollection();
+			public var systemHandler:SystemHandler;
+			protected var localProp:Object;
+			
+			public function init():void{
+				systemHandler = new SystemHandler();
+				//装载本地缓存参数
+				this.loadLocalProperties();
+				this.setShowState("DEFAULT");
+				//设置默认服务器
+				this.loadDefaultHostList();
+				this.loadDefaultHost();
+				this.loadDefaultUser();
+				//读取远程服务器列表
+				this.systemHandler.loadServerList();
+			}
+			
+			/**
+			 * 读取本地缓存的参数
+			 */
+			private function loadLocalProperties():void{
+				var str:String = this.systemHandler.loadLocalProperties();
+				//读取属性成功时,设置默认值
+				if(str){
+					localProp = JSON.decode(str);
+				}else{
+					localProp = new Object();
+				}
+			}
+			
+			/**
+			 * 设置最近的服务器列表
+			 */
+			private function loadDefaultHostList():void{
+				hosts.removeAll();
+				if(localProp.hosts){
+					var recs:Array = JSON.decode(localProp.hosts) as Array;
+					for each(var rec:Object in recs){
+						var object:Object = new Object();
+						object.name = rec.hostname;
+						object.host = rec.host;
+						object.port = rec.port;
+						hosts.addItem(object);
+					}
+				}
+				//刷新列表
+				this.grid_host.invalidateList();
+			}
+			
+			/**
+			 * 设置默认服务器
+			 */
+			private function loadDefaultHost():void{
+				this.text_host.text = localProp.host;
+				this.text_port.text = localProp.port;
+			}
+			
+			/**
+			 * 设置默认用户
+			 */
+			private function loadDefaultUser():void{
+				this.text_loginName.text = localProp.loginname;
+				this.text_password.text = localProp.password;
+			}
+			
+			/**
+			 * 设置界面的显示状态
+			 */
+			public function setShowState(state:String):void{
+				switch(state){
+					case "ACCOUNT": //输入账号
+						this.canvas_host.visible = false;
+						this.canvas_account.visible = true;
+						this.grid_host.selectable = false;
+						break;
+					default:
+						this.canvas_host.visible = true;
+						this.canvas_account.visible = false;
+						this.grid_host.selectable = true;
+						break;
+				}
+			}
+			
+			/**
+			 * 列表选择变化时的回调函数
+			 */
+			public function onChange(evt:Event):void{
+				var item:Object = evt.target.selectedItem;
+				if(item!=null){
+					this.text_host.text = item.host;
+					this.text_port.text = item.port;
+				}
+			}
+			
+			/**
+			 * 连接服务器
+			 */
+			public function doConnect():void{
+				if(!this.text_host.text){
+					ApplicationUtil.alert("请输入主机地址!");
+					return;
+				}
+				if(!this.text_port.text){
+					ApplicationUtil.alert("请输入端口!");
+					return;
+				}
+				TooltipManager.showLoadingTip("连接服务器...", 60000);
+				this.systemHandler.connectToServer(this.text_host.text, int(this.text_port.text));
+			}
+			
+			/**
+			 * 执行登录
+			 */
+			public function doLogin():void{
+				if(!this.text_loginName.text){
+					ApplicationUtil.alert("请输入帐号!");
+					return;
+				}
+				ActionManager.doLogin(this.text_loginName.text, this.text_password.text);
+				//保存帐号密码到本地参数
+				this.systemHandler.saveLocalProperty("loginname", this.text_loginName.text);
+				this.systemHandler.saveLocalProperty("password", this.text_password.text);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%" height="100%">
+		<mx:Canvas width="100%" height="0">
+		</mx:Canvas>
+		<mx:HBox width="100%" height="100%">
+			<mx:Canvas width="50%" height="100%" borderStyle="solid" borderThickness="1">
+				<mx:Text id="text_notice" top="10" bottom="10" left="10" right="10" textAlign="left"/>
+			</mx:Canvas>
+			<mx:VBox width="50%" height="100%">
+				<mx:Canvas width="100%" height="100%">
+					<mx:DataGrid id="grid_host" width="100%" height="100%" dataProvider="{hosts}" change="onChange(event)">
+						<mx:columns>
+							<mx:DataGridColumn headerText="主机名" dataField="name"/>
+							<mx:DataGridColumn headerText="IP地址" dataField="host"/>
+							<mx:DataGridColumn headerText="状态" dataField="state"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:Canvas>
+				<mx:Canvas width="100%" height="160" borderStyle="solid" borderThickness="1">
+					<mx:Canvas id="canvas_host" visible="true" horizontalCenter="0" verticalCenter="0">
+						<mx:Label y="26" text="主机" color="#000000"/>
+						<mx:TextInput id="text_host" x="60" y="24" width="120" color="#000000" text="f14eagle.vicp.net"/>
+						<mx:Label y="56" text="端口" color="#000000"/>
+						<mx:TextInput id="text_port" x="60" y="54" width="52" color="#000000" text="8181"/>
+						<mx:Button x="50" y="98" label="连接服务器" click="doConnect()" />
+					</mx:Canvas>
+					<mx:Canvas id="canvas_account" visible="false" verticalCenter="0" horizontalCenter="0">
+						<mx:Label x="23" y="47" text="帐号" color="#000000"/>
+						<mx:TextInput id="text_loginName" x="76" y="45" width="120" color="#000000"/>
+						<mx:Label x="23" y="75" text="密码"/>
+						<mx:TextInput x="75.5" y="73" width="120" displayAsPassword="true" id="text_password"/>
+						<mx:Button x="225" y="45" label="登 录" click="doLogin()" height="52"/>
+						<mx:LinkButton x="99" y="124" label="注册新用户" click="StateManager.showRegistWindow()" />
+						<mx:LinkButton x="183" y="124" label="返回服务器列表" click="setShowState('DEFAULT')" />
+					</mx:Canvas>
+				</mx:Canvas>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:Canvas width="100%" height="35" borderStyle="solid">
+			<mx:Label text="[=F14=]Eagle出品!   QQ:15596739 MSN:scomb_2@hotmail.com QQ群:42840017"  right="10" verticalCenter="0" selectable="true" />
+		</mx:Canvas>
+	</mx:VBox>
+</mx:Canvas>

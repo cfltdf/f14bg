@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.F14bgGame.RFTG.ui.*" xmlns:ns2="com.f14.F14bgGame.RFTG.ui.simple.*" borderStyle="none">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgGame.bg.consts.PlayerState;
+			import com.f14.F14bgGame.RFTG.RaceUtil;
+			import com.f14.F14bgGame.RFTG.manager.RaceImageManager;
+			import com.f14.F14bgGame.RFTG.manager.RaceGameManager;
+			import com.f14.f14bg.event.BgEvent;
+			import mx.effects.effectClasses.ZoomInstance;
+			import mx.effects.IEffectInstance;
+			import mx.effects.Zoom;
+			import com.f14.F14bgGame.RFTG.ui.simple.ImageCard;
+			import com.f14.F14bgGame.RFTG.component.RaceCard;
+			import com.f14.F14bgGame.RFTG.player.RacePlayer;
+			
+			[Bindable]
+			private var _racePlayer:RacePlayer;
+			[Bindable]
+			public var msg:String;
+			
+			private var actionImages:Array;
+			private var _canChooseAction:Boolean
+			
+			private var vpEffect:ZoomInstance;
+			private var handEffect:ZoomInstance;
+			
+			override public function clear():void{
+				super.clear();
+				//this.msg = null;
+				this._canChooseAction = false;
+				this.actionImages = new Array();
+				this.hbox_actions.removeAllChildren();
+				this.cardBoard.clear();
+				this.playerGoalBoard.clear();
+			}
+			
+			override public function set player(player:Player):void{
+				super.player = player;
+				this._racePlayer = player as RacePlayer;
+				initBackgroundColor();
+				if(player!=null){
+					player.addEventListener(BgEvent.PLAYER_STATE_CHANGE, playerStateChange);
+				}
+			}
+			
+			public function get canChooseAction():Boolean{
+				return this._canChooseAction;
+			}
+			
+			public function set canChooseAction(canChooseAction:Boolean):void{
+				this._canChooseAction = canChooseAction;
+			}
+			
+			/**
+			 * 初始化背景色
+			 */
+			public function initBackgroundColor():void{
+				if(_player==null){
+					//canvas_player.setStyle("backgroundColor", null);
+				}else{
+					//var color:int = StateManager.COLORS[player.position];
+					//canvas_player.setStyle("backgroundColor", color);
+					//canvas_player.setStyle("backgroundAlpha", 0.2);
+				}
+				vpEffect = RaceUtil.effectManager.zoomEffect.createInstance(label_vp) as ZoomInstance;
+				handEffect = RaceUtil.effectManager.zoomEffect.createInstance(label_handSize) as ZoomInstance;
+			}
+			
+			public function onVPChange(vp:int):void{
+				if(vp==0){
+					return;
+				}
+				/*vpEffect.end();
+				if(vp>0){
+					vpEffect.zoomHeightFrom = 2;
+					vpEffect.zoomWidthFrom = 2;
+				}else{
+					vpEffect.zoomHeightFrom = 0;
+					vpEffect.zoomWidthFrom = 0;
+				}
+				vpEffect.play();*/
+			}
+			
+			public function onHandSizeChange(handSize:int):void{
+				if(handSize==0){
+					return;
+				}
+				//暂时去除效果
+				/*handEffect.end();
+				if(handSize>0){
+					handEffect.zoomHeightFrom = 2;
+					handEffect.zoomWidthFrom = 2;
+				}else{
+					handEffect.zoomHeightFrom = 0;
+					handEffect.zoomWidthFrom = 0;
+				}
+				handEffect.play();*/
+			}
+			
+			public function initImageAction():void{
+				actionImages = new Array();
+				for(var i:int=0;i<RaceGameManager.ACTION_NUM;i++){
+					var actionImage:ImageCard = new ImageCard(RaceImageManager.DEFAULT_SCALE);
+					hbox_actions.addChild(actionImage);
+					actionImage.addEventListener(MouseEvent.MOUSE_OVER, showChooseActionBoard);
+					actionImages.push(actionImage);
+				}
+				//清除图像
+				clearActionImages();
+			}
+			
+			/**
+			 * 显示行动选择界面
+			 */
+			public function showChooseActionBoard(evt:MouseEvent):void{
+				if(canChooseAction){
+					var board:ChooseActionBoard = RaceUtil.stateManager.chooseActionBoard;
+					var rgt:Rectangle = evt.target.getBounds(RaceUtil.module);
+					var newpoint:Point = new Point(rgt.left, rgt.top);
+					newpoint.x -= 10;
+					newpoint.y = newpoint.y - board.height + evt.target.height + 10;
+					board.x = newpoint.x;
+					board.y = newpoint.y;
+					board.visible = true;
+				}
+			}
+			
+			/**
+			 * 清除行动选择的图像
+			 */
+			public function clearActionImages():void{
+				actionImages.forEach(function(actionImage:ImageCard, i:int, arr:Array):void{
+					//actionImage.object = null;
+					var card:RaceCard = new RaceCard();
+					card.imageIndex = RaceImageManager.IMAGE_INDEX_BACK;
+					//actionImage.loadImage(115);
+					actionImage.object = card;
+				});
+			}
+			
+			/**
+			 * 设置选择行动完成
+			 */
+			public function setActionComplete():void{
+				canChooseAction = false;
+				actionImages.forEach(function(actionImage:ImageCard, i:int, arr:Array):void{
+					//actionImage.card = null;
+					//actionImage.loadImage(ImageManager.IMAGE_INDEX_ACTION + player.position*10 + 10);
+					var card:RaceCard = new RaceCard();
+					card.imageIndex = RaceImageManager.IMAGE_INDEX_ACTION + player.position*10 + 10;
+					//actionImage.loadImage(115);
+					actionImage.object = card;
+				});
+			}
+			
+			/**
+			 * 读取选择行动卡牌图像
+			 */
+			public function loadActionImages(actionCodes:String):void{
+				var codes:Array = actionCodes.split(",");
+				for(var i:int=0;i<codes.length;i++){
+					var j:int = RaceUtil.stateManager.chooseActionBoard.getImageIndex(codes[i]);
+					var card:RaceCard = new RaceCard();
+					card.imageIndex = RaceImageManager.IMAGE_INDEX_ACTION+j+player.position*10;
+					actionImages[i].object = card;
+				}
+			}
+			
+			/**
+			 * 玩家状态变化时的回调函数
+			 */
+			override public function playerStateChange(evt:Event):void{
+				switch(this.player.playerState){
+					case PlayerState.READY:
+						msg = "Ready!";
+						label_ready.setStyle("color", 0x00ff00);
+						break;
+					case PlayerState.INPUTING:
+						msg = "等待行动中...";
+						label_ready.setStyle("color", 0xff0000);
+						break;
+					case PlayerState.RESPONSED:
+						msg = "行动完成!";
+						label_ready.setStyle("color", 0x00ff00);
+						break;
+					default:
+						msg = "";
+						break;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox horizontalGap="4">
+		<mx:Canvas id="canvas_player" minWidth="120" height="130" horizontalScrollPolicy="off" verticalScrollPolicy="off" borderStyle="solid" cornerRadius="3" backgroundColor="#424242" borderThickness="2">
+			<mx:Label x="6" y="6" text="{_racePlayer.name}" id="label_name" fontWeight="bold" fontSize="16" color="#FFFFFF"/>
+			<mx:Canvas x="68" y="34" styleName="hands" width="27" height="32" />
+			<mx:Canvas x="25" y="34" styleName="chips" width="37" height="32" />
+			<mx:Label x="28" y="36" text="{_racePlayer.vp}" id="label_vp" textAlign="center" fontWeight="bold" fontFamily="Arial" fontSize="20" width="30" color="#FFFFFF"/>
+			<mx:Label x="66" y="36" text="{_racePlayer.handSize}" id="label_handSize" color="#000000" textAlign="center" fontWeight="bold" fontFamily="Arial" fontSize="20" width="30"/>
+			<mx:Label x="14" y="73" text="{msg}" id="label_ready"  color="#FFFFFF"/>
+			<ns1:PlayerGoalBoard x="6" y="97" id="playerGoalBoard">
+			</ns1:PlayerGoalBoard>
+		</mx:Canvas>
+		<mx:HBox id="hbox_actions" horizontalGap="4" height="100%">
+		</mx:HBox>
+		<ns1:CardBoard x="150" verticalCenter="0" id="cardBoard" height="130">
+		</ns1:CardBoard>
+	</mx:HBox>
+</PlayerBoard>

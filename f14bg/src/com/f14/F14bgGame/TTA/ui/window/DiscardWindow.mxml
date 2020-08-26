@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" height="250" showCloseButton="false" title="请选择要弃掉的军事牌" minWidth="250">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import com.f14.f14bg.event.BgEvent;
+			import com.f14.f14bg.components.ComponentOption;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.TTA.components.TTACard;
+			
+			/**
+			 * 选择器,支持多选
+			 */
+			protected var options:ComponentOption = new ComponentOption(true);
+			
+			override public function clear():void{
+				super.clear();
+				this.options.removeAllComponent();
+				this.hbox_card.removeAllChildren();
+			}
+			
+			/**
+			 * 添加卡牌
+			 */
+			public function addCard(cardId:String):void{
+				var card:TTACard = TTAUtil.resourceManager.createTTACard(cardId);
+				this.hbox_card.addChild(card);
+				this.options.addComponent(card);
+			}
+			
+			/**
+			 * 添加卡牌
+			 */
+			public function addCards(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				for each(var cardId:String in ids){
+					this.addCard(cardId);
+				}
+			}
+			
+			/**
+			 * 从参数中装载卡牌信息
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				this.addCards(param.cardIds);
+				//设置所有卡牌可选
+				this.options.setAllComponentsSelectable(true);
+			}
+			
+			/**
+			 * 创建确认时的参数
+			 */
+			override protected function createConfirmParam():Object{
+				var param:Object = new Object();
+				var cards:Array = this.options.getSelection();
+				param.cardIds = BgUtils.card2String(cards);
+				return param;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox id="hbox_card" top="40" horizontalCenter="0">
+	</mx:HBox>
+	<mx:Button label="确定" horizontalCenter="0" click="doConfirm()" bottom="15"/>
+	<mx:Label text="{msg}" horizontalCenter="0" top="10"/>
+</ConfirmWindow>

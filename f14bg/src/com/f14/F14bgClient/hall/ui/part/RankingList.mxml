@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgClient.hall.HallUtil;
+			import mx.events.ListEvent;
+			import mx.events.ItemClickEvent;
+			import com.f14.core.util.ApplicationUtil;
+			import mx.collections.ArrayCollection;
+			[Bindable]
+			protected var _gameTypes:ArrayCollection;
+			[Bindable]
+			protected var rankingList:ArrayCollection = new ArrayCollection();
+			protected var lastIndex:int;
+			//是否点击过
+			public var inited:Boolean = false;
+			
+			/*public function init():void{
+				this.refresh();
+				if(this.lastIndex){
+					this.cb_gameType.selectedIndex = this.lastIndex;
+				}
+			}*/
+			
+			public function set gameTypes(gameTypes:ArrayCollection):void{
+				this._gameTypes = gameTypes;
+			}
+			
+			public function get gameTypes():ArrayCollection{
+				return this._gameTypes;
+			}
+			
+			/**
+			 * 刷新排行榜
+			 */
+			public function refresh():void{
+				this.inited = true;
+				var item:Object = this.cb_gameType.selectedItem;
+				if(item==null){
+					ApplicationUtil.alert("请选择游戏类型!");
+					return;
+				}
+				this.lastIndex = this.cb_gameType.selectedIndex;
+				HallUtil.actionManager.refreshRankingList(item.value);
+			}
+			
+			/**
+			 * 读取排行榜参数信息
+			 */
+			public function loadRankingListParam(param:Object):void{
+				rankingList = new ArrayCollection(param.list);
+				//刷新排列序号
+				for(var i:int=0;i<this.rankingList.length;i++){
+					this.rankingList.getItemAt(i).index = (i+1);
+				}
+			}
+			
+			/**
+			 * 刷新用户积分信息
+			 */
+			public function refreshUserRank(evt:ListEvent):void{
+				var item:Object = this.rankingList.getItemAt(evt.rowIndex);
+				if(item!=null){
+					HallUtil.actionManager.refreshUserRanking(item.userId);
+				}
+			}
+			
+			/**
+			 * 在排行榜中找到自己的位置
+			 */
+			public function findMe():void{
+				var find:Boolean = false;
+				for(var i:int=0;i<this.rankingList.length;i++){
+					var item:Object = this.rankingList.getItemAt(i);
+					if(item.userId==ApplicationUtil.localUser.userId){
+						this.table_ranking.selectedIndex = i;
+						this.table_ranking.scrollToIndex(i);
+						find = true;
+						break;
+					}
+				}
+				if(!find){
+					ApplicationUtil.alert("没有找到记录!");
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox top="5" bottom="5" left="5" right="5">
+		<mx:Canvas width="100%">
+			<mx:HBox x="0" y="0" width="100%" height="100%">
+				<mx:Label text="游戏类型"/>
+				<mx:ComboBox id="cb_gameType" dataProvider="{_gameTypes}" change="refresh()" ></mx:ComboBox>
+				<mx:Button label="刷 新" click="refresh()"/>
+				<mx:Button label="查找自己" click="findMe()"/>
+			</mx:HBox>
+		</mx:Canvas>
+		<mx:Canvas height="100%" width="100%">
+			<mx:DataGrid id="table_ranking" dataProvider="{rankingList}" width="100%" height="100%" itemDoubleClick="refreshUserRank(event)" doubleClickEnabled="true">
+				<mx:columns>
+					<mx:DataGridColumn headerText="序号" dataField="index" width="40"/>
+					<mx:DataGridColumn headerText="用户名" dataField="userName" width="200"/>
+					<mx:DataGridColumn headerText="胜" dataField="numWins" width="70"/>
+					<mx:DataGridColumn headerText="负" dataField="numLoses" width="70"/>
+					<mx:DataGridColumn headerText="总数" dataField="numTotal" width="90"/>
+					<mx:DataGridColumn headerText="胜率(%)" dataField="rate" width="90"/>
+					<mx:DataGridColumn headerText="总积分" dataField="score" width="120"/>
+					<mx:DataGridColumn headerText="排名点数" dataField="rankPoint"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:Canvas>
+	</mx:VBox>
+</mx:Canvas>

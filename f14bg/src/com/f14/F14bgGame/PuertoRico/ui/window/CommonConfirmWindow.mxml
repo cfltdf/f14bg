@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="250" height="150" title="请确认">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			[Bindable]
+			public var message:String;
+			public var stepCode:String;
+			
+			/**
+			 * 结果
+			 */
+			public function confirm(confirm:Boolean):void{
+				PRUtil.actionManager.commonConfirm(stepCode, confirm);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Text text="{message}" x="23" y="23" width="184" selectable="false" textAlign="center" fontWeight="bold"/>
+	<mx:Button label="确 认"  x="60" y="78" click="confirm(true)" />
+	<mx:Button label="取 消"  x="119" y="78" click="confirm(false)" />
+</FloatWindow>

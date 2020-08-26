@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" dataChange="onDataChange()" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			
+			protected function onDataChange():void{
+				
+			}
+			
+			override public function set data(value:Object):void{
+				super.data = value;
+			}
+			
+			protected function getVisible(data:Object):Boolean{
+				if(data!=null && data.ready==true){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Image id="image_ready" source="@Embed('./images/green.png')" visible="{getVisible(data)}" width="16" height="16" horizontalCenter="0" verticalCenter="0" />
+</mx:Canvas>

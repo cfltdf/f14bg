@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:UIComponent xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import mx.core.FlexBitmap;
+			import com.f14.F14bgGame.RFTG.manager.ImageManager;
+			
+			protected var bit:FlexBitmap;
+			
+			public function init():void{
+				this.width = ImageManager.WIDTH;
+				this.height = ImageManager.HEIGHT;
+				bit = new FlexBitmap();
+				addChild(bit);
+			}
+			
+			/**
+			 * 设置图像
+			 */
+			public function setImage(i:int):void{
+				bit.bitmapData = ImageManager.getCardImage(i);
+			}
+			
+		]]>
+	</mx:Script>
+</mx:UIComponent>

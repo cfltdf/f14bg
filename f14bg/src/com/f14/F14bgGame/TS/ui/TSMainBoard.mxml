@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MainBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:part="com.f14.F14bgGame.TS.ui.part.*" xmlns:ui="com.f14.F14bgGame.TS.ui.*" xmlns:simple="com.f14.F14bgGame.TS.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.consts.InputState;
+			import com.f14.F14bgGame.TS.consts.TSGameCmd;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.TS.consts.SuperPower;
+			import com.f14.F14bgGame.TS.manager.TSResourceManager;
+			import com.f14.F14bgGame.TS.components.TSCard;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgGame.TS.TSUtil;
+			import com.f14.F14bgGame.TS.player.TSPlayer;
+			import com.f14.F14bgGame.TS.ui.simple.CountryPart;
+			
+			[Bindable]
+			public var vp:int;
+			
+			/**
+			 * 初始化
+			 */
+			override public function init():void{
+				super.init();
+				this.tsmap.init();
+				this.playerInfo_usa.init();
+				this.playerInfo_ussr.init();
+				this.playerBoard_local.init();
+				this.activedCardList.init();
+				this.disableAllInput();
+				this.gameInfoBoard.init();
+			}
+			
+			override public function clear():void{
+				super.clear();
+				this.tsmap.clear();
+				this.playerInfo_usa.clear();
+				this.playerInfo_ussr.clear();
+				this.playerBoard_local.clear();
+				//this.deckPart.clear();
+				this.activedCardList.clear();
+				this.actionRecordList.clear();
+				this.gameInfoBoard.clear();
+				
+				TSUtil.stateManager.clear();
+				TSUtil.stateManager.hideGameBoard();
+			}
+			
+			/**
+			 * 设置界面输入的状态
+			 */
+			override public function setInputState(code:int):void{
+				/*var inputState:String = InputState.DISABLE_ALL;
+				switch(code){
+					case TSGameCmd.GAME_CODE_ROUND: //玩家行动回合
+						inputState = InputState.DEFAULT;
+						break;
+				}
+				TSUtil.getLocalPlayer().playerBoard.inputState = inputState;*/
+				this.disableAllInput();
+			}
+			
+			/**
+			 * 创建指定玩家的面板
+			 */
+			override public function createPlayerBoard(player:Player):void{
+				var tsplayer:TSPlayer = player as TSPlayer;
+				if(TSUtil.gameManager.isLocalPlayer(player)){
+					//如果是本地玩家,则使用本地游戏面板
+					tsplayer.playerBoard = this.playerBoard_local;
+				}
+				if(player.position==0){
+					tsplayer.playerInfoBoard = this.playerInfo_ussr;
+				}else{
+					tsplayer.playerInfoBoard = this.playerInfo_usa;
+				}
+			}
+			
+			/**
+			 * 装载游戏基本信息
+			 */
+			public function loadGameParam(param:Object):void{
+				//vp负为美国,正为苏联
+				if(param.vp>0){
+					this.label_vp.x = 30;
+					this.canvas_vp.styleName = "vpUssr";
+				}else if(param.vp<0){
+					this.label_vp.x = 0;
+					this.canvas_vp.styleName = "vpUsa";
+				}else{
+					this.label_vp.x = 15;
+					this.canvas_vp.styleName = "vpMiddle";
+				}
+				this.vp = Math.abs(param.vp);
+				
+				this.gameInfoBoard.loadGameParam(param);
+			}
+			
+			/**
+			 * 装载国家的信息
+			 */
+			public function loadCountriesParam(param:Object):void{
+				for each(var o:Object in param.countries){
+					var c:CountryPart = this.tsmap.getCountry(o.country);
+					c.setInfluence(o.usa, o.ussr);
+					c.setControlledPower(o.controlledPower);
+				}
+			}
+			
+			/**
+			 * 装载中国牌的信息
+			 */
+			public function loadChinaCardParam(param:Object):void{
+				//设置中国牌的位置
+				switch(param.superPower){
+					case SuperPower.USSR:
+						this.playerInfo_usa.chinaCard = false;
+						this.playerInfo_ussr.chinaCard = true;
+						//this.chinaCard.y = 0;
+						//this.chinaCard.visible = true;
+						break;
+					case SuperPower.USA:
+						this.playerInfo_usa.chinaCard = true;
+						this.playerInfo_ussr.chinaCard = false;
+						//this.chinaCard.y = 58;
+						//this.chinaCard.visible = true;
+						break;
+					default:
+						this.playerInfo_usa.chinaCard = false;
+						this.playerInfo_ussr.chinaCard = false;
+						//this.chinaCard.visible = false;
+				}
+				//设置中国牌是否可用
+				//param.canUse;
+			}
+			
+			/**
+			 * 装载牌堆信息
+			 */
+			public function loadDeckInfo(param:Object):void{
+				/*if(!this.deckPart.inited){
+					this.deckPart.init();
+				}
+				this.deckPart.loadParam(param);*/
+				this.gameInfoBoard.loadDeckInfo(param);
+			}
+			
+			/**
+			 * 禁止所有的输入
+			 */
+			override public function disableAllInput():void{
+				super.disableAllInput();
+				this.playerBoard_local.inputState = InputState.DISABLE_ALL;
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" height="100%" horizontalGap="0">
+		<mx:VBox width="150" height="100%" verticalGap="2" horizontalAlign="center">
+			<mx:Canvas width="150" height="40" backgroundImage="@Embed('./com/f14/F14bgGame/TS/images/title1.png')" />
+			<mx:Accordion width="150" height="100%">
+				<part:TSActivedCardList label="生效事件" id="activedCardList" width="100%" height="100%" styleName="listbg" />
+				<part:TSActionRecordList label="出牌记录" id="actionRecordList" width="100%" height="100%" styleName="listbg" />
+			</mx:Accordion>
+			<ui:TSGameInfoBoard id="gameInfoBoard" />
+		</mx:VBox>
+		<mx:VBox width="100%" height="100%" verticalGap="0">
+			<part:TSMap id="tsmap" width="100%" height="100%" />
+			<mx:Canvas width="100%" height="128" styleName="rowbg">
+				<mx:HBox horizontalCenter="0" horizontalGap="0">
+					<ui:TSUSAPlayerInfoBoard id="playerInfo_usa" />
+					<mx:Canvas>
+						<mx:Canvas id="canvas_vp" styleName="vpMiddle" width="90" height="38" />
+						<mx:Label id="label_vp" x="15" verticalCenter="0" width="60" textAlign="center" text="{this.vp}" fontWeight="bold" fontSize="18" color="#eeeeee"/>
+					</mx:Canvas>
+					<ui:TSUSSRPlayerInfoBoard id="playerInfo_ussr" />
+				</mx:HBox>
+				<ui:TSPlayerBoard y="38" id="playerBoard_local" width="100%" height="90" />
+			</mx:Canvas>
+		</mx:VBox>
+	</mx:HBox>
+</MainBoard>

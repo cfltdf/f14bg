@@ -1,0 +1,614 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" minWidth="920" minHeight="550" styleName="gameBoard" xmlns:ns1="com.f14.F14bgGame.TTA.ui.part.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.TTA.components.OvertimeCard;
+			import mx.controls.Alert;
+			import com.f14.F14bgGame.TTA.event.TTAEvent;
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import mx.collections.ArrayCollection;
+			import com.f14.F14bgGame.TTA.ui.part.CardRow;
+			import com.f14.F14bgGame.TTA.ui.part.TTAPlayerHand;
+			import com.f14.F14bgGame.TTA.consts.CardSubType;
+			import com.f14.F14bgGame.bg.consts.InputState;
+			import com.f14.F14bgGame.bg.consts.PlayerColor;
+			import com.f14.F14bgGame.TTA.player.TTAPlayer;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgGame.TTA.ui.part.TTAPlayerInfo;
+			import com.f14.F14bgGame.TTA.ui.part.CardColumn;
+			import com.f14.F14bgGame.TTA.consts.CardType;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.TTA.components.TTACard;
+			
+			//public var playerInfo:TTAPlayerInfo;
+			//protected var _step:String;
+			protected var cards:Array = new Array();
+			protected var buttons:Array = new Array();
+			protected var _uncompleteWonder:TTACard;
+			protected var ttaPlayer:TTAPlayer;
+			/**
+			 * 本地玩家的手牌区
+			 */
+			public var playerHands:TTAPlayerHand;
+			/**
+			 * 本地玩家的摸牌区
+			 */
+			public var cardRow:CardRow;
+			/**
+			 * 所有输入部件
+			 */
+			protected var parts:Array = ["DEFAULT", "BUILDING", "UNCOMPLETE_WONDER", "HAND", "CARDROW",
+					"UNCONTENT_WORKER", "BUTTONS", "WONDER", "COLONY", "ACTIVABLE_CARDS", "PACT"];
+			/**
+			 * 可激活能力的牌
+			 */
+			protected var activableCards:Array = new Array();
+			
+			override public function init():void{
+				//初始化面板的标志物
+				this.workerPool.init();
+				this.resourcePool.init();
+				this.unusedWorker.init();
+				this.happinessIndicate.init();
+				//初始化按键
+				this.buttons.push(this.button_build);
+				this.buttons.push(this.button_destory);
+				this.buttons.push(this.button_upgrade);
+				this.buttons.push(this.button_pass);
+				this.buttons.push(this.button_political_pass);
+				this.buttons.push(this.button_resigned);
+				this.buttons.push(this.button_break_pact);
+			}
+			
+			override public function set player(player:Player):void{
+				super.player = player;
+				//if(this.playerInfo!=null){
+				//	this.playerInfo.player = player as TTAPlayer;
+				//}
+				this.ttaPlayer = player as TTAPlayer;
+				if(player!=null){
+					this.setStyle("backgroundColor", PlayerColor.COLORS[player.position]);
+				}else{
+					this.setStyle("backgroundColor", null);
+				}
+			}
+			
+			/**
+			 * 设置输入状态
+			 */
+			override public function set inputState(inputState:String):void{
+				super.inputState = inputState;
+				var enableParts:Array = new Array();
+				switch(inputState){
+					case InputState.ENABLE_ALL: //允许所有
+					case InputState.DEFAULT: //默认状态
+						switch(this.ttaPlayer.step){
+							case "POLITICAL":
+								//政治行动阶段只允许出牌
+								enableParts.push("BUTTONS");
+								enableParts.push("HAND");
+								enableParts.push("ACTIVABLE_CARDS");
+								break;
+							default:
+								//正常输入状态
+								enableParts.push("DEFAULT");
+								enableParts.push("BUTTONS");
+								enableParts.push("HAND");
+								enableParts.push("CARDROW");
+								enableParts.push("ACTIVABLE_CARDS");
+								break;
+						}
+						break;
+					case InputState.DISABLE_ALL: //不允许所有
+						break;
+					case "ACTION_BUILD": //建造
+						enableParts.push("BUILDING");
+						enableParts.push("UNCOMPLETE_WONDER");
+						break;
+					case "ACTION_DESTORY": //摧毁建筑
+					case "ACTION_UPGRADE": //升级建筑
+					case "REQUEST_UPGRADE_TO": //选择升级目标
+						enableParts.push("BUILDING");
+						break;
+					case "ACTION_PLAY_CARD": //出牌
+						enableParts.push("HAND");
+						break;
+					case "ACTION_LOSE_POPULATION": //选择人口
+						enableParts.push("BUILDING");
+						enableParts.push("UNCONTENT_WORKER");
+						break;
+					case "ACTION_TAKE_CARD": //拿牌
+						enableParts.push("CARDROW");
+						break;
+					case "ACTION_CHOOSE_WONDER": //选择奇迹
+						enableParts.push("WONDER");
+						break;
+					case "ACTION_CHOOSE_COLONY": //选择殖民地
+						enableParts.push("COLONY");
+						break;
+					case "ACTION_BREAK_PACT": //选择条约
+						enableParts.push("PACT");
+						break;
+				}
+				this.setEnableParts(enableParts);
+			}
+			
+			/**
+			 * 设置数组中的部件为可选
+			 */
+			protected function setEnableParts(enableParts:Array):void{
+				for each(var part:String in parts){
+					this.setPartInputable(part, BgUtils.inArray(part, enableParts));
+				}
+			}
+			
+			/**
+			 * 设置各个输入部件是否输入的情况
+			 */
+			protected function setPartInputable(part:String, inputable:Boolean):void{
+				var button:Button;
+				var card:TTACard;
+				switch(part){
+					case "DEFAULT": //默认部件
+						this.workerPool.selectable = inputable;
+						break;
+					case "BUILDING": //建筑部件
+						for each(card in this.cards){
+							if(card!=null){
+								switch(card.object.cardType){
+									case CardType.PRODUCTION:
+									case CardType.BUILDING:
+									case CardType.UNIT:
+										card.selectable = inputable;
+										break;
+								}
+							}
+						}
+						break;
+					case "UNCOMPLETE_WONDER": //在建的奇迹
+						if(this.uncompleteWonder!=null){
+							this.uncompleteWonder.selectable = inputable;
+						}
+						break;
+					case "HAND": //手牌
+						if(this.playerHands!=null){
+							this.playerHands.selectable = inputable;
+						}
+						break;
+					case "CARDROW": //摸牌区
+						if(this.cardRow!=null){
+							this.cardRow.selectable = inputable;
+						}
+						break;
+					case "UNCONTENT_WORKER": //空闲工人
+						this.unusedWorker.selectable = inputable;
+						break;
+					case "BUTTONS": //按键
+						for each(button in this.buttons){
+							button.visible = inputable;
+						}
+						break;
+					case "WONDER": //奇迹
+						for each(card in this.cards){
+							//不包括未建成的奇迹
+							if(card!=null && card!=this.uncompleteWonder){
+								switch(card.object.cardType){
+									case CardType.WONDER:
+										card.selectable = inputable;
+										break;
+								}
+							}
+						}
+						break;
+					case "COLONY": //殖民地
+						for each(card in this.cards){
+							if(card!=null){
+								switch(card.object.cardSubType){
+									case CardSubType.TERRITORY:
+										card.selectable = inputable;
+										break;
+								}
+							}
+						}
+						break;
+					case "ACTIVABLE_CARDS": //可激活的卡牌
+						this.setActivable(inputable);
+						break;
+					case "PACT": //条约
+						for each(card in this.cards){
+							if(card!=null){
+								switch(card.object.cardType){
+									case CardSubType.PACT:
+										card.selectable = inputable;
+										break;
+								}
+							}
+						}
+						break;
+				}
+			}
+			
+			/**
+			 * 显示阶段对应的按键面板
+			 */
+			public function showStepButtons():void{
+				switch(this.ttaPlayer.step){
+					case "POLITICAL": //政治阶段
+						this.buttons_political.visible = true;
+						this.buttons_normal.visible = false;
+						break;
+					case "NORMAL": //普通阶段
+						this.buttons_political.visible = false;
+						this.buttons_normal.visible = true;
+						break;
+					default: //无
+						this.buttons_political.visible = false;
+						this.buttons_normal.visible = false;
+				}
+			}
+			
+			override public function clear():void{
+				super.clear();
+				//移除所有卡牌的监听器
+				for each(var card:TTACard in this.cards){
+					if(card!=null){
+						card.removeEventListener(MouseEvent.CLICK, onBuildingClick);
+						card.removeEventListener(TTAEvent.ACTIVE_CARD, onActiveCard);
+					}
+				}
+				this.cards = new Array();
+				this.activableCards = new Array();
+				this.workerPool.clear();
+				this.resourcePool.clear();
+				this.unusedWorker.clear();
+				this.happinessIndicate.clear();
+				this.uncompleteWonder = null;
+				this.hbox_production.removeAllChildren();
+				this.hbox_building.removeAllChildren();
+				this.hbox_unit.removeAllChildren();
+				this.canvas_goverment.removeAllChildren();
+				this.canvas_leader.removeAllChildren();
+				this.canvas_tactics.removeAllChildren();
+				this.canvas_uncompleteWonder.removeAllChildren();
+				this.hbox_wonder.removeAllChildren();
+				this.hbox_special.removeAllChildren();
+				this.hbox_territory.removeAllChildren();
+				this.hbox_pact.removeAllChildren();
+				this.hbox_war.removeAllChildren();
+			}
+			
+			/**
+			 * 按照id取得玩家面板中的卡牌
+			 */
+			public function getCard(id:String):TTACard{
+				return cards[id];
+			}
+		
+			/**
+			 * 玩家板块添加卡牌
+			 */
+			public function addCard(id:String):TTACard{
+				var card:TTACard = TTAUtil.resourceManager.createTTACard(id);
+				if(card!=null){
+					switch(card.object.cardType){
+						case CardType.PRODUCTION: //生产
+						case CardType.BUILDING: //建筑
+						case CardType.UNIT: //部队
+							var cc:CardColumn = this.getCardColumn(card);
+							cc.addCard(card);
+							break;
+						case CardType.GOVERMENT: //政府
+							this.canvas_goverment.removeAllChildren();
+							this.canvas_goverment.addChild(card);
+							break;
+						case CardType.LEADER: //领袖
+							this.canvas_leader.removeAllChildren();
+							this.canvas_leader.addChild(card);
+							break;
+						case CardType.TACTICS: //战术牌
+							this.canvas_tactics.removeAllChildren();
+							this.canvas_tactics.addChild(card);
+							break;
+						case CardType.WONDER: //奇迹
+							this.hbox_wonder.addChild(card);
+							break;
+						case CardType.SPECIAL: //特殊科技
+							//先移除同类型的特殊科技
+							this.removeSpecialBySubType(card.object.cardSubType);
+							this.hbox_special.addChild(card);
+							break;
+						case CardType.EVENT: //领土
+							this.hbox_territory.addChild(card);
+							break;
+						case CardType.WAR: //战争
+							this.hbox_war.addChild(card);
+							//设置ab玩家的显示状态
+							var ocard:OvertimeCard = TTAUtil.overtimeCardManager.getCard(id);
+							card.setAB(ocard);
+							break;
+						case CardType.PACT: //条约
+							this.hbox_pact.addChild(card);
+							//设置ab玩家的显示状态
+							ocard = TTAUtil.overtimeCardManager.getCard(id);
+							card.setAB(ocard);
+							break;
+					}
+					this.cards[id] = card;
+					card.addEventListener(MouseEvent.CLICK, onBuildingClick);
+					card.addEventListener(TTAEvent.ACTIVE_CARD, onActiveCard);
+				}
+				return card;
+			}
+			
+			/**
+			 * 玩家板块添加卡牌
+			 */
+			public function addCards(cardIds:String):Array{
+				var cards:Array = new Array();
+				var idarray:Array = cardIds.split(",");
+				for each(var id:String in idarray){
+					cards.push(this.addCard(id));
+				}
+				return cards;
+			}
+			
+			/**
+			 * 玩家板块移除卡牌
+			 */
+			public function removeCard(id:String):void{
+				var card:TTACard = this.cards[id];
+				if(card!=null){
+					card.removeEventListener(MouseEvent.CLICK, onBuildingClick);
+					card.removeEventListener(TTAEvent.ACTIVE_CARD, onActiveCard);
+					this.cards[id] = null;
+					card.parent.removeChild(card);
+				}
+			}
+			
+			/**
+			 * 玩家板块移除卡牌
+			 */
+			public function removeCards(cardIds:String):void{
+				var idarray:Array = cardIds.split(",");
+				for each(var id:String in idarray){
+					this.removeCard(id);
+				}
+			}
+			
+			/**
+			 * 取得卡牌对应的卡牌列
+			 */
+			protected function getCardColumn(card:TTACard):CardColumn{
+				var hbox:HBox = this.getHbox(card.object.cardType);
+				for each(var cc:CardColumn in hbox.getChildren()){
+					if(cc.cardSubType==card.object.cardSubType){
+						return cc;
+					}
+				}
+				//如果不存在,则创建一个卡牌列
+				var cardColumn:CardColumn = new CardColumn();
+				hbox.addChild(cardColumn);
+				return cardColumn;
+			}
+			
+			/**
+			 * 按照卡牌类型取得对应的hbox容器
+			 */
+			protected function getHbox(cardType:String):HBox{
+				switch(cardType){
+					case CardType.PRODUCTION:
+						return this.hbox_production;
+					case CardType.BUILDING:
+						return this.hbox_building;
+					case CardType.UNIT:
+						return this.hbox_unit;
+				}
+				return null;
+			}
+			
+			/**
+			 * 为玩家设置未建造完成的奇迹
+			 */
+			public function setUncompleteWonder(cardId:String):void{
+				var card:TTACard = TTAUtil.resourceManager.createTTACard(cardId);
+				this.uncompleteWonder = card;
+			}
+			
+			/**
+			 * 设置玩家在建的奇迹
+			 */
+			public function set uncompleteWonder(card:TTACard):void{
+				if(this._uncompleteWonder!=null){
+					this.removeCard(this._uncompleteWonder.id);
+					//this._uncompleteWonder.removeEventListener(MouseEvent.CLICK, onBuildingClick);
+					//this.canvas_uncompleteWonder.removeAllChildren();
+					//this.cards[this._uncompleteWonder.id] = null;
+				}
+				this._uncompleteWonder = card;
+				if(this._uncompleteWonder!=null){
+					this.canvas_uncompleteWonder.addChild(this._uncompleteWonder);
+					this.cards[this._uncompleteWonder.id] = this._uncompleteWonder;
+					this._uncompleteWonder.addEventListener(MouseEvent.CLICK, onBuildingClick);
+					this._uncompleteWonder.addEventListener(TTAEvent.ACTIVE_CARD, onActiveCard);
+				}
+			}
+			
+			/**
+			 * 取得玩家在建的奇迹
+			 */
+			public function get uncompleteWonder():TTACard{
+				return this._uncompleteWonder;
+			}
+			
+			/**
+			 * 完成奇迹的建造
+			 */
+			public function completeWonder():TTACard{
+				var card:TTACard = this.uncompleteWonder;
+				this.uncompleteWonder = null;
+				return this.addCard(card.id);
+			}
+			
+			/**
+			 * 建筑,部队和在建奇迹点击时触发的事件
+			 */
+			public function onBuildingClick(evt:MouseEvent):void{
+				var card:TTACard = evt.currentTarget as TTACard;
+				if(card.selectable){
+					var param:Object;
+					if(TTAUtil.stateManager.currentConfirmWindow!=null){
+						//如果存在询问窗口,则由该窗口返回指令参数
+						param = {};
+						param.cardId = card.id;
+						TTAUtil.stateManager.currentConfirmWindow.doConfirm(param);
+					}else{
+						//由请求窗口创建参数
+						param = TTAUtil.mainBoard.requestWindow.createParam();
+						param.cardId = card.id;
+						TTAUtil.actionManager.sendCurrentCommand(this.inputState, param);
+					}
+				}
+			}
+			
+			/**
+			 * 空闲工人点击时触发的事件
+			 */
+			public function onUncontentWorkerClick(evt:MouseEvent):void{
+				if(evt.currentTarget.selectable){
+					var param:Object;
+					if(TTAUtil.stateManager.currentConfirmWindow!=null){
+						//如果存在询问窗口,则由该窗口返回指令参数
+						param = {};
+						param.uncontentWorker = true;
+						TTAUtil.stateManager.currentConfirmWindow.doConfirm(param);
+					}
+				}
+			}
+			
+			/**
+			 * 移除指定cardSubType的特殊科技
+			 */
+			public function removeSpecialBySubType(cardSubType:String):void{
+				for each(var card:TTACard in this.hbox_special.getChildren()){
+					if(card.object.cardSubType==cardSubType){
+						//移除卡牌和监听器
+						this.hbox_special.removeChild(card);
+						this.cards[card.id] = null;
+						card.removeEventListener(MouseEvent.CLICK, onBuildingClick);
+						card.removeEventListener(TTAEvent.ACTIVE_CARD, onActiveCard);
+					}
+				}
+			}
+			
+			/**
+			 * 初始化可激活的卡牌
+			 */
+			public function initActivableCards(cardIds:String):void{
+				//先将所有可激活的卡牌设为未激活
+				this.setActivable(false);
+				//重新设置可激活的卡牌
+				this.activableCards = new Array();
+				var ids:Array = cardIds.split(",");
+				for each(var id:String in ids){
+					var card:TTACard = this.getCard(id);
+					if(card!=null){
+						this.activableCards[id] = card;
+					}
+				}
+			}
+			
+			/**
+			 * 设置可激活卡牌的激活状态
+			 */
+			public function setActivable(activable:Boolean):void{
+				for each(var card:TTACard in this.activableCards){
+					card.activable = activable;
+				}
+			}
+			
+			/**
+			 * 使用卡牌时触发的方法
+			 */
+			protected function onActiveCard(evt:TTAEvent):void{
+				TTAUtil.actionManager.activeCard(evt.card.id);
+			}
+			
+			protected function resign():void{
+				this.buttons_political.visible = false;
+				this.buttons_resign.visible = true;
+			}
+			
+			protected function resignConfirm():void{
+				TTAUtil.actionManager.resign();
+				this.buttons_political.visible = true;
+				this.buttons_resign.visible = false;
+			}
+			
+			protected function resignCancel():void{
+				this.buttons_political.visible = true;
+				this.buttons_resign.visible = false;
+			}
+		]]>
+	</mx:Script>
+	<mx:Canvas>
+		<mx:Canvas y="298" x="5" styleName="playerBoard" width="550" height="200"/>
+		<mx:HBox x="10" y="10" height="280" horizontalGap="5">
+			<mx:HBox id="hbox_production" horizontalGap="5">
+			</mx:HBox>
+			<mx:HBox id="hbox_building" horizontalGap="5">
+			</mx:HBox>
+			<mx:HBox id="hbox_unit" horizontalGap="5">
+			</mx:HBox>
+		</mx:HBox>
+		<mx:Canvas id="canvas_goverment" x="464" y="373" width="72" height="108" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+		<mx:VBox x="563" y="298" verticalGap="2">
+			<mx:HBox>
+				<mx:Canvas id="canvas_leader" width="72" height="108" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+				<mx:HBox id="hbox_wonder">
+				</mx:HBox>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Canvas id="canvas_uncompleteWonder" width="72" height="108" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+				<mx:HBox id="hbox_special">
+				</mx:HBox>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Canvas id="canvas_tactics" width="72" height="108" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+				<mx:HBox id="hbox_territory">
+				</mx:HBox>
+			</mx:HBox>
+		</mx:VBox>
+		<ns1:WorkerPool id="workerPool" x="11" y="390" />
+		<ns1:ResourcePool id="resourcePool" x="11" y="304" />
+		<ns1:UnusedWorkerSpan id="unusedWorker" x="378" y="305" click="this.onUncontentWorkerClick(event)" />
+		<mx:Canvas id="buttons_normal" x="440" y="303">
+			<mx:Button id="button_build" label="建造" fillAlphas="[0.8, 1.0, 1.0, 1.0]" click="TTAUtil.actionManager.requestBuild()" x="0" y="0"/>
+			<mx:Button id="button_upgrade" label="升级" fillAlphas="[0.8, 1.0, 1.0, 1.0]" click="TTAUtil.actionManager.requestUpgrade()" x="60" y="0"/>
+			<mx:Button id="button_destory" label="摧毁" fillAlphas="[0.8, 1.0, 1.0, 1.0]" click="TTAUtil.actionManager.requestDestory()" x="0" y="32"/>
+			<mx:Button id="button_pass" label="结束" fillAlphas="[0.8, 1.0, 1.0, 1.0]" click="TTAUtil.actionManager.doPass()" x="60" y="32"/>
+		</mx:Canvas>
+		<mx:VBox id="buttons_political" x="440" y="303" horizontalAlign="center">
+			<mx:Button id="button_break_pact" label="中止条约" fillAlphas="[0.8, 1.0, 1.0, 1.0]" click="TTAUtil.actionManager.requestBreakPact()"/>
+			<mx:HBox>
+				<mx:Button id="button_resigned" label="体退" fillAlphas="[0.8, 1.0, 1.0, 1.0]" click="resign()"/>
+				<mx:Button id="button_political_pass" label="结束" fillAlphas="[0.8, 1.0, 1.0, 1.0]" click="TTAUtil.actionManager.passPolitical()"/>
+			</mx:HBox>
+		</mx:VBox>
+		<mx:VBox id="buttons_resign" x="440" y="303" horizontalAlign="center" visible="false">
+			<mx:Text id="text_resign_confirm" text="确定要体退吗？" color="0xFF0000"/>
+			<mx:HBox>
+				<mx:Button id="button_resign_confirm" label="确定" fillAlphas="[0.8, 1.0, 1.0, 1.0]" click="resignConfirm()"/>
+				<mx:Button id="button_resign_cancel" label="放弃" fillAlphas="[0.8, 1.0, 1.0, 1.0]" click="resignCancel()"/>
+			</mx:HBox>
+		</mx:VBox>
+		<ns1:HappinessIndicate id="happinessIndicate" x="13" y="463">
+		</ns1:HappinessIndicate>
+		<mx:HBox x="10" y="506">
+			<mx:HBox id="hbox_war">
+			</mx:HBox>
+			<mx:HBox id="hbox_pact">
+			</mx:HBox>
+		</mx:HBox>
+	</mx:Canvas>
+</PlayerBoard>

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" height="60" horizontalScrollPolicy="auto" verticalScrollPolicy="off" xmlns:component="com.f14.F14bgGame.bg.component.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.Innovation.ui.window.InnoChooseHandWindow;
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import com.f14.F14bgGame.Innovation.components.InnoCard;
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoCardLabel;
+			import com.f14.F14bgGame.bg.ui.simple.SimpleCard;
+			import com.f14.f14bg.components.ComponentOption;
+			protected var option:ComponentOption = new ComponentOption();
+			protected var _cards:Array = new Array();
+			protected var _selectable:Boolean;
+			protected var _multiSelection:Boolean;
+			
+			public function init():void{
+			}
+			
+			public function clear():void{
+				this.option.removeAllComponent();
+				//移除所有卡牌的监听器
+				for each(var card:InnoCardLabel in this._cards){
+					if(card!=null){
+						card.removeEventListener(MouseEvent.CLICK, onClick);
+					}
+				}
+				this._cards = new Array();
+				this.canvas_cards.removeAllChildren();
+			}
+			
+			/**
+			 * 设置是否可选
+			 */
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				var card:InnoCardLabel;
+				for each(card in this.canvas_cards.getChildren()){
+					card.selectable = selectable;
+				}
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function set multiSelection(multiSelection:Boolean):void{
+				this.option.multiSelection = multiSelection;
+			}
+			
+			public function set autoSort(autoSort:Boolean):void{
+				this.canvas_cards.autoSort = autoSort;
+			}
+			
+			/**
+			 * 取得所有的卡牌对象
+			 */
+			public function getAllCards():Array{
+				return this._cards;
+			}
+			
+			/**
+			 * 取得所有排序后的卡牌对象
+			 */
+			public function getSortedCards():Array{
+				return this.canvas_cards.getChildren();
+			}
+			
+			/**
+			 * 添加卡牌
+			 */
+			public function addCard(id:String):void{
+				var card:InnoCard = InnoUtil.resourceManager.createInnoCard(id);
+				if(card!=null){
+					var sc:InnoCardLabel = new InnoCardLabel();
+					InnoUtil.module.imageCanvas.addChild(sc);
+					sc.init();
+					sc.object = card;
+					sc.selectable = this.selectable;
+					this._cards[id] = sc;
+					this.canvas_cards.addChild(sc);
+					sc.addEventListener(MouseEvent.CLICK, onClick);
+					//添加到选择组件中
+					option.addComponent(sc);
+				}
+			}
+			
+			/**
+			 * 添加卡牌
+			 */
+			public function addCards(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				for each(var id:String in ids){
+					this.addCard(id);
+				}
+			}
+			
+			/**
+			 * 按照id取得卡牌
+			 */
+			public function getCard(id:String):InnoCardLabel{
+				return this._cards[id] as InnoCardLabel;
+			}
+			
+			/**
+			 * 移除卡牌
+			 */
+			public function removeCard(id:String):void{
+				var card:InnoCardLabel = this.getCard(id);
+				if(card!=null){
+					this._cards[id] = null;
+					card.removeEventListener(MouseEvent.CLICK, onClick);
+					card.parent.removeChild(card);
+					//从选择组件中移除
+					this.option.removeComponent(card);
+				}
+			}
+			
+			/**
+			 * 移除卡牌
+			 */
+			public function removeCards(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				for each(var id:String in ids){
+					this.removeCard(id);
+				}
+			}
+			
+			/**
+			 * 点击卡牌时触发的方法
+			 */
+			protected function onClick(evt:MouseEvent):void{
+				var card:InnoCardLabel = evt.currentTarget as InnoCardLabel;
+				if(card.selectable){
+					if(this.option.trigOnSelected){
+						if(InnoUtil.stateManager.currentConfirmWindow!=null){
+							//如果存在询问窗口
+							if(InnoUtil.stateManager.currentConfirmWindow instanceof InnoChooseHandWindow){
+								//如果该窗口是选择卡牌的专用窗口,则将选中的卡牌添加到该窗口中
+								var win:InnoChooseHandWindow = InnoChooseHandWindow(InnoUtil.stateManager.currentConfirmWindow);
+								win.clickCard(card.object.object.id);
+							}else{
+								//如果不是,则直接由该窗口返回指令参数
+								var param:Object = {};
+								param.cardIds = card.object.object.id;
+								InnoUtil.stateManager.currentConfirmWindow.doConfirm(param);
+							}
+						}else{
+							InnoUtil.actionManager.meldCard(card.object.object.id);
+						}
+					}
+					
+					/*if(TSUtil.stateManager.currentConfirmWindow!=null){
+						//如果存在询问窗口,则由该窗口返回指令参数
+						param = {};
+						param.cardId = card.id;
+						TSUtil.stateManager.currentConfirmWindow.doConfirm(param);
+					}*/
+				}
+			}
+			
+			/**
+			 * 取得选中的卡牌
+			 */
+			public function getSelectedCard():SimpleCard{
+				return this.option.selectedComponent as SimpleCard;
+			}
+			
+			/**
+			 * 设置选中的卡牌
+			 */
+			public function setSelectedCard(cardId:String):void{
+				var card:InnoCardLabel = this.getCard(cardId);
+				if(card!=null){
+					this.option.selectedComponent = card;
+				}
+			}
+			
+			/**
+			 * 取得选中的卡牌
+			 */
+			public function getSelection():Array{
+				return this.option.getSelection();
+			}
+			
+			/**
+			 * 设置是否在选择时就触发事件
+			 */
+			public function setEventTrigOnSelected(trigOnSelected:Boolean):void{
+				if(this.option!=null){
+					this.option.trigOnSelected = trigOnSelected;
+				}
+			}
+			
+			/**
+			 * 移动卡牌
+			 */
+			public function moveCard(card:SimpleCard, offset:int):void{
+				this.canvas_cards.moveChild(card, offset);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<component:CardCanvas id="canvas_cards" width="100%" height="100%" gap="4" />
+</mx:Canvas>

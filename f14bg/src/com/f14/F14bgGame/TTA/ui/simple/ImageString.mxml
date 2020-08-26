@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="26" height="26">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			public var value:String;
+		]]>
+	</mx:Script>
+	<mx:Image id="image" width="26" height="26" horizontalCenter="0" verticalCenter="0"/>
+	<mx:Label text="{value}" horizontalCenter="0" verticalCenter="0" fontWeight="bold" fontSize="14" color="#000000" textAlign="center"/>
+</mx:Canvas>

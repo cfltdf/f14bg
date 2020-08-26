@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TSConfirmWindow xmlns="com.f14.F14bgGame.TS.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="300" height="205" xmlns:ns1="com.f14.F14bgGame.TS.ui.simple.*" title="#49-导弹嫉妒">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.TSUtil;
+			import com.f14.F14bgGame.TS.ui.simple.TSCardLabel;
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				this.cardMessage = this.local_cm;
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				//设置太空竞赛的按键状态
+				this.button_spacerace.label = "太空竞赛("+param.spaceRaceChance+")";
+				this.button_spacerace.enabled = (param.spaceRaceChance>0);
+			}
+			
+			public function confirmParam(subact:String):void{
+				var param:Object = {};
+				param.subact = subact;
+				this.sendParam(param);
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox top="10" bottom="10" left="10" right="10" horizontalAlign="center">
+		<ns1:TSCardMessage id="local_cm" width="100%" />
+		<mx:VBox width="100%" height="100%" horizontalAlign="center">
+			<mx:Button label="使用OP" width="160" click="this.confirmParam('ACTION_USE_OP')" />
+			<mx:Button id="button_spacerace" label="太空竞赛" width="160" click="this.confirmParam('ACTION_SPACE_RACE')" />
+		</mx:VBox>
+	</mx:VBox>
+</TSConfirmWindow>

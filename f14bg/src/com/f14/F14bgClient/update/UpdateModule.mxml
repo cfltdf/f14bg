@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module:F14module xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:module="com.f14.core.controls.module.*" layout="absolute" width="100%" height="100%" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			//import com.f14.net.smartinvoke.UpdateCommandHandler;
+			import com.f14.F14bgClient.FlashHandler.UpdateHandler;
+			import com.f14.core.util.ApplicationUtil;
+			
+			public var updateHandler:UpdateHandler;
+			
+			[Bindable]
+			public var title:String;
+			[Bindable]
+			public var filename:String;
+			[Bindable]
+			public var size:String;
+			[Bindable]
+			public var rate:int;
+			[Bindable]
+			public var totalSize:int;
+			
+			override public function init():void{
+				//ApplicationUtil.commandHandler = new UpdateCommandHandler();
+				UpdateUtil.module = this;
+				UpdateUtil.init();
+				
+				updateHandler = new UpdateHandler();
+				//装载完成后开始更新
+				this.updateHandler.updateFiles();
+				
+				this.title = "开始下载";
+			}
+			
+			/**
+			 * 装载参数
+			 */
+			public function loadParam(param:Object):void{
+				this.title = "正在下载: " + param.i + "/" + param.totalFiles;
+				this.filename = param.filename;
+				this.totalSize = param.totalSize;
+				this.refreshSize(param.currentSize);
+			}
+			
+			/**
+			 * 刷新下载进度
+			 */
+			public function refreshSize(currentSize:int):void{
+				this.rate = int((currentSize / this.totalSize)*100);
+				this.size = int(currentSize/1024) + "KB / " + int(this.totalSize/1024) + "KB";
+				this.prog_bar.setProgress(this.rate, 100);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox horizontalAlign="center" verticalAlign="middle" left="5" right="5" top="5" bottom="5">
+		<mx:Label text="{title}"/>
+		<mx:HBox>
+			<mx:Label text="{filename}" width="250"/>
+			<mx:Label text="{size}" width="200" textAlign="right"/>
+		</mx:HBox>
+		<mx:ProgressBar id="prog_bar" label="{rate}%" labelPlacement="center" width="100%" minimum="0" maximum="100" mode="manual"/>
+	</mx:VBox>
+</module:F14module>

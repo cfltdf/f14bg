@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:part="com.f14.F14bgGame.Innovation.ui.part.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Innovation.player.InnoPlayer;
+			import mx.states.SetEventHandler;
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import com.f14.F14bgGame.Innovation.consts.InnoInputState;
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import com.f14.F14bgGame.bg.consts.InputState;
+			/**
+			 * 所有输入部件
+			 */
+			protected var parts:Array = ["DEFAULT", "BUTTON", "HANDS", "DECKS", "STACKS", "ACHIEVE"];
+		
+			override public function init():void{
+				super.init();
+				this.playerHands.init();
+			}
+			
+			override public function clear():void{
+				super.clear();
+				this.playerHands.clear();
+			}
+			
+			/**
+			 * 设置输入状态
+			 */
+			override public function set inputState(inputState:String):void{
+				super.inputState = inputState;
+				var enableParts:Array = new Array();
+				var param:Object = {};
+				switch(inputState){
+					case InputState.ENABLE_ALL: //允许所有
+					case InputState.DEFAULT: //默认状态
+						break;
+					case InputState.DISABLE_ALL: //不允许所有
+						break;
+					case InnoInputState.ACTION_ROUND: //回合行动
+						enableParts.push("BUTTON");
+						enableParts.push("HANDS");
+						enableParts.push("DECKS");
+						enableParts.push("STACKS");
+						enableParts.push("ACHIEVE");
+						param.multiSelection = false;
+						param.trigOnSelected = true;
+						break;
+					case InnoInputState.ACTION_SELECT_CARD: //选手牌
+						enableParts.push("HANDS");
+						param.multiSelection = false;
+						param.trigOnSelected = true;
+						break;
+					case InnoInputState.ACTION_SELECT_CARDS: //选手牌(多选)
+						enableParts.push("HANDS");
+						param.multiSelection = true;
+						param.trigOnSelected = true;
+						break;
+					case InnoInputState.ACTION_DRAW_CARD: //摸牌
+						enableParts.push("DECKS");
+						param.multiSelection = false;
+						break;
+					case InnoInputState.ACTION_CHOOSE_STACK: //选择牌堆
+						enableParts.push("STACKS");
+						break;
+					case InnoInputState.ACTION_CHOOSE_PLAYER_STACK:	//选择所有玩家的牌堆
+						enableParts.push("STACKS");
+						param.isAllEnable = true;
+						break;
+				}
+				this.setEnableParts(enableParts, param);
+			}
+			
+			/**
+			 * 设置数组中的部件为可选
+			 */
+			protected function setEnableParts(enableParts:Array, param:Object):void{
+				for each(var part:String in parts){
+					this.setPartInputable(part, BgUtils.inArray(part, enableParts), param);
+				}
+			}
+			
+			/**
+			 * 设置各个输入部件是否输入的情况
+			 */
+			protected function setPartInputable(part:String, inputable:Boolean, param:Object):void{
+				switch(part){
+					case "DEFAULT": //默认部件
+						//this.workerPool.selectable = inputable;
+						break;
+					case "BUTTON": //按键
+						//this.buttonPart.hbox_normal.visible = inputable;
+						break;
+					case "HANDS": //手牌
+						this.playerHands.multiSelection = param.multiSelection;
+						this.playerHands.setEventTrigOnSelected(param.trigOnSelected);
+						this.playerHands.selectable = inputable;
+						break;
+					case "DECKS": //摸牌堆
+						InnoUtil.mainBoard.drawDeckPart.selectable = inputable;
+						InnoUtil.mainBoard.drawDeckPart.setEventTrigOnSelected(true);
+						break;
+					case "ACHIEVE": //成就牌堆
+						InnoUtil.mainBoard.normalAchieveDeck.selectable = inputable;
+						InnoUtil.mainBoard.normalAchieveDeck.setEventTrigOnSelected(true);
+						break;
+					case "STACKS":	//已打出的牌堆
+						if(!inputable){
+							//需要禁用所有玩家的牌堆
+							for each(var p:InnoPlayer in InnoUtil.gameManager.players){
+								if(p.playerTable!=null){
+									p.playerTable.selectable = inputable;
+									p.playerTable.setEventTrigOnSelected(true);
+								}
+							}
+						}else{
+							if(param.isAllEnable){
+								//可以选择所有玩家的牌堆
+								for each(var p:InnoPlayer in InnoUtil.gameManager.players){
+									if(p.playerTable!=null){
+										p.playerTable.selectable = inputable;
+										p.playerTable.setEventTrigOnSelected(true);
+									}
+								}
+							}else{
+								//只能选择自己的牌堆
+								if(InnoUtil.getLocalPlayer()!=null && InnoUtil.getLocalPlayer().playerTable!=null){
+									InnoUtil.getLocalPlayer().playerTable.selectable = inputable;
+									InnoUtil.getLocalPlayer().playerTable.setEventTrigOnSelected(true);
+								}
+							}
+						}
+						break;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<part:InnoPlayerHand x="10" id="playerHands" width="100%" verticalCenter="0" />
+</PlayerBoard>

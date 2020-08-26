@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off" mouseOver="onMouseOver(event)" mouseOut="onMouseOut(event)">
+	<mx:Script>
+		<![CDATA[
+			import mx.effects.IEffectInstance;
+			import com.f14.F14bgGame.bg.manager.DefaultManagerUtil;
+			import com.f14.F14bgGame.bg.component.ImageObject;
+			import com.f14.core.util.ApplicationUtil;
+			import mx.core.UIComponent;
+			[Bindable]
+			protected var _name:String;
+			protected var _object:ImageObject;
+			protected var _selectable:Boolean;
+			protected var _selected:Boolean = false;
+			
+			protected var _selectEffect:IEffectInstance;
+			
+			public function init():void{
+				//初始化时加入高光效果
+				DefaultManagerUtil.effectManager.addHighlight(this);
+				_selectEffect = DefaultManagerUtil.effectManager.selectEffect.createInstance(this);
+			}
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			/**
+			 * 设置该标签显示的图片对象
+			 */
+			public function set object(object:ImageObject):void{
+				this._object = object;
+				if(object==null || object.object==null){
+					this._name = null;
+				}else{
+					this._name = object.object.name;
+				}
+				this.refreshStyle();
+			}
+			
+			/**
+			 * 取得该标签显示的图片对象
+			 */
+			public function get object():ImageObject{
+				return this._object;
+			}
+			
+			/**
+			 * 设置图像是否选中
+			 */
+			public function set selected(selected:Boolean):void{
+				this._selected = selected;
+				if(this.selected){
+					DefaultManagerUtil.effectManager.glowEffect.end();
+					this._selectEffect.play();
+				}else{
+					this._selectEffect.end();
+				}
+			}
+			
+			public function get selected():Boolean{
+				return this._selected;
+			}
+			
+			/**
+			 * 设置显示样式
+			 */
+			protected function refreshStyle():void{
+				
+			}
+			
+			/**
+			 * 鼠标移到图像上时触发的事件
+			 */
+			protected function onMouseOver(evt:MouseEvent):void{
+				if(this.object!=null && this.object.object!=null){
+					//显示tooltip
+					var point:Point = new Point(this.x, this.y);
+					point = this.parent.localToGlobal(point);
+					DefaultManagerUtil.tooltipManager.setImage(this.object);
+					var newpoint:Point = new Point(point.x, point.y);
+					if((point.x + this.width + DefaultManagerUtil.tooltipManager.getTooltipWidth() + 5) > ApplicationUtil.application.width){
+						newpoint.x = newpoint.x - DefaultManagerUtil.tooltipManager.getTooltipWidth() - 5;
+					}else{
+						newpoint.x = newpoint.x + this.width + 5;
+					}
+					if((point.y + DefaultManagerUtil.tooltipManager.getTooltipHeight()) > ApplicationUtil.application.height){
+						newpoint.y = ApplicationUtil.application.height - DefaultManagerUtil.tooltipManager.getTooltipHeight() - 5;
+					}else{
+					}
+					DefaultManagerUtil.tooltipManager.showTooltip(newpoint.x, newpoint.y);
+				}
+			}
+			
+			/**
+			 * 鼠标移出图像时触发的事件
+			 */
+			protected function onMouseOut(evt:MouseEvent):void{
+				//隐藏tooltip
+				DefaultManagerUtil.tooltipManager.hideTooltip();
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

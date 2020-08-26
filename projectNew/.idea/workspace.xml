@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="SCOPE_TYPE" value="3" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="4d5dfe03-4133-4b09-a6d3-718ed7775b14" name="Default" comment="analyze code">
+      <change beforePath="$PROJECT_DIR$/src/com/f14/bg/common/ParamCache.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/f14/bg/common/ParamCache.kt" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeStyleSettingsInfer">
+    <option name="done" value="true" />
+  </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/projectNew$F14bgServer.coverage" NAME="F14bgServer Coverage Results" MODIFIED="1545269402628" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>com.f14.F14bg.network.*</FILTER>
+    </SUITE>
+  </component>
+  <component name="DefaultGradleProjectSettings">
+    <option name="isMigrated" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin Class" />
+        <option value="Class" />
+        <option value="Kotlin File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="ROOT_SYNC" value="SYNC" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/src" />
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="1" />
+  </component>
+  <component name="ProjectId" id="1UBtXZUUPsAfPsINm1JLfmjKJQP" />
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>Android &gt; Lint &gt; Correctness</id>
+          </State>
+          <State>
+            <id>Android &gt; Lint &gt; Correctness &gt; Messages</id>
+          </State>
+          <State>
+            <id>Android &gt; Lint &gt; Internationalization</id>
+          </State>
+          <State>
+            <id>Android &gt; Lint &gt; Usability &gt; Icons</id>
+          </State>
+          <State>
+            <id>Android Lint for Kotlin</id>
+          </State>
+          <State>
+            <id>CollectionsScala</id>
+          </State>
+          <State>
+            <id>General</id>
+          </State>
+          <State>
+            <id>GeneralScala</id>
+          </State>
+          <State>
+            <id>Groovy</id>
+          </State>
+          <State>
+            <id>Internationalization issuesJava</id>
+          </State>
+          <State>
+            <id>JUnit issuesJava</id>
+          </State>
+          <State>
+            <id>Java</id>
+          </State>
+          <State>
+            <id>Javadoc issuesJava</id>
+          </State>
+          <State>
+            <id>Kotlin</id>
+          </State>
+          <State>
+            <id>Naming ConventionsGroovy</id>
+          </State>
+          <State>
+            <id>Naming conventionsJava</id>
+          </State>
+          <State>
+            <id>OtherCollectionsScala</id>
+          </State>
+          <State>
+            <id>Performance issuesJava</id>
+          </State>
+          <State>
+            <id>Probable bugsJava</id>
+          </State>
+          <State>
+            <id>Properties Files</id>
+          </State>
+          <State>
+            <id>Scala</id>
+          </State>
+          <State>
+            <id>Style issuesKotlin</id>
+          </State>
+          <State>
+            <id>TestNGJava</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Groovy</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+    <entry key="Project Default copy">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>Kotlin</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Destructure</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+    <entry key="TEST">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>General</id>
+          </State>
+          <State>
+            <id>Kotlin</id>
+          </State>
+          <State>
+            <id>Other problemsKotlin</id>
+          </State>
+          <State>
+            <id>Probable bugsKotlin</id>
+          </State>
+          <State>
+            <id>Properties Files</id>
+          </State>
+          <State>
+            <id>Redundant constructsKotlin</id>
+          </State>
+          <State>
+            <id>Spelling</id>
+          </State>
+          <State>
+            <id>Style issuesKotlin</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Other problemsKotlin</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="Downloaded.Files.Path.Enabled" value="true" />
+    <property name="Repository.Attach.Annotations" value="false" />
+    <property name="Repository.Attach.JavaDocs" value="true" />
+    <property name="Repository.Attach.Sources" value="false" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="create.test.in.the.same.root" value="true" />
+    <property name="last.edited.regexp" value="{limitNum}" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/bin" />
+    <property name="project.structure.last.edited" value="Global Libraries" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="run.code.analysis.last.selected.profile" value="pTEST" />
+    <property name="settings.editor.selected.configurable" value="project.kotlinCompiler" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="com.f14.bg.listener" />
+      <recent name="com.f14.bg" />
+    </key>
+    <key name="MoveMembersDialog.RECENTS_KEY">
+      <recent name="com.f14.innovation.anim.InnoAnimParamFactory" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\f14bg_server\projectNew\lib" />
+      <recent name="C:\f14bg_server\projectNew\tmp" />
+      <recent name="C:\f14bg_server\projectNew\src" />
+      <recent name="C:\f14bg_server\projectNew\src\com\f14" />
+      <recent name="C:\f14bg_server\projectNew\tmp\TTA" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\f14bg_server\projectNew\bin" />
+      <recent name="C:\f14bg_server\projectNew\lib" />
+      <recent name="C:\f14bg_server\projectNew\src\com\f14\TS\executor" />
+      <recent name="C:\f14bg_server\projectNew\src\com\f14\TS\condition" />
+      <recent name="C:\f14bg_server\projectNew\src\com\f14\TTA\executor\active" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.f14.bg" />
+    </key>
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.f14.TTA.listener.event" />
+      <recent name="com.f14.TTA.executor.event" />
+      <recent name="com.f14.TTA.listener" />
+      <recent name="com.f14.TTA.executor" />
+      <recent name="com.f14.TTA.listener.war" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="Applet">
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="CabalRunConfiguration" factoryName="Haskell">
+      <module name="" />
+      <setting name="executableName" value="" />
+      <setting name="parameters" value="" />
+      <setting name="workingDir" value="" />
+      <environmetVariables />
+      <method />
+    </configuration>
+    <configuration name="F14bgServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.f14.F14bg.network.F14bgServer" />
+      <module name="projectNew" />
+      <option name="PROGRAM_PARAMETERS" value="8118" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.f14.F14bg.network.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <option name="TEST_OBJECT" value="class" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType" factoryName="Kotlin script">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="filePath" />
+      <option name="vmParameters" />
+      <option name="alternativeJrePath" />
+      <option name="programParameters" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" />
+      <option name="isAlternativeJrePathEnabled" value="false" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+      <module name="" />
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="filePath" />
+      <option name="vmParameters" />
+      <option name="alternativeJrePath" />
+      <option name="programParameters" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" />
+      <option name="isAlternativeJrePathEnabled" value="false" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="TestNG">
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType">
+      <module name="" />
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
+      <option name="PROGRAM_PARAMETERS" />
+      <predefined_log_file enabled="true" id="idea.log" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.F14bgServer" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4d5dfe03-4133-4b09-a6d3-718ed7775b14" name="Default" comment="" />
+      <created>1500275987130</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1500275987130</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Initialize Git">
+      <created>1556093942818</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1556093942818</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Remove useless files">
+      <created>1556096085400</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1556096085400</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Add play card check available action points">
+      <created>1556157313945</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1556157313945</updated>
+    </task>
+    <task id="LOCAL-00004" summary="change direct build/upgrade/destroy code">
+      <created>1556255720874</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1556255720874</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Add Match Mode with Anonymous Players and Chatting Forbidden&#10;Run Inspect in Codes">
+      <created>1556267310574</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1556267310574</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Chatting available when match ended">
+      <created>1556413226289</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1556413226289</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Fix leave room error">
+      <created>1556417708320</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1556417708320</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Fix replace player name not exchanged bug">
+      <created>1556501364866</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1556501364866</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Reformatted code">
+      <created>1556506816094</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1556506816094</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Organized Code&#10;Remove Unused Stuffs">
+      <created>1556530018325</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1556530018325</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Organized Code&#10;Remove Unused Stuffs">
+      <created>1556601537084</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1556601537084</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Remove message when player join/leave a match mode room">
+      <created>1556631926381</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1556631926381</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Show real name when game ended">
+      <created>1556677311518</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1556677311518</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Fix win num error">
+      <created>1573611676669</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1573611676670</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Fix coroutine not start error">
+      <created>1573614884986</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1573614884987</updated>
+    </task>
+    <task id="LOCAL-00016" summary="analyze code">
+      <created>1598231184061</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1598231184061</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="EXTERNAL C:/f14bg_server/projectNew/src">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER">
+                <list>
+                  <option value="0" />
+                  <option value="1" />
+                  <option value="2" />
+                  <option value="3" />
+                </list>
+              </option>
+            </State>
+          </value>
+        </entry>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list />
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$" />
+    </ignored-roots>
+    <MESSAGE value="Initialize Git" />
+    <MESSAGE value="Remove useless files" />
+    <MESSAGE value="Add play card check available action points" />
+    <MESSAGE value="change direct build/upgrade/destroy code" />
+    <MESSAGE value="Add Match Mode with Anonymous Players and Chatting Forbidden" />
+    <MESSAGE value="Add Match Mode with Anonymous Players and Chatting Forbidden&#10;Run Inspect in Codes" />
+    <MESSAGE value="Chatting available when match ended" />
+    <MESSAGE value="Fix leave room error" />
+    <MESSAGE value="Fix replace player name not exchanged bug" />
+    <MESSAGE value="Reformatted code" />
+    <MESSAGE value="Organized Code&#10;Remove Unused Stuffs" />
+    <MESSAGE value="Remove message when player join/leave a match mode room" />
+    <MESSAGE value="Show real name when game ended" />
+    <MESSAGE value="Fix win num error" />
+    <MESSAGE value="Fix coroutine not start error" />
+    <MESSAGE value="analyze code" />
+    <option name="LAST_COMMIT_MESSAGE" value="analyze code" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="719" y="397" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1598231504404">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="719" y="397" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1920.1040@0.0.1920.1040" timestamp="1598231504404" />
+    <state x="618" y="116" key="CommitChangelistDialog2" timestamp="1598231160834">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="618" y="116" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1598231160834" />
+    <state x="652" y="346" key="com.intellij.ide.util.TipDialog" timestamp="1598348822284">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="652" y="346" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1598348822284" />
+    <state x="334" y="245" key="new project wizard" timestamp="1598348852965">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="334" y="245" key="new project wizard/0.0.1920.1040@0.0.1920.1040" timestamp="1598348852965" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/tmp/TTA/TTA.java</url>
+          <line>391</line>
+          <properties class="com.f14.TTA.TTA" method="getGameMode">
+            <option name="EMULATED" value="true" />
+          </properties>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/com/f14/innovation/executor/custom/InnoCustom020Executor.kt</url>
+          <line>20</line>
+          <option name="timeStamp" value="414" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/com/f14/TTA/executor/active/TTARaiseOlympicsExecutor.kt</url>
+          <line>11</line>
+          <option name="timeStamp" value="519" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/com/f14/TTA/executor/TTAPlayTacticsCardExecutor.kt</url>
+          <line>21</line>
+          <option name="timeStamp" value="526" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/com/f14/bg/hall/GameRoom.kt</url>
+          <line>2</line>
+          <option name="timeStamp" value="528" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/com/f14/TTA/TTA.kt</url>
+          <line>1826</line>
+          <option name="timeStamp" value="529" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="Application">
+        <watch expression="this" />
+        <watch expression="((LinkedHashMap)((TTAPartPool)((GovermentCard)toCard).tokens).pool).entrySet().toArray()[2]" custom="com.f14.TTA.component.TTAPartPool,java.util.LinkedHashMap,com.f14.TTA.component.card.GovermentCard" />
+        <watch expression="this.playerOrder.asSequence().take(2).toList()" language="kotlin" />
+      </configuration>
+    </watches-manager>
+  </component>
+</project>

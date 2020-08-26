@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="800" height="170" title="计分区">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Innovation.components.InnoCard;
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoCardLabel;
+			import com.f14.F14bgGame.Innovation.ui.part.InnoPlayerHand;
+			import mx.controls.HRule;
+			
+			public var cardsPart:InnoPlayerHand;
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				
+				cardsPart = new InnoPlayerHand();
+				cardsPart.width = this.width*0.8;
+				cardsPart.x = (this.width-cardsPart.width)/2;
+				cardsPart.y = 10;
+				this.addChild(cardsPart);
+				cardsPart.init();
+				cardsPart.selectable = false;
+				cardsPart.autoSort = true;
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				if(this.cardsPart!=null){
+					this.cardsPart.clear();
+				}
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				this.cardsPart.addCards(param.scoreCardIds);
+			}
+			
+			public function removeCards(cardIds:String):void{
+				this.cardsPart.removeCards(cardIds);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Button label="关 闭" horizontalCenter="0" bottom="5" click="this.cancel()" />
+</NewConfirmWindow>

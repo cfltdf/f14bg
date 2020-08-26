@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="185" height="155" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Image;
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import mx.containers.TitleWindow;
+			import com.f14.F14bgGame.RFTG.RaceUtil;
+			import com.f14.F14bgGame.RFTG.consts.CmdConst;
+			
+			private var canvases:Array = new Array();
+			private var win1:TitleWindow;
+			private var win2:TitleWindow;
+			
+			public function init():void{
+				canvases = [
+					{"code":0, "canvas":canvas_other},
+					{"code":CmdConst.GAME_CODE_STARTING_DISCARD, "canvas":canvas_startingDiscard},
+					{"code":CmdConst.GAME_CODE_EXPLORE, "canvas":canvas_explore},
+					{"code":CmdConst.GAME_CODE_DEVELOP, "canvas":canvas_develop},
+					{"code":CmdConst.GAME_CODE_SETTLE, "canvas":canvas_settle},
+					{"code":CmdConst.GAME_CODE_CONSUME, "canvas":canvas_consume},
+					{"code":CmdConst.GAME_CODE_PRODUCE, "canvas":canvas_produce},
+					{"code":CmdConst.GAME_CODE_ROUND_DISCARD, "canvas":canvas_roundDiscard},
+				];
+				
+				//隐藏所有的按钮
+				this.hideAllButtons();
+			}
+			
+			/**
+			 * 按照玩家的观战状态显示初始状态的按钮
+			 */
+			public function showInitButtons():void{
+				if(RaceUtil.gameManager.isPlayingGame()){
+					//否则显示游戏按钮面板
+					this.changeButtons(CmdConst.GAME_CODE_JOIN);
+				}else{
+					//观战则显示观战按钮面板
+					this.changeButtons(CmdConst.GAME_CODE_AUDIENCE);
+				}
+			}
+			
+			/**
+			 * 隐藏所有的按钮
+			 */
+			public function hideAllButtons():void{
+				canvases.forEach(function(obj:Object, i:int, arr:Array):void{
+					obj.canvas.visible = false;
+				})
+			}
+			
+			public function getCanvas(index:int):Canvas{
+				for(var i:int=0;i<canvases.length;i++){
+					if(canvases[i].code==index){
+						return canvases[i].canvas;
+					}
+				}
+				return canvases[0].canvas;
+			}
+			
+			/**
+			 * 显示指定阶段的按钮
+			 */
+			public function changeButtons(index:int):void{
+				hideAllButtons();
+				var canvas:Canvas = getCanvas(index);
+				canvas.visible = true;
+			}
+			
+			/**
+			 * 显示卡牌一览
+			 */
+			public function showManual1Window():void{
+				/*if(win1==null){
+					win1 = new TitleWindow();
+					var img:Image = new Image();
+					img.source = "images/manual1.jpg";
+					//img.source = ImageManager.manual1;
+					win1.addChild(img);
+					win1.showCloseButton = true;
+					win1.addEventListener(CloseEvent.CLOSE, hideManualWindow);
+				}
+				PopUpManager.addPopUp(win1, RaceUtil.module, true);*/
+			}
+			
+			/**
+			 * 显示回合一览
+			 */
+			public function showManual2Window():void{
+				/*if(win2==null){
+					win2 = new TitleWindow();
+					var img:Image = new Image();
+					img.source = "images/manual2.jpg";
+					//img.source = ImageManager.manual2;
+					win2.addChild(img);
+					win2.showCloseButton = true;
+					win2.addEventListener(CloseEvent.CLOSE, hideManualWindow);
+				}
+				PopUpManager.addPopUp(win2, RaceUtil.module, true);*/
+			}
+			
+			/**
+			 * 隐藏窗口
+			 */
+			public function hideManualWindow(evt:CloseEvent):void{
+				PopUpManager.removePopUp((evt.target as TitleWindow));
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Canvas width="100" height="100%" right="5" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		<mx:Canvas width="100%" id="canvas_other" height="140" horizontalCenter="0" top="5">
+		</mx:Canvas>
+		<mx:Canvas width="100%" id="canvas_startingDiscard" height="140" horizontalCenter="0" top="5">
+			<mx:VBox width="100%" verticalGap="4" horizontalAlign="center" verticalAlign="top">
+				<mx:Button label="弃 牌" click="RaceUtil.actionManager.doDiscard()"/>
+			</mx:VBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" id="canvas_explore" height="140" horizontalCenter="0" top="5">
+			<mx:VBox width="100%" verticalGap="4" horizontalAlign="center" verticalAlign="top">
+				<mx:Button label="弃 牌" click="RaceUtil.actionManager.doDiscard()"/>
+			</mx:VBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" id="canvas_develop" height="140" horizontalCenter="0" top="5">
+			<mx:VBox width="100%" verticalGap="4" horizontalAlign="center" verticalAlign="top">
+				<mx:Button label="开 发" click="RaceUtil.actionManager.doDevelop()"/>
+				<mx:Button label="弃 牌" click="RaceUtil.actionManager.doDiscard()"/>
+				<mx:Button label="取 消" click="RaceUtil.actionManager.doCancel()"/>
+				<mx:Button label="结 束" click="RaceUtil.actionManager.doPass()"/>
+			</mx:VBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" id="canvas_settle" height="140" horizontalCenter="0" top="5">
+			<mx:VBox width="100%" verticalGap="4" horizontalAlign="center" verticalAlign="top">
+				<mx:Button label="扩 张" click="RaceUtil.actionManager.doDevelop()"/>
+				<mx:Button label="弃 牌" click="RaceUtil.actionManager.doDiscard()"/>
+				<mx:Button label="取 消" click="RaceUtil.actionManager.doCancel()"/>
+				<mx:Button label="结 束" click="RaceUtil.actionManager.doPass()"/>
+			</mx:VBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" id="canvas_consume" height="140" horizontalCenter="0" top="5">
+			<mx:VBox width="100%" verticalGap="4" horizontalAlign="center" verticalAlign="top">
+				<mx:Button label="交 易" click="RaceUtil.actionManager.doTrade()"/>
+				<mx:Button label="赌 博" click="RaceUtil.actionManager.doGamble()"/>
+				<mx:Button label="结 束" click="RaceUtil.actionManager.doPass()"/>
+			</mx:VBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" id="canvas_produce" height="140" horizontalCenter="0" top="5">
+			<mx:VBox width="100%" verticalGap="4" horizontalAlign="center" verticalAlign="top">
+				<mx:Button label="生 产" click="RaceUtil.actionManager.doProduce()"/>
+				<mx:Button label="结 束" click="RaceUtil.actionManager.doPass()"/>
+			</mx:VBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" id="canvas_roundDiscard" height="140" horizontalCenter="0" top="5">
+			<mx:VBox width="100%" verticalGap="4" horizontalAlign="center" verticalAlign="top">
+				<mx:Button label="弃 牌" click="RaceUtil.actionManager.doDiscard()"/>
+			</mx:VBox>
+		</mx:Canvas>
+	</mx:Canvas>
+	<mx:Button x="10" y="10" label="回合一览" click="showManual1Window()" visible="false"/>
+	<mx:Button x="10" y="42" label="卡牌一览" click="showManual2Window()" visible="false"/>
+</mx:Canvas>

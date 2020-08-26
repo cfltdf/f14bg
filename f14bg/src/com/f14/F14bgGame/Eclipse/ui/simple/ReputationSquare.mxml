@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="80" height="86">
+	<mx:Script>
+		<![CDATA[
+			protected var _object:Object;
+			
+			public function set object(o:Object):void{
+				this._object = o;
+				this.styleName = this.getReputationStyle(o.reputationSquareType);
+			} 
+			
+			/**
+			 * 按照方格类型取得样式
+			 */
+			protected function getReputationStyle(type:String):String{
+				switch(type){
+					case "SINGLE":
+						return "reputationSingle";
+					default:
+						return "reputationMulti";
+				}
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

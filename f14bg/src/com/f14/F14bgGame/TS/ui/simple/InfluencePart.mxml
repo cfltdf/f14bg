@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="38" height="38" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.TSUtil;
+			[Bindable]
+			protected var _num:int;
+			protected var _superPower:String;
+			protected var _selectable:Boolean;
+			
+			public function init():void{
+				//初始化,设置高亮可选状态
+				//TSUtil.effectManager.addHighlight(this);
+			}
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function set num(num:int):void{
+				this._num = num;
+			}
+			
+			public function set superPower(superPower:String):void{
+				this._superPower = superPower;
+			}
+			
+			/**
+			 * 取得样式颜色
+			 */
+			protected function getStyleColor():String{
+				switch(this._superPower){
+					case "USA":
+						return "#0000ff";
+					case "USSR":
+						return "#ff0000";
+					default:
+						return "#ffffff";
+				}
+			}
+			
+			public function setShowStyle(style:String):void{
+				if(this._num==0){
+					this.label_num.visible = false;
+					this.setStyle("backgroundColor", "");
+					this.setStyle("background-alpha", "");
+				}else{
+					var color:String = this.getStyleColor();
+					switch(style){
+						case "NORMAL": //普通
+							this.label_num.visible = true;
+							this.label_num.setStyle("color", color);
+							this.setStyle("backgroundColor", "#ffffff");
+							this.setStyle("background-alpha", "1");
+							break;
+						case "CONTROL": //被控制
+							this.label_num.visible = true;
+							this.label_num.setStyle("color", "#ffffff");
+							this.setStyle("backgroundColor", color);
+							this.setStyle("background-alpha", "1");
+							break;
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Label id="label_num" text="{_num}" width="40" horizontalCenter="0" verticalCenter="0"  textAlign="center" fontWeight="bold" fontSize="20"/>
+</mx:Canvas>

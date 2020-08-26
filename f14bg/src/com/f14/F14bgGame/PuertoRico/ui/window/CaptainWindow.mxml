@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="330" title="选择装货" xmlns:simple="com.f14.F14bgGame.PuertoRico.ui.simple.*" backgroundColor="#EEEEEE">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			import com.f14.F14bgGame.bg.ui.MainBoard;
+			import com.f14.F14bgGame.PuertoRico.ui.simple.ShipTile;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.PuertoRico.components.ResourcePart;
+			import com.f14.f14bg.components.ComponentOption;
+			import com.f14.F14bgGame.PuertoRico.event.PrEvent;
+			
+			protected var inputOption:ComponentOption = new ComponentOption();
+			protected var ships:Array = new Array();
+			
+			/**
+			 * 重置面板输入信息
+			 */
+			public function reset():void{
+				//将所有货船的货物和数量置空
+				/*for each(var ship:ShipTile in this.ships){
+					ship.goodType = null;
+					ship.size = 0;
+				}*/
+				//清除选项
+				this.inputOption.clearSelection();
+				this.resource_choose.reset();
+				
+				this.resource_selecter.player = null;
+				this.resource_selecter.reset();
+			}
+			
+			/**
+			 * 初始化所有输入组件
+			 */
+			public function initInputs():void{
+				this.resource_selecter.initResourceImage();
+				this.resource_selecter.callBackFunction = onResourceClick;
+				this.resource_selecter.setResourceSelectable(true);
+				
+				this.resource_choose.initResourceImage();
+			}
+			
+			/**
+			 * 按照参数初始化特殊船只(私船,小私船)
+			 */
+			public function initSpecialShips(param:Object):void{
+				//检查是否可以使用私船
+				var ship:ShipTile;
+				if(param.selfShip){
+					//如果可以使用私船并且私船不存在,则创建私船
+					ship = new ShipTile();
+					this.vbox_ship.addChild(ship);
+					ship.init();
+					ship.shipName = "私船";
+					ship.selectable = true;
+					this.inputOption.addComponent(ship);
+				}
+				
+				//检查是否可以使用小码头
+				if(param.smallShip){
+					//如果可以使用小码头并且小码头不存在,则创建小码头
+					ship = new ShipTile();
+					this.vbox_ship.addChild(ship);
+					ship.init();
+					ship.shipName = "小码头";
+					ship.selectable = true;
+					ship.addEventListener(MouseEvent.CLICK, onSmallShipClick);
+				}
+			}
+			
+			/**
+			 * 装载货船信息
+			 */
+			public function loadShipInfo():void{
+				this.vbox_ship.removeAllChildren();
+				this.ships = new Array();
+				this.inputOption = new ComponentOption();
+				//按照货船面板生成运货界面的货船信息
+				for each(var orgShip:ShipTile in PRUtil.mainBoard.shipBoard.ships){
+					var ship:ShipTile = new ShipTile();
+					this.vbox_ship.addChild(ship);
+					ship.init();
+					ship.shipName = orgShip.shipName;
+					ship.maxSize = orgShip.maxSize;
+					ship.goodType = orgShip.goodType;
+					ship.size = orgShip.size;
+					this.inputOption.addComponent(ship);
+					this.ships[orgShip.maxSize] = ship;
+				}
+				this.inputOption.setAllComponentsSelectable(true);
+				//与游戏面板上的货船信息同步
+				/*for each(var orgShip:ShipTile in PRUtil.application.shipBoard.ships){
+					var ship:ShipTile = this.ships[orgShip.maxSize];
+					//如果船只的容量不相等,则需要重置船只的属性
+					if(orgShip.maxSize!=ship.maxSize){
+						ship.maxSize = orgShip.maxSize;
+					}
+					ship.goodType = orgShip.goodType;
+					ship.size = orgShip.size;
+				}*/
+				//同步玩家货物的信息
+				this.resource_selecter.player = PRUtil.getLocalPlayer();
+				this.showNormalShip();
+			}
+			
+			/**
+			 * 点击资源时触发的方法
+			 */
+			public function onResourceClick(evt:PrEvent):void{
+				var part:ResourcePart = evt.part as ResourcePart;
+				var ship:ShipTile = this.inputOption.selectedComponent as ShipTile;
+				if(ship==null){
+					ApplicationUtil.alert("请先选择要装货的货船!");
+					return;
+				}
+				PRUtil.actionManager.captain(part.type, ship.maxSize);
+			}
+			
+			/**
+			 * 显示小码头的运货界面
+			 */
+			protected function showSelfShip():void{
+				this.vbox_normal.visible = false;
+				this.vbox_selfship.visible = true;
+				this.resource_choose.player = PRUtil.getLocalPlayer();
+			}
+			
+			/**
+			 * 显示普通的运货界面
+			 */
+			protected function showNormalShip():void{
+				this.vbox_normal.visible = true;
+				this.vbox_selfship.visible = false;
+			}
+			
+			/**
+			 * 点击小码头触发的事件
+			 */
+			protected function onSmallShipClick(evt:MouseEvent):void{
+				this.showSelfShip();
+			}
+			
+			/**
+			 * 小码头确定运货
+			 */
+			protected function doSmallShip():void{
+				var resource:Object = this.resource_choose.getResource();
+				PRUtil.actionManager.smallShip(resource);
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox id="vbox_normal" width="100%" horizontalAlign="center">
+		<mx:Canvas height="5" />
+		<simple:ResourceSelecter id="resource_selecter"/>
+		<mx:VBox id="vbox_ship">
+		</mx:VBox>
+		<mx:Button label="结 束" click="PRUtil.actionManager.doPass()"/>
+		<mx:Canvas height="5" />
+	</mx:VBox>
+	<mx:VBox id="vbox_selfship" width="100%" horizontalAlign="center" visible="false">
+		<mx:Canvas height="5" />
+		<mx:Label text="请选择要用小码头装运的货物:" />
+		<simple:ResourceMultiChoose id="resource_choose">
+		</simple:ResourceMultiChoose>
+		<mx:HBox>
+			<mx:Button label="确定" click="this.doSmallShip()"/>
+			<mx:Button label="返回" click="this.showNormalShip()"/>
+		</mx:HBox>
+		<mx:Canvas height="5" />
+	</mx:VBox>
+</FloatWindow>

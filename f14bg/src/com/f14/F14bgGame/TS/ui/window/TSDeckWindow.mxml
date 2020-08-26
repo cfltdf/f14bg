@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" title="查看弃牌堆" width="700" height="500" xmlns:components="com.f14.F14bgGame.TS.components.*" xmlns:part="com.f14.F14bgGame.TS.ui.part.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.TS.components.TSCard;
+			import com.f14.F14bgGame.TS.TSUtil;
+			import com.f14.F14bgGame.TS.ui.simple.TSCardLabel;
+			
+			override public function clear():void{
+				super.clear();
+				this.canvas_discard.clear();
+				this.canvas_trash.clear();
+			}
+			
+			public function loadDiscardParam(param:Object):void{
+				if(param.reload){
+					this.canvas_discard.clear();
+				}
+				if(param.cardIds){
+					this.canvas_discard.addCards(param.cardIds);
+				}
+			}
+			
+			public function loadTrashParam(param:Object):void{
+				if(param.reload){
+					this.canvas_trash.clear();
+				}
+				if(param.cardIds){
+					this.canvas_trash.addCards(param.cardIds);
+				}
+			}
+			
+			/**
+			 * 从弃牌堆中移除卡牌
+			 */
+			public function removeDiscards(param:Object):void{
+				if(param.cardIds){
+					this.canvas_discard.removeCards(param.cardIds);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox top="5" bottom="5" left="5" right="5" horizontalAlign="center">
+		<mx:Label width="100%" text="弃牌堆" fontWeight="bold" fontSize="14" />
+		<part:TSCardFlowCanvas id="canvas_discard" width="100%" height="50%" horizontalGap="5" verticalGap="3" />
+		<mx:Label width="100%" text="废牌堆" fontWeight="bold" fontSize="14" />
+		<part:TSCardFlowCanvas id="canvas_trash" width="100%" height="50%" horizontalGap="5" verticalGap="3" />
+		<mx:Button width="60" label="关 闭" click="this.cancel()" />
+	</mx:VBox>
+</NewConfirmWindow>

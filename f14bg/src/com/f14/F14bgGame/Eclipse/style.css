@@ -1,0 +1,308 @@
+/* CSS file */
+global
+{
+	backgroundSize: "100%";
+	backgroundGradientAlphas: 1, 1;
+	backgroundGradientColors: #0b0b0d, #0b0b0d;
+	fontSize: 12;
+	color: #000000;
+	theme-color: #DD8C00;
+}
+.gameBoard{
+	backgroundAlpha: 0.2;
+}
+.playerInfoText{
+	color: #FFFFFF;
+	font-size: 14;
+	font-weight: bold;
+}
+
+.eclipseLogo{
+	background-image: Embed("./images/logo.jpg");
+	backgroundSize: auto;
+}
+.roundPanel{
+	background-image: Embed("./images/roundPanel.png");
+	backgroundSize: auto;
+}
+.supplyButton{
+	background-image: Embed("./images/supplyButton.png");
+	backgroundSize: auto;
+}
+.playerSummary{
+	background-image: Embed("./images/playerSummary.png");
+	backgroundSize: auto;
+}
+.bgrepeat{
+	background-image : Embed("./images/bgrepeat.png");
+	background-repeat: repeat;
+	borderSkin: ClassReference("com.degrafa.skins.CSSSkin");
+}
+.eclipseHex{
+	background-image: Embed("./images/hex.png");
+	backgroundSize: auto;
+}
+
+.spaceMap{
+	background-image: Embed("./images/space.jpg");
+	backgroundSize: "100%";
+}
+
+.buttonAction{
+	button-width: 95;
+}
+.buttonExplore{
+	up-skin: Embed("./images/exp01.png");
+	down-skin: Embed("./images/exp03.png");
+	over-skin: Embed("./images/exp02.png");
+}
+
+.textRound{
+	color: #ffffff;
+	font-size: 38;
+	font-weight: bold;
+}
+.textVp{
+	color: #693f1b;
+	font-size: 24;
+	font-weight: bold;
+}
+.textHexDeck{
+	color: #ffffff;
+	font-size: 32;
+	font-weight: bold;
+}
+.textHexDiscard{
+	color: #ffffff;
+	font-size: 20;
+	font-weight: bold;
+}
+.textBigCounter{
+	color: #ffffff;
+	font-size: 24;
+	font-weight: bold;
+	background-alpha: 1;
+}
+.textSmallCounter{
+	color: #ffffff;
+	font-size: 18;
+	font-weight: bold;
+	background-alpha: 1;
+}
+.textMoney{
+	color: #d2660b;
+	font-size: 18;
+	font-weight: bold;
+}
+.textScience{
+	color: #dea5b8;
+	font-size: 18;
+	font-weight: bold;
+}
+.textMaterials{
+	color: #8a492d;
+	font-size: 18;
+	font-weight: bold;
+}
+.textSummaryNumber{
+	color: #ffffff;
+	font-size: 16;
+	font-weight: bold;
+	background-alpha: 1;
+}
+
+.publicBoard{
+	background-image: Embed("./images/publicBoard.jpg");
+	backgroundSize: auto;
+}
+.playerBoard{
+	background-image: Embed("./images/playerBoardNew.jpg");
+	backgroundSize: auto;
+}
+.passedLabel{
+	background-image: Embed("./images/passed.png");
+	backgroundSize: auto;
+}
+.influenceTrack{
+	background-image: Embed("./images/influenceTrack.png");
+	backgroundSize: auto;
+}
+.buttonPanel{
+	background-image: Embed("./images/buttonPanel.png");
+	backgroundSize: auto;
+}
+.tokenTraitor{
+	background-image: Embed("./images/traitor.png");
+	backgroundSize: auto;
+}
+.tokenStartPlayer{
+	background-image: Embed("./images/startPlayer.png");
+	backgroundSize: auto;
+}
+.hexCircle{
+	background-image: Embed("./images/circle.png");
+	backgroundSize: auto;
+}
+.hexVp{
+	background-image: Embed("./images/hexvp.png");
+	backgroundSize: auto;
+}
+.hexArtifactKey{
+	background-image: Embed("./images/artifactKey.png");
+	backgroundSize: auto;
+}
+.hexWormHole{
+	background-image: Embed("./images/wormHole.png");
+	backgroundSize: auto;
+}
+.hexDiscoveryTile{
+	background-image: Embed("./images/discoveryTile.png");
+	backgroundSize: auto;
+}
+
+
+.planetMoney{
+	background-image: Embed("./images/planetMoney.png");
+	backgroundSize: auto;
+}
+.planetScience{
+	background-image: Embed("./images/planetScience.png");
+	backgroundSize: auto;
+}
+.planetMaterials{
+	background-image: Embed("./images/planetMaterials.png");
+	backgroundSize: auto;
+}
+.planetGray{
+	background-image: Embed("./images/planetGray.png");
+	backgroundSize: auto;
+}
+.planetOrbital{
+	background-image: Embed("./images/orbital.png");
+	backgroundSize: auto;
+}
+.planetMonolith{
+	background-image: Embed("./images/monolith.png");
+	backgroundSize: auto;
+}
+.squareMoney{
+	background-image: Embed("./images/squareMoney.png");
+	backgroundSize: auto;
+}
+.squareScience{
+	background-image: Embed("./images/squareScience.png");
+	backgroundSize: auto;
+}
+.squareMaterials{
+	background-image: Embed("./images/squareMaterials.png");
+	backgroundSize: auto;
+}
+.squareGray{
+	background-image: Embed("./images/squareGray.png");
+	backgroundSize: auto;
+}
+.squareOrbital{
+	background-image: Embed("./images/squareOrbital.png");
+	backgroundSize: auto;
+}
+
+.squareMoneyAdv{
+	background-image: Embed("./images/squareMoneyAdv.png");
+	backgroundSize: auto;
+}
+.squareScienceAdv{
+	background-image: Embed("./images/squareScienceAdv.png");
+	backgroundSize: auto;
+}
+.squareMaterialsAdv{
+	background-image: Embed("./images/squareMaterialsAdv.png");
+	backgroundSize: auto;
+}
+.influenceDisc{
+	background-image: Embed("./images/influenceDisc.png");
+	backgroundSize: auto;
+}
+.populationCube{
+	background-image: Embed("./images/populationCube.png");
+	backgroundSize: auto;
+}
+
+.reputationSingle{
+	background-image: Embed("./images/reputationSingle.png");
+	backgroundSize: auto;
+}
+.reputationMulti{
+	background-image: Embed("./images/reputationMulti.png");
+	backgroundSize: auto;
+}
+
+.unitAncientShip{
+	background-image: Embed("./images/unitAncientShip.png");
+	backgroundSize: auto;
+}
+.unitGCDS{
+	background-image: Embed("./images/unitGCDS.png");
+	backgroundSize: auto;
+}
+.unitInterceptor{
+	background-image: Embed("./images/unitInterceptor.png");
+	backgroundSize: auto;
+}
+.unitCruiser{
+	background-image: Embed("./images/unitCruiser.png");
+	backgroundSize: auto;
+}
+.unitDreadnought{
+	background-image: Embed("./images/unitDreadnought.png");
+	backgroundSize: auto;
+}
+.unitStarbase{
+	background-image: Embed("./images/unitStarbase.png");
+	backgroundSize: auto;
+}
+.raceTERRANS{
+	background-image: Embed("./images/raceTerrans.png");
+	backgroundSize: auto;
+}
+
+.resourceOptionMONEY{
+	background-color: #d2660b;
+}
+.resourceOptionSCIENCE{
+	background-color: #dea5b8;
+}
+.resourceOptionMATERIALS{
+	background-color: #8a492d;
+}
+
+.buttonTradeM2S{
+	icon: Embed("./images/tradeM2S.png");
+}
+.buttonTradeM2MA{
+	icon: Embed("./images/tradeM2MA.png");
+}
+.buttonTradeS2M{
+	icon: Embed("./images/tradeS2M.png");
+}
+.buttonTradeS2MA{
+	icon: Embed("./images/tradeS2MA.png");
+}
+.buttonTradeMA2M{
+	icon: Embed("./images/tradeMA2M.png");
+}
+.buttonTradeMA2S{
+	icon: Embed("./images/tradeMA2S.png");
+}
+
+.resourceMoney{
+	background-image: Embed("./images/resourceMoney.png");
+	backgroundSize: auto;
+}
+.resourceScience{
+	background-image: Embed("./images/resourceScience.png");
+	backgroundSize: auto;
+}
+.resourceMaterials{
+	background-image: Embed("./images/resourceMaterials.png");
+	backgroundSize: auto;
+}

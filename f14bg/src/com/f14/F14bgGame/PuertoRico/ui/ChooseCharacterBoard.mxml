@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true" title="选择角色">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			import mx.containers.VBox;
+			import mx.containers.Canvas;
+			import com.f14.F14bgGame.PuertoRico.components.CharacterCard;
+			
+			public var characterCards:Array = new Array();
+			
+			override public function clear():void{
+				characterCards = new Array();
+				this.hbox_main.removeAllChildren();
+			}
+			
+			/**
+			 * 按照cardIds初始化角色卡选择面板
+			 */
+			public function initCharacterCards(cardIds:String):void{
+				//首先清除原先的角色卡面板
+				this.clear();
+				var ids:Array = cardIds.split(",");
+				var i:int = 0;
+				var vbox:VBox;
+				for each(var id:String in ids){
+					if(i%2==0){
+						if(vbox!=null){
+							//加空边..
+							vbox.addChild(new Canvas());
+						}
+						vbox = new VBox();
+						this.hbox_main.addChild(vbox);
+					}
+					var obj:Object = PRUtil.resourceManager.getObject(id);
+					var card:CharacterCard = new CharacterCard();
+					card.object = obj;
+					//设置卡牌的位置
+					card.x = (int(i/2))*(CharacterCard.IMAGE_WIDTH+5) + 5;
+					card.y = (int(i%2))*(CharacterCard.IMAGE_HEIGHT+5) + 5;
+					this.characterCards.push(card);
+					vbox.addChild(card);
+					card.addEventListener(MouseEvent.CLICK, onCharacterSelect);
+					i++;
+				}
+				//加空边..
+				this.hbox_main.addChild(new Canvas());
+			}
+			
+			/**
+			 * 按照id取得角色卡
+			 */
+			public function getCharacterCard(cardId:String):CharacterCard{
+				for each(var c:CharacterCard in this.characterCards){
+					if(c.id==cardId){
+						return c;
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * 选择角色卡的回调函数
+			 */
+			public function onCharacterSelect(evt:MouseEvent):void{
+				var card:CharacterCard = evt.target as CharacterCard;
+				if(card!=null && card.canUse && card.selectable){
+					//如果选择的卡牌是可选的,则发送指令并关闭窗口
+					PRUtil.actionManager.doChooseCharacter(card.id);
+					cancel();
+				}
+			}
+			
+			/**
+			 * 开始选择,将所有可使用的角色卡设为可选
+			 */
+			public function startSelect():void{
+				for each(var card:CharacterCard in this.characterCards){
+					if(card!=null){
+						card.selectable = card.canUse;
+					}
+				}
+			}
+			
+			/**
+			 * 刷新角色卡的状态
+			 */
+			public function updateCharacterCard(param:Object):void{
+				var card:CharacterCard = this.getCharacterCard(param.id);
+				if(card!=null){
+					card.canUse = param.canUse;
+					card.doubloon = param.doubloon;
+				}
+			}
+			
+			/**
+			 * 刷新所有角色卡状态
+			 */
+			public function refreshAll(param:Object):void{
+				for each(var obj:Object in param.characterCards){
+					this.updateCharacterCard(obj);
+				}
+			}
+			
+			/**
+			 * 设置所有卡牌是否可选
+			 */
+			public function setAllSelectable(selectable:Boolean):void{
+				for each(var card:CharacterCard in this.characterCards){
+					if(card!=null){
+						card.selectable = selectable;
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox id="hbox_main" x="6" y="6">
+	</mx:HBox>
+</FloatWindow>

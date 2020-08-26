@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FlowCanvas xmlns="com.f14.F14bgGame.TS.components.*" xmlns:mx="http://www.adobe.com/2006/mxml" horizontalGap="5" verticalGap="3">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.f14bg.components.ComponentOption;
+			import com.f14.F14bgGame.TS.ui.simple.TSCardLabel;
+			import com.f14.F14bgGame.TS.components.TSCard;
+			import com.f14.F14bgGame.TS.TSUtil;
+			
+			protected var option:ComponentOption = new ComponentOption();
+			protected var _selectable:Boolean;
+			protected var _cards:Array = new Array();
+			
+			public function clear():void{
+				this.option.removeAllComponent();
+				this._cards = new Array();
+				this.removeAllChildren();
+			}
+			
+			/**
+			 * 设置是否可选
+			 */
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				var card:TSCardLabel;
+				for each(card in this.getChildren()){
+					card.selectable = selectable;
+				}
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function addCard(cardId:String):void{
+				var card:TSCard = TSUtil.resourceManager.createTSCard(cardId);
+				if(card!=null){
+					var label:TSCardLabel = new TSCardLabel();
+					this.addChild(label);
+					label.init();
+					label.selectable = this.selectable;
+					label.object = card;
+					this._cards[cardId] = label;
+					option.addComponent(label);
+				}
+			}
+			
+			public function addCards(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				for each(var cardId:String in ids){
+					this.addCard(cardId);
+				}
+			}
+			
+			/**
+			 * 按照id取得卡牌
+			 */
+			public function getCard(id:String):TSCardLabel{
+				return this._cards[id] as TSCardLabel;
+			}
+			
+			/**
+			 * 移除卡牌
+			 */
+			public function removeCard(id:String):void{
+				var card:TSCardLabel = this.getCard(id);
+				if(card!=null){
+					this._cards[card.id] = null;
+					this.removeChild(card);
+					//从选择组件中移除
+					this.option.removeComponent(card);
+				}
+			}
+			
+			/**
+			 * 移除卡牌
+			 */
+			public function removeCards(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				for each(var cardId:String in ids){
+					this.removeCard(cardId);
+				}
+			}
+			
+			/**
+			 * 取得选中的卡牌
+			 */
+			public function getSelectedCard():TSCardLabel{
+				return this.option.selectedComponent as TSCardLabel;
+			}
+			
+		]]>
+	</mx:Script>
+</FlowCanvas>

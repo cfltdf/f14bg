@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="794" height="79" horizontalScrollPolicy="off" verticalScrollPolicy="off" styleName="influenceTrack">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.player.EclipsePlayer;
+			import com.f14.F14bgGame.Eclipse.Eclipse;
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			import com.f14.F14bgGame.Eclipse.ui.simple.InfluenceDisc;
+			protected var disc:Array = new Array();
+			protected var count:int = 13;
+			protected var initialled:Boolean;
+			
+			protected function initComponents():void{
+				var player:EclipsePlayer = EclipseUtil.getLocalPlayer();
+				if(player!=null){
+					for(var i:int = 0;i<count;i++){
+						var c:InfluenceDisc = EclipseUtil.resourceManager.createInfluenceDisc(player.position);
+						c.scaleX = 0.7;
+						c.scaleY = 0.7;
+						c.x = 13 + (50 + 10) * i;
+						c.y = 4;
+						c.visible = false;
+						this.disc[i] = c;
+						this.addChild(c);
+					}					
+				}
+			}
+			
+			public function clear():void{
+				this.removeAllChildren();
+				this.disc = new Array();
+				this.initialled = false;
+			}
+			
+			public function loadInfluenceDiscParam(param:Object):void{
+				this.num = param.influenceDisc;
+			}
+			
+			public function set num(num:int):void{
+				if(!this.initialled){
+					this.initialled = true;
+					this.initComponents();
+				}
+				for(var i:int = 0;i<this.count;i++){
+					if(i<num){
+						this.disc[i].visible = true;
+					}else{
+						this.disc[i].visible = false;
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

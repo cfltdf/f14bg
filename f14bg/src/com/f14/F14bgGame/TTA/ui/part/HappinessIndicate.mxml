@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			/**
+			 * 幸福度
+			 */
+			protected var _happy:int;
+			/**
+			 * 空闲工人数
+			 */
+			protected var _unused:int;
+			/**
+			 * 不满的工人数
+			 */
+			protected var _discontent:int;
+			protected var _images:Array = new Array();
+			
+ 			[Embed("./com/f14/F14bgGame/TTA/images/face_happy.png")]
+			protected var image_happy:Class;
+ 			[Embed("./com/f14/F14bgGame/TTA/images/face_unused.png")]
+			protected var image_unused:Class;
+			[Embed("./com/f14/F14bgGame/TTA/images/face_discontent.png")]
+			protected var image_discontent:Class;
+			
+			public function set happy(happy:int):void{
+				this._happy = happy;
+				var i:int = 0;
+				for each(var image:Image in this._images){
+					if(happy>=i){
+						//image.styleName = "face_happy";
+						image.source = image_happy;
+					}else{
+						//image.styleName = "";
+						image.source = null;
+					}
+					i++;
+				}
+			}
+			
+			public function set unused(unused:int):void{
+				this._unused = unused;
+				var index:int = this._happy + 1;
+				//显示的空闲工人最多不会超过不满意度,和数组长度
+				var count:int = Math.min(index+this._discontent, index+unused, this._images.length);
+				count = Math.max(count, 0);	//最小不能比0小
+				index = Math.max(index, 0);
+				for(var i:int = index;i<count;i++){
+					this._images[i].source = this.image_unused;
+				}
+			}
+			
+			public function set discontent(discontent:int):void{
+				this._discontent = discontent;
+				var index:int = this._happy + 1;
+				//不满意度最多不能超过数组长度
+				var count:int = Math.min(this._images.length, index+discontent);
+				count = Math.max(count, 0);	//最小不能比0小
+				index = Math.max(index, 0);
+				for(var i:int = index;i<count;i++){
+					this._images[i].source = this.image_discontent;
+				}
+			}
+			
+			/**
+			 * 初始化
+			 */
+			public function init():void{
+				_images[0] = this.image_0;
+				_images[1] = this.image_1;
+				_images[2] = this.image_2;
+				_images[3] = this.image_3;
+				_images[4] = this.image_4;
+				_images[5] = this.image_5;
+				_images[6] = this.image_6;
+				_images[7] = this.image_7;
+				_images[8] = this.image_8;
+			}
+			
+			/**
+			 * 清除所有显示
+			 */
+			public function clear():void{
+				this._happy = 0;
+				this._unused = 0;
+				this._discontent = 0;
+				for each(var image:Image in this._images){
+					image.source = null;
+				}
+			}
+			
+			/**
+			 * 从参数装载幸福相关显示情况
+			 */
+			public function loadParam(param:Object):void{
+				this.happy = param.HAPPINESS;
+				this.discontent = param.UNHAPPY_WORKER;
+				this.unused = param.UNUSED_WORKER;
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox  horizontalGap="12">
+		<mx:Image id="image_8" width="24" height="24" />
+		<mx:Image id="image_7" width="24" height="24" />
+		<mx:Image id="image_6" width="24" height="24" />
+		<mx:Image id="image_5" width="24" height="24" />
+		<mx:Image id="image_4" width="24" height="24" />
+		<mx:Image id="image_3" width="24" height="24" />
+		<mx:Image id="image_2" width="24" height="24" />
+		<mx:Canvas width="24" height="24" />
+		<mx:Image id="image_1" width="24" height="24" />
+		<mx:Image id="image_0" width="24" height="24" />
+	</mx:HBox>
+</mx:Canvas>

@@ -1,0 +1,40 @@
+/* CSS file */
+TitleWindow
+{
+	color: #000000;
+	borderAlpha: 1.0;
+}
+.block
+{
+	backgroundColor: #3C3C3C;
+}
+global
+{
+	backgroundSize: "100%";
+	backgroundGradientAlphas: 1.0, 1.0;
+	backgroundGradientColors: #3C3C3C, #3C3C3C;
+	fontSize: 12;
+	color: #FFFFFF;
+	theme-color: #DD8C00;
+}
+Button
+{
+	color: #1D1D1D;
+}
+ChooseActionBoard
+{
+	backgroundColor: #454545;
+}
+StartWorldWindow
+{
+	color: #FFFFFF;
+	backgroundColor: #3C3C3C;
+}
+.hands{
+	background-image: Embed("./images/hands.png");
+	background-size: "100%";
+}
+.chips{
+	background-image: Embed("./images/chip.png");
+	background-size: "100%";
+}

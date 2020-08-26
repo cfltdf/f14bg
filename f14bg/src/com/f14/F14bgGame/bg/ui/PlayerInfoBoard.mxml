@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.manager.DefaultManagerUtil;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.bg.consts.PlayerState;
+			import mx.effects.IEffectInstance;
+			import com.f14.f14bg.event.BgEvent;
+			import com.f14.F14bgGame.bg.player.Player;
+			
+			protected var _player:Player;
+			protected var _inputingEffect:IEffectInstance;
+			protected var _responsedEffect:IEffectInstance;
+			
+			public function get player():Player{
+				return this._player;
+			}
+			
+			public function set player(player:Player):void{
+				//先移除原player对象的监听器
+				if(this._player!=null){
+					this._player.removeEventListener(BgEvent.PLAYER_STATE_CHANGE, onStateChange);
+				}
+				this._player = player;
+				//添加新的监听器
+				if(this._player!=null){
+					this._player.addEventListener(BgEvent.PLAYER_STATE_CHANGE, onStateChange);
+				}
+			}
+			
+			/**
+			 * 初始化
+			 */
+			public function init():void{
+				this._inputingEffect = DefaultManagerUtil.effectManager.createInputingEffectInstance(this.effectTarget);
+				this._responsedEffect = DefaultManagerUtil.effectManager.createResponsedEffectInstance(this.effectTarget);
+			}
+			
+			/**
+			 * 清除内容
+			 */
+			public function clear():void{
+				
+			}
+			
+			/**
+			 * 得到效果的目标对象
+			 */
+			protected function get effectTarget():Object{
+				return this;
+			}
+			
+			/**
+			 * 玩家状态变化时触发的方法
+			 */
+			public function onStateChange(evt:BgEvent):void{
+				var state:String = evt.param.playerState;
+				if(this._inputingEffect!=null){
+					this._inputingEffect.end();
+					this._responsedEffect.end();
+					switch(state){
+						//case PlayerState.READY:
+						case PlayerState.RESPONSED:
+							this._responsedEffect.play();
+							break;
+						case PlayerState.INPUTING:
+							this._inputingEffect.play();
+							break;
+						default:
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

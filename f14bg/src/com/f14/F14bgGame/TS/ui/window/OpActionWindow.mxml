@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TSConfirmWindow xmlns="com.f14.F14bgGame.TS.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="270" title="使用OP" xmlns:ns1="com.f14.F14bgGame.TS.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import mx.collections.ArrayCollection;
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				this.cardMessage = this.local_cm;
+			}
+		
+		]]>
+	</mx:Script>
+	
+	<ns1:TSCardMessage id="local_cm" left="45" right="45" top="10" />
+	<mx:VBox horizontalCenter="0" top="90" verticalGap="10">
+		<mx:HBox horizontalGap="15">
+			<mx:Button label="放影响力" width="140" height="50" click="this.sendParam({'subact':'ACTION_ADD_INFLUENCE'})" />
+			<mx:Button label="调整阵营" width="140" height="50" click="this.sendParam({'subact':'ACTION_REALIGNMENT'})" />
+		</mx:HBox>
+		<mx:HBox horizontalGap="15">
+			<mx:Button label="政 变" width="140" height="50" click="this.sendParam({'subact':'ACTION_COUP'})" />
+			<mx:Button label="放 弃" width="140" height="50" click="this.doPass()"/>
+		</mx:HBox>
+	</mx:VBox>
+</TSConfirmWindow>

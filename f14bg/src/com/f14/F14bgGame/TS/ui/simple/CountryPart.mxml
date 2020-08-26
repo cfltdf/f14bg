@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="81" height="42" xmlns:simple="com.f14.F14bgGame.TS.ui.simple.*" backgroundAlpha="0.01" borderStyle="solid">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.TSUtil;
+			import com.f14.F14bgGame.TS.consts.SuperPower;
+			[Bindable]
+			protected var _usa:int = 0;
+			[Bindable]
+			protected var _ussr:int = 0;
+			protected var _controlledPower:String;
+			protected var _selectable:Boolean;
+			
+			public function init():void{
+				//初始化,设置高亮可选状态
+				TSUtil.effectManager.addHighlight(this);
+				this.addEventListener(MouseEvent.CLICK, onclick);
+				//this.part_ussr.init();
+				//this.part_usa.init();
+			}
+			
+			public function clear():void{
+				this.usa = 0;
+				this.ussr = 0;
+				this._controlledPower = null;
+			}
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			protected function set usa(usa:int):void{
+				this._usa = usa;
+				this.part_usa.num = usa;
+			}
+			
+			protected function set ussr(ussr:int):void{
+				this._ussr = ussr;
+				this.part_ussr.num = ussr;
+			}
+			
+			public function setInfluence(usa:int, ussr:int):void{
+				this.usa = usa;
+				this.ussr = ussr;
+			}
+			
+			public function setControlledPower(power:String):void{
+				this._controlledPower = power;
+				this.refreshStyle();
+			}
+			
+			/**
+			 * 刷新显示情况
+			 */
+			protected function refreshStyle():void{
+				switch(this._controlledPower){
+					case SuperPower.USA: //美国控制
+						this.part_usa.setShowStyle("CONTROL");
+						this.part_ussr.setShowStyle("NORMAL");
+						break;
+					case SuperPower.USSR: //苏联控制
+						this.part_usa.setShowStyle("NORMAL");
+						this.part_ussr.setShowStyle("CONTROL");
+						break;
+					default:
+						this.part_usa.setShowStyle("NORMAL");
+						this.part_ussr.setShowStyle("NORMAL");
+				}
+			}
+			
+			/**
+			 * 点击时触发的方法
+			 */
+			protected function onclick(evt:Event):void{
+				if(this.selectable){
+					if(TSUtil.stateManager.currentConfirmWindow!=null){
+						var param:Object = new Object();
+						param.country = this.id;
+						param.subact = "country";
+						TSUtil.stateManager.currentConfirmWindow.sendParam(param);
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	<simple:InfluencePart id="part_usa" superPower="USA" verticalCenter="0" left="1" />
+	<simple:InfluencePart id="part_ussr" superPower="USSR" verticalCenter="0" right="1" />
+</mx:Canvas>

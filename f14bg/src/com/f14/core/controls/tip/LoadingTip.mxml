@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" fontSize="12" fontFamily="Arial" fontWeight="normal" horizontalAlign="center" verticalAlign="middle" title="请稍后" backgroundAlpha="1.0">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.consts.Const;
+			import mx.managers.PopUpManager;
+			public function showLoadingTip(parent:DisplayObject, text:String = null):void{
+				PopUpManager.addPopUp(this, parent, true);
+				PopUpManager.centerPopUp(this);
+				this.loadingbar.label = text ? text : Const.DEFAULT_LOADING_TEXT;
+			}
+			
+			public function hideLoadingTip():void{
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+	<mx:ProgressBar id="loadingbar" horizontalCenter="0" verticalCenter="0" indeterminate="true" labelPlacement="center" label="读取中" fontWeight="bold" fontStyle="normal" textDecoration="underline" />
+</mx:TitleWindow>

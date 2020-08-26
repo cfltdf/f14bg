@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.f14bg.player.User;
+			import com.f14.F14bgClient.hall.HallUtil;
+			import com.adobe.serialization.json.JSON;
+			import com.f14.core.util.ApplicationUtil;
+			
+			/**
+			 * 装载用户信息
+			 */
+			public function loadParam(param:Object):void{
+				var object:Object = param.user;
+				HallUtil.module.hallHandler.setLocalUser(JSON.encode(object));
+				var user:User = new User();
+				user.loginName = object.loginName;
+				user.name = object.name;
+				user.userId = object.userId;
+				ApplicationUtil.localUser = user;
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

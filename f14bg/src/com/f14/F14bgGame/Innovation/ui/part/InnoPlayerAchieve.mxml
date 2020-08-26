@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="110">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import com.f14.F14bgGame.bg.component.ImageObject;
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoAchieveCardLabel;
+		
+			public function clear():void{
+				this.vbox_list.removeAllChildren();
+			}
+			
+			public function addCard(cardId:String):void{
+				var card:ImageObject = InnoUtil.resourceManager.createAchieveCard(cardId);
+				var label:InnoAchieveCardLabel = new InnoAchieveCardLabel();
+				this.vbox_list.addChild(label);
+				label.init();
+				label.object = card;
+			}
+			
+			/**
+			 * 添加卡牌
+			 */
+			public function addCards(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				for each(var id:String in ids){
+					this.addCard(id);
+				}
+			} 
+			
+		]]>
+	</mx:Script>
+	<mx:VBox id="vbox_list" width="100%" horizontalAlign="center" verticalGap="3">
+		
+	</mx:VBox>
+</mx:Canvas>

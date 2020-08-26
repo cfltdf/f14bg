@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="215" height="100" horizontalScrollPolicy="off" verticalScrollPolicy="off" styleName="prBoard" xmlns:simple="com.f14.F14bgGame.PuertoRico.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			import com.f14.F14bgGame.PuertoRico.consts.GameCmdConst;
+			import com.f14.f14bg.consts.CmdConst;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			import mx.controls.Image;
+			import mx.containers.TitleWindow;
+			
+			private var canvases:Array = new Array();
+			private var win1:TitleWindow;
+			private var win2:TitleWindow;
+			
+			public function init():void{
+				canvases = [
+					{"code":0, "canvas":canvas_other},
+					//{"code":CmdConst.GAME_CODE_JOIN, "canvas":canvas_waiting},
+					{"code":GameCmdConst.GAME_CODE_CHOOSE_CHARACTER, "canvas":canvas_chooseCharacter},
+					{"code":GameCmdConst.GAME_CODE_SETTLE, "canvas":canvas_settle},
+					{"code":GameCmdConst.GAME_CODE_BUILDER, "canvas":canvas_builder},
+					{"code":GameCmdConst.GAME_CODE_MAJOR, "canvas":canvas_major},
+					{"code":GameCmdConst.GAME_CODE_CRAFTSMAN, "canvas":canvas_craftsman},
+					{"code":GameCmdConst.GAME_CODE_TRADER, "canvas":canvas_trader},
+					{"code":GameCmdConst.GAME_CODE_CAPTAIN, "canvas":canvas_captain},
+					//{"code":CmdConst.GAME_CODE_END, "canvas":canvas_end},
+					//{"code":CmdConst.GAME_CODE_AUDIENCE, "canvas":canvas_audienct}
+				];
+				
+				//隐藏所有的按钮
+				this.hideAllButtons();
+			}
+			
+			/**
+			 * 按照玩家的观战状态显示初始状态的按钮
+			 */
+			public function showInitButtons():void{
+				if(!PRUtil.gameManager.isPlayingGame()){
+					//观战则显示观战按钮面板
+					this.changeButtons(CmdConst.GAME_CODE_AUDIENCE);
+				}else{
+					//否则显示游戏按钮面板
+					this.changeButtons(CmdConst.GAME_CODE_JOIN);
+				}
+			}
+			
+			/**
+			 * 隐藏所有的按钮
+			 */
+			public function hideAllButtons():void{
+				canvases.forEach(function(obj:Object, i:int, arr:Array):void{
+					obj.canvas.visible = false;
+				})
+			}
+			
+			public function getCanvas(index:int):Canvas{
+				for(var i:int=0;i<canvases.length;i++){
+					if(canvases[i].code==index){
+						return canvases[i].canvas;
+					}
+				}
+				return canvases[0].canvas;
+			}
+			
+			/**
+			 * 显示指定阶段的按钮
+			 */
+			public function changeButtons(index:int):void{
+				hideAllButtons();
+				var canvas:Canvas = getCanvas(index);
+				canvas.visible = true;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Canvas y="30" width="100%" height="40" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		<mx:Canvas width="100%" id="canvas_other" verticalCenter="0" x="0">
+		</mx:Canvas>
+		<mx:Canvas width="100%" id="canvas_chooseCharacter" verticalCenter="0" x="0">
+			<mx:HBox width="100%" verticalGap="4" horizontalAlign="left" verticalAlign="middle">
+				<mx:Button label="选择角色" click="PRUtil.stateManager.showCharacterBoard()"/>
+			</mx:HBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" id="canvas_settle" verticalCenter="0" x="0">
+			<mx:HBox width="100%" verticalGap="4" horizontalAlign="left" verticalAlign="middle">
+				<mx:Button label="结 束" click="PRUtil.actionManager.doPass()"/>
+			</mx:HBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" id="canvas_builder" verticalCenter="0" x="0">
+			<mx:HBox width="100%" verticalGap="4" horizontalAlign="left" verticalAlign="middle">
+				<mx:Button label="结 束" click="PRUtil.actionManager.doPass()"/>
+			</mx:HBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" id="canvas_major" verticalCenter="0" x="0">
+			<mx:HBox width="100%" verticalGap="4" horizontalAlign="left" verticalAlign="middle">
+				<mx:Button label="完成分配" click="PRUtil.actionManager.major()"/>
+			</mx:HBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" id="canvas_craftsman" verticalCenter="0" x="0">
+			<mx:HBox width="100%" verticalGap="4" horizontalAlign="left" verticalAlign="middle">
+				<mx:Button label="结 束" click="PRUtil.actionManager.doPass()"/>
+			</mx:HBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" id="canvas_trader" verticalCenter="0" x="0">
+			<mx:HBox width="100%" verticalGap="4" horizontalAlign="left" verticalAlign="middle">
+				<mx:Button label="结 束" click="PRUtil.actionManager.doPass()"/>
+			</mx:HBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" id="canvas_captain" verticalCenter="0" x="0">
+			<mx:HBox width="100%" verticalGap="4" horizontalAlign="left" verticalAlign="middle">
+				<mx:Button label="结 束" click="PRUtil.actionManager.doPass()"/>
+			</mx:HBox>
+		</mx:Canvas>
+	</mx:Canvas>
+	<mx:HBox y="70">
+		<mx:Button label="角色面板" click="PRUtil.stateManager.trigCharacterBoard()"/>
+		<mx:Button label="建筑面板" click="PRUtil.stateManager.trigBuildingBoard()"/>
+	</mx:HBox>
+</mx:Canvas>

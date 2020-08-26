@@ -1,0 +1,66 @@
+/* CSS file #3C3C3C*/
+global
+{
+	backgroundSize: "100%";
+	backgroundGradientAlphas: 1, 1;
+	backgroundGradientColors: #ffffff, #ffffff;
+	fontSize: 12;
+	color: #000000;
+	theme-color: #DD8C00;
+}
+Button
+{
+	color: #1D1D1D;
+}
+TextInput
+{
+	color: #000000;
+}
+DataGrid
+{
+	color: #000000;
+	verticalGridLines: true;
+	horizontalGridLines: false;
+	rollOverColor: #FEAA25;
+	selectionColor: #FF9C00;
+}
+ProgressBar
+{
+	color: #000000;
+	barColor: #DD8C00;
+}
+ApplicationControlBar
+{
+	fillAlphas: 0.5, 0.5;
+}
+ChatBoard
+{
+	titleStyleName: chatBoardTitle;
+}
+LoginBoard
+{
+	color: #000000;
+}
+ChatTextArea
+{
+	color: #000000;
+}
+Button
+{
+	color: #1D1D1D;
+}
+.block
+{
+	backgroundColor: #3C3C3C;
+}
+.chatBoardTitle
+{
+	fontFamily: Verdana;
+	fontWeight: bold;
+	fontSize: 12;
+}
+.fullsize
+{
+	width: "100%";
+	height: "100%";
+}

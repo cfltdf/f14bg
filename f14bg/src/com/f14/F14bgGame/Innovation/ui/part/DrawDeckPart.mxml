@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.f14bg.components.ComponentOption;
+			import com.f14.F14bgGame.Innovation.components.DrawDeckCard;
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import com.f14.F14bgGame.Innovation.components.InnoCard;
+			protected var inited:Boolean = false;
+			protected var decks:Array = new Array();
+			protected var option:ComponentOption;
+			protected var _selectable:Boolean;
+			
+			/**
+			 * 设置是否可选
+			 */
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				var deck:DrawDeckCard;
+				for each(deck in this.decks){
+					deck.selectable = selectable;
+				}
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function loadParam(param:Object):void{
+				if(!this.inited){
+					this.init();
+				}
+				var deckInfo = param.deckInfo;
+				for(var key in deckInfo){
+					var level:int = int(key);
+					this.getDeck(level).num = int(deckInfo[key]);
+				}
+			}
+			
+			private function init():void{
+				inited = true;
+				this.option = new ComponentOption(false, true);
+				
+				//创建10个时代的摸牌堆
+				for(var i=1;i<=10;i++){
+					var card:DrawDeckCard = InnoUtil.resourceManager.createDrawDeckCard(i, 0.4);
+					card.x = 10 + (i-1) * (5 + card.width);
+					card.y = 10; 
+					this.addChild(card);
+					
+					card.selectable = this.selectable;
+					card.addEventListener(MouseEvent.CLICK, onClick);
+					//添加到选择组件中
+					option.addComponent(card);
+					
+					this.decks[i+""] = card;
+				}
+			}
+			
+			public function getDeck(level:int):DrawDeckCard{
+				return this.decks[level+""] as DrawDeckCard;
+			}
+			
+			/**
+			 * 设置是否在选择时就触发事件
+			 */
+			public function setEventTrigOnSelected(trigOnSelected:Boolean):void{
+				if(this.option!=null){
+					this.option.trigOnSelected = trigOnSelected;
+				}
+			}
+			
+			/**
+			 * 点击卡牌时触发的方法
+			 */
+			protected function onClick(evt:MouseEvent):void{
+				var card:DrawDeckCard = evt.currentTarget as DrawDeckCard;
+				if(card.selectable){
+					if(this.option.trigOnSelected){
+						InnoUtil.actionManager.drawCard(card.object.level);
+					}else{
+						
+					}
+					
+					/*if(TSUtil.stateManager.currentConfirmWindow!=null){
+						//如果存在询问窗口,则由该窗口返回指令参数
+						param = {};
+						param.cardId = card.id;
+						TSUtil.stateManager.currentConfirmWindow.doConfirm(param);
+					}*/
+				}
+			}
+			
+			/**
+			 * 取得选中的卡牌
+			 */
+			public function getSelectedCard():DrawDeckCard{
+				return this.option.selectedComponent as DrawDeckCard;
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

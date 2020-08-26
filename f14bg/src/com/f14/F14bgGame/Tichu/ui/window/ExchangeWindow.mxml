@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="510" height="290" title="请选择换牌" xmlns:ns1="com.f14.F14bgGame.Tichu.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Tichu.components.TichuCard;
+			import com.f14.F14bgGame.Tichu.TichuUtil;
+			
+			protected var cards:Array = new Array(3);
+			protected var canvases:Array = new Array();
+			
+			override public function init():void{
+				super.init();
+				canvases.push(canvas1);
+				canvases.push(canvas2);
+				canvases.push(canvas3);
+			}
+		
+			override public function clear():void{
+				super.clear();
+				cards = new Array(3);
+				this.info1.clear();
+				this.info2.clear();
+				this.info3.clear();
+				this.canvas1.removeAllChildren();
+				this.canvas2.removeAllChildren();
+				this.canvas3.removeAllChildren();
+			}
+			
+			/**
+			 * 装载玩家信息
+			 */
+			public function loadPlayerInfo():void{
+				this.clear();
+				this.info1.player = TichuUtil.mainBoard.playerBoard1.player;
+				this.info2.player = TichuUtil.mainBoard.playerBoard2.player;
+				this.info3.player = TichuUtil.mainBoard.playerBoard3.player;
+			}
+			
+			/**
+			 * 添加卡牌
+			 */
+			public function addCard(cardId:String):void{
+				var position:int = this.getEmptyPosition();
+				if(position>=0){
+					var card:TichuCard = TichuUtil.resourceManager.createTichuCard(cardId);
+					cards[position] = card;
+					(this.canvases[position] as Canvas).addChild(card);
+				}
+			}
+			
+			/**
+			 * 移除卡牌
+			 */
+			public function removeCard(cardId:String):void{
+				for(var i=0;i<cards.length;i++){
+					var card:TichuCard = cards[i] as TichuCard;
+					if(card!=null && card.object.id==cardId){
+						cards[i] = null;
+						(this.canvases[i] as Canvas).removeAllChildren();
+					}
+				}
+			}
+			
+			/**
+			 * 取得空位
+			 */
+			protected function getEmptyPosition():int{
+				for(var i:int=0;i<cards.length;i++){
+					if(cards[i]==null){
+						return i;
+					}
+				}
+				return -1;
+			}
+			
+			/**
+			 * 判断卡牌是否已经选择完成
+			 */
+			public function isFull():Boolean{
+				return this.getEmptyPosition()==-1;
+			}
+			
+			/**
+			 * 清除所有选择的牌
+			 */
+			public function clearSelection():void{
+				for(var i:int=0;i<this.cards.length;i++){
+					cards[i] = null;
+					(this.canvases[i] as Canvas).removeAllChildren();
+				}
+				TichuUtil.getLocalPlayer().tichuPlayerBoard.playerHand.clearSelection();
+			}
+			
+			/**
+			 * 确认换牌
+			 */
+			public function exchange():void{
+				var param:Object = {};
+				if(cards[0]!=null){
+					param["card"+info1.player.position] = (cards[0] as TichuCard).object.id;
+				}
+				if(cards[1]!=null){
+					param["card"+info2.player.position] = (cards[1] as TichuCard).object.id;
+				}
+				if(cards[2]!=null){
+					param["card"+info3.player.position] = (cards[2] as TichuCard).object.id;
+				}
+				TichuUtil.actionManager.sendCurrentCommand("confirm", param);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<ns1:TichuPlayerInfoBoard id="info3" x="10" y="10" />
+	<ns1:TichuPlayerInfoBoard id="info2" x="170" y="10" />
+	<ns1:TichuPlayerInfoBoard id="info1" x="330" y="10" />
+	<mx:Canvas id="canvas3" width="84" left="45" top="75" height="128"/>
+	<mx:Canvas id="canvas2" width="84" horizontalCenter="0" top="75" height="128"/>
+	<mx:Canvas id="canvas1" width="84" right="45" top="75" height="128"/>
+	<mx:HBox horizontalCenter="0" bottom="10">
+		<mx:Button label="重新选择" width="80" click="this.clearSelection()" />
+		<mx:Button label="确 定" width="80" click="this.exchange()"/>
+	</mx:HBox>
+</NewConfirmWindow>

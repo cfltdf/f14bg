@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" height="160" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.RFTG.RaceUtil;
+			import com.f14.F14bgGame.RFTG.manager.RaceImageManager;
+			import com.f14.F14bgGame.RFTG.ui.simple.ImageCard;
+			import com.f14.F14bgGame.RFTG.consts.UIConst;
+			import com.f14.F14bgGame.RFTG.component.RaceCard;
+			import mx.collections.ArrayCollection;
+			
+			protected var _currentCard:ImageCard;
+			protected var _multiSelect:Boolean = false;
+			protected var _cards:ArrayCollection = new ArrayCollection();
+			protected var _goods:ArrayCollection = new ArrayCollection();
+			
+			public function clear():void{
+				this.reset();
+				this._currentCard = null;
+				this._multiSelect = false;
+				this._cards.removeAll();
+				this._goods.removeAll();
+				this.removeAllChildren();
+			}
+			
+			public function get multiSelect():Boolean{
+				return this._multiSelect;
+			}
+			
+			public function set multiSelect(multiSelect:Boolean):void{
+				this._multiSelect = multiSelect;
+				clearSelection();
+			}
+			
+			public function get currentCard():ImageCard{
+				return this._currentCard;
+			}
+			
+			/**
+			 * 重置
+			 */
+			public function reset():void{
+				this.clearActiveCard();
+				this.setAllLocked(false);
+				this.setAllSelectable(false);
+				this.setAllGoodSelectable(false);
+			}
+			
+			/**
+			 * 添加卡牌
+			 */
+			public function addCard(card:RaceCard):void{
+				var imageCard:ImageCard = new ImageCard(RaceImageManager.DEFAULT_SCALE);
+				imageCard.object = card;
+				//设置位置
+				imageCard.x = UIConst.PADDING_X + (imageCard.width + UIConst.PADDING_X) * _cards.length;
+				imageCard.y = UIConst.PADDING_Y;
+				this.addChild(imageCard);
+				this._cards.addItem(imageCard);
+				//添加卡牌时添加事件
+				imageCard.addEventListener(MouseEvent.CLICK, onCardClick);
+			}
+			
+			/**
+			 * 移除卡牌
+			 */
+			public function removeCard(card:RaceCard):void{
+				var removed:Boolean = false;
+				for(var i:int=(_cards.length-1);i>=0;i--){
+					var c:ImageCard = _cards.getItemAt(i) as ImageCard;
+					if(c.object==card){
+						_cards.removeItemAt(i);
+						this.removeChild(c);
+						//移除时移除事件
+						c.removeEventListener(MouseEvent.CLICK, onCardClick);
+						removed = true;
+						break;
+					}
+				}
+				if(removed){
+					redrawCards();
+				}
+			}
+			
+			/**
+			 * 移除卡牌
+			 */
+			public function removeCards(cards:Array):void{
+				var removed:Boolean = false;
+				for(var i:int=0;i<cards.length;i++){
+					var card:RaceCard = cards[i];
+					for(var j:int=(this._cards.length-1);j>=0;j--){
+						var c:ImageCard = this._cards.getItemAt(j) as ImageCard;
+						if(c.object==card){
+							_cards.removeItemAt(j);
+							this.removeChild(c);
+							//移除时移除事件
+							c.removeEventListener(MouseEvent.CLICK, onCardClick);
+							removed = true;
+							break;
+						}
+					}
+				}
+				if(removed){
+					redrawCards();
+				}
+			}
+			
+			/**
+			 * 重画所有卡牌
+			 */
+			public function redrawCards():void{
+				for(var i:int=0;i<_cards.length;i++){
+					//设置位置
+					var imageCard:ImageCard = _cards.getItemAt(i) as ImageCard;
+					imageCard.x = UIConst.PADDING_X + (imageCard.width + UIConst.PADDING_X) * i;
+					imageCard.y = UIConst.PADDING_Y;
+					
+					var good:ImageCard = this.getGood(imageCard.object.id);
+					if(good!=null){
+						good.x = imageCard.x;
+						good.y = imageCard.y + UIConst.PADDING_GOOD;
+					}
+				}
+			}
+			
+			/**
+			 * 清空所有选择
+			 */
+			public function clearSelection():void{
+				for(var i:int=0;i<_cards.length;i++){
+					var imageCard:ImageCard = _cards.getItemAt(i) as ImageCard;
+					imageCard.selected = false;
+				}
+			}
+			
+			/**
+			 * 清空所有选择
+			 */
+			public function clearGoodSelection():void{
+				for(var i:int=0;i<_goods.length;i++){
+					var imageCard:ImageCard = _goods.getItemAt(i) as ImageCard;
+					imageCard.selected = false;
+				}
+			}
+			
+			/**
+			 * 设置所有卡牌是否可选
+			 */
+			public function setAllSelectable(selectable:Boolean = true):void{
+				clearSelection();
+				for(var i:int=0;i<_cards.length;i++){
+					var imageCard:ImageCard = _cards.getItemAt(i) as ImageCard;
+					imageCard.selectable = selectable;
+				}
+			}
+			
+			/**
+			 * 设置所有货物是否可选
+			 */
+			public function setAllGoodSelectable(selectable:Boolean = true):void{
+				clearGoodSelection();
+				for(var i:int=0;i<_goods.length;i++){
+					var imageCard:ImageCard = _goods.getItemAt(i) as ImageCard;
+					imageCard.selectable = selectable;
+				}
+			}
+			
+			/**
+			 * 点击牌时触发的事件
+			 */
+			public function onCardClick(evt:MouseEvent):void{
+				var card:ImageCard = evt.target as ImageCard;
+				if(!this.multiSelect){
+					this.clearSelection();
+				}
+				if(card.selectable && !card.active){
+					card.selected = !card.selected;
+					if(card.selected){
+						_currentCard = card;
+					}else{
+						_currentCard = null;
+					}
+				}
+			}
+			
+			/**
+			 * 点击货物时触发的事件
+			 */
+			public function onGoodClick(evt:MouseEvent):void{
+				var card:ImageCard = evt.target as ImageCard;
+				if(!this.multiSelect){
+					this.clearGoodSelection();
+				}
+				if(card.selectable){
+					card.selected = !card.selected;
+				}
+			}
+			
+			/**
+			 * 取得选中的所有卡牌
+			 * 
+			 * @return Array<RaceCard>
+			 */
+			public function getSelection():Array{
+				var res:Array = new Array();
+				for(var i:int=0;i<_cards.length;i++){
+					var imageCard:ImageCard = _cards.getItemAt(i) as ImageCard;
+					if(imageCard.selected){
+						res.push(imageCard.object);
+					}
+				}
+				return res;
+			}
+			
+			/**
+			 * 取得选中的所有货物
+			 * 
+			 * @return Array<RaceCard>
+			 */
+			public function getSelectionGood():Array{
+				var res:Array = new Array();
+				for(var i:int=0;i<_goods.length;i++){
+					var imageCard:ImageCard = _goods.getItemAt(i) as ImageCard;
+					if(imageCard.selected){
+						res.push(imageCard.object);
+					}
+				}
+				return res;
+			}
+			
+			/**
+			 * 设置部分卡牌的是否可选状态
+			 */
+			public function setCardsSelectable(cardIds:String, selectable:Boolean, selected:Boolean=false):void{
+				var imageCards:Array = this.getCards(cardIds);
+				imageCards.forEach(function(imageCard:ImageCard, i:int, arr:Array):void{
+					imageCard.selectable = selectable;
+					imageCard.selected = selected;
+				});
+			}
+			
+			/**
+			 * 设置所有卡牌的锁定
+			 */
+			public function setAllLocked(locked:Boolean):void{
+				for(var i:int=0;i<_cards.length;i++){
+					var imageCard:ImageCard = _cards.getItemAt(i) as ImageCard;
+					imageCard.locked = locked;
+				}
+			}
+			
+			/**
+			 * 设置部分卡牌锁定
+			 */
+			public function setCardsLocked(cardIds:String, locked:Boolean):void{
+				var imageCards:Array = this.getCards(cardIds);
+				imageCards.forEach(function(imageCard:ImageCard, i:int, arr:Array):void{
+					imageCard.locked = locked;
+				});
+			}
+			
+			/**
+			 * 取得卡牌
+			 * 
+			 * @param
+			 * @return ImageCard
+			 */
+			public function getCard(cardId:String):ImageCard{
+				for(var i:int=0;i<_cards.length;i++){
+					var imageCard:ImageCard = _cards.getItemAt(i) as ImageCard;
+					if(imageCard.object.id==cardId){
+						return imageCard;
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * 取得卡牌
+			 * 
+			 * @param
+			 * @return Array<ImageCard>
+			 */
+			public function getCards(cardIds:String):Array{
+				var cards:Array = new Array();
+				var ids:Array = cardIds.split(",");
+				if(ids.length>0){
+					for(var i:int=0;i<_cards.length;i++){
+						var imageCard:ImageCard = _cards.getItemAt(i) as ImageCard;
+						for(var j:int=0;j<ids.length;j++){
+							if(imageCard.object.id==ids[j]){
+								cards.push(imageCard);
+								break;
+							}
+						}
+					}
+				}
+				return cards;
+			}
+			
+			/**
+			 * 设置卡牌是否可以主动使用的效果
+			 */
+			public function setActive(cardIds:String, active:Boolean):void{
+				var cards:Array = this.getCards(cardIds);
+				if(cards.length>0){
+					if(active){
+						RaceUtil.effectManager.activeEffect.play(cards);
+					}else{
+						RaceUtil.effectManager.activeEffect.end();
+					}
+					cards.forEach(function(card:ImageCard, index:int, array:Array):void{
+						card.addEventListener(MouseEvent.CLICK, activeCard);
+					});
+				}
+			}
+			
+			/**
+			 * 设置所有卡牌的锁定
+			 */
+			public function setAllActive(active:Boolean):void{
+				for(var i:int=0;i<_cards.length;i++){
+					var icard:ImageCard = _cards.getItemAt(i) as ImageCard;
+					icard.active = active;
+					if(active){
+						icard.addEventListener(MouseEvent.CLICK, activeCard);
+					}else{
+						icard.removeEventListener(MouseEvent.CLICK, activeCard);
+					}
+				}
+			}
+			
+			/**
+			 * 设置卡牌是否可以主动使用的效果,以及使用的效果类型
+			 */
+			public function setActiveWithType(cards:Array, active:Boolean):void{
+				if(cards!=null && cards.length>0){
+					cards.forEach(function(obj:Object, i:int, arr:Array):void{
+						var icard:ImageCard = getCard(obj.cardId);
+						if(icard!=null){
+							icard.activeType = obj.activeType;
+							icard.active = active;
+							if(active){
+								icard.addEventListener(MouseEvent.CLICK, activeCard);
+							}else{
+								icard.removeEventListener(MouseEvent.CLICK, activeCard);
+							}
+						}
+					});
+				}
+			}
+			
+			/**
+			 * 激活卡牌
+			 */
+			public function activeCard(evt:MouseEvent):void{
+				var card:ImageCard = evt.target as ImageCard;
+				if(card!=null){
+					RaceUtil.actionManager.activeCard(card.object.id, card.activeType);
+				}
+			}
+			
+			/**
+			 * 清除所有可以主动使用的卡牌
+			 */
+			public function clearActiveCard():void{
+				for(var i:int=0;i<_cards.length;i++){
+					var imageCard:ImageCard = _cards.getItemAt(i) as ImageCard;
+					imageCard.active = false;
+					imageCard.removeEventListener(MouseEvent.CLICK, activeCard);
+				}
+			}
+			
+			/**
+			 * 取得货物卡牌
+			 */
+			public function getGood(cardId:String):ImageCard{
+				for(var i:int=0;i<this._goods.length;i++){
+					var good:ImageCard = _goods.getItemAt(i) as ImageCard;
+					if(good.object.id==cardId){
+						return good;
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * 为选择的星球生产货物
+			 */
+			public function produceGoods(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				ids.forEach(function(id:String, i:int, arr:Array):void{
+					produceGood(id);
+				});
+			}
+			
+			/**
+			 * 为星球生产货物
+			 */
+			public function produceGood(cardId:String):void{
+				var cardImage:ImageCard = this.getCard(cardId);
+				/*var good:ImageCard = new ImageCard(RaceImageManager.DEFAULT_SCALE);
+				var card:RaceCard = new RaceCard();
+				card.id = cardImage.object.id;
+				card.imageIndex = RaceImageManager.IMAGE_INDEX_BACK;
+				good.object = card;*/
+				//good.loadImage();
+				var good:ImageCard = RaceUtil.resourceManager.createGoodCard(cardImage.object.id);
+				good.x = cardImage.x;
+				good.y = cardImage.y + UIConst.PADDING_GOOD;
+				this._goods.addItem(good);
+				//货物要插在星球前面,也就是显示在星球下面
+				this.addChildAt(good, this.getChildIndex(cardImage));
+				//添加货物时添加事件
+				good.addEventListener(MouseEvent.CLICK, onGoodClick);
+			}
+			
+			/**
+			 * 丢弃货物
+			 */
+			public function discardGood(cardId:String):void{
+				var icard:ImageCard = this.getGood(cardId);
+				_goods.removeItemAt(_goods.getItemIndex(icard));
+				icard.removeEventListener(MouseEvent.CLICK, onGoodClick);
+				removeChild(icard);
+			}
+			
+			/**
+			 * 丢弃货物
+			 */
+			public function discardGoods(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				ids.forEach(function(cardId:String, i:int, arr:Array):void{
+					discardGood(cardId);
+				});
+			}
+			
+		]]>
+	</mx:Script>
+</mx:Canvas>

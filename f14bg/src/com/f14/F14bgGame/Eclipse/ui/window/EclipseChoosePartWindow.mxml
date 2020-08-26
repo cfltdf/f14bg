@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EclipseConfirmWindow xmlns="com.f14.F14bgGame.Eclipse.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="600" height="540" xmlns:component="com.f14.F14bgGame.bg.component.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.components.EclipseShipPart;
+			import com.f14.F14bgGame.Eclipse.manager.EclipseUIManager;
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			import com.f14.F14bgGame.Eclipse.ui.simple.Unit;
+			import com.f14.F14bgGame.bg.component.FlowCanvas;
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoCardLabel;
+			import com.f14.F14bgGame.Innovation.ui.part.InnoPlayerHand;
+			import mx.controls.HRule;
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				this.label_msg.text = null;
+				this.canvas_currentPart.removeAllChildren();
+				this.canvas_defaultPart.removeAllChildren();
+				this.canvas_basePart.removeAllChildren();
+				this.canvas_advancedPart.removeAllChildren();
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				this.label_msg.text = param.msg;
+				//设置当前的部件
+				var object:Object = param.shipPart;
+				var part:EclipseShipPart = EclipseUtil.resourceManager.createShipPart(object.cardIndex);
+				part.id = object.id;
+				this.canvas_currentPart.addChild(part);
+				//设置默认部件
+				object = param.defaultShipPart;
+				part = EclipseUtil.resourceManager.createShipPart(object.cardIndex);
+				part.id = object.id;
+				part.selectable = true;
+				part.addEventListener(MouseEvent.CLICK, onDefaultPartClick);
+				this.canvas_defaultPart.addChild(part);
+				//设置基本部件
+				for each(object in param.baseShipParts){
+					part = EclipseUtil.resourceManager.createShipPart(object.cardIndex);
+					part.id = object.id;
+					part.selectable = true;
+					part.addEventListener(MouseEvent.CLICK, onPartClick);
+					this.canvas_basePart.addChild(part);
+				}
+				//设置高级部件
+				for each(object in param.advancedShipParts){
+					part = EclipseUtil.resourceManager.createShipPart(object.cardIndex);
+					part.id = object.id;
+					part.selectable = true;
+					part.addEventListener(MouseEvent.CLICK, onPartClick);
+					this.canvas_advancedPart.addChild(part);
+				}
+			}
+			
+			/**
+			 * 创建确认时的参数
+			 */
+			override protected function createConfirmParam():Object{
+				var param:Object = {};
+				return param;
+			}
+			
+			/**
+			 * 当默认部件点击时触发的方法
+			 */
+			public function onDefaultPartClick(evt:MouseEvent):void{
+				var param:Object = {"useDefaultPart":true};
+				EclipseUtil.actionManager.sendCurrentCommand("CHANGE_PART", param);
+			}
+			
+			/**
+			 * 当部件点击时触发的方法
+			 */
+			public function onPartClick(evt:MouseEvent):void{
+				var part:EclipseShipPart = evt.target as EclipseShipPart;
+				if(part.selectable){
+					var param:Object = {"useDefaultPart":false, "partIndex":part.object.cardIndex};
+					EclipseUtil.actionManager.sendCurrentCommand("CHANGE_PART", param);
+				}
+				
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas width="100%" height="100%" styleName="bgrepeat">
+		<mx:Label id="label_msg" top="10" horizontalCenter="0" styleName="textSummaryNumber" />
+		<mx:VBox top="40" horizontalCenter="0">
+			<mx:HBox width="100%">
+				<mx:VBox width="50%">
+					<mx:Label text="当前部件:" styleName="textSummaryNumber" />
+					<mx:Canvas id="canvas_currentPart">
+					</mx:Canvas>
+				</mx:VBox>
+				<mx:VBox width="50%">
+					<mx:Label text="默认部件:" styleName="textSummaryNumber" />
+					<mx:Canvas id="canvas_defaultPart">
+					</mx:Canvas>
+				</mx:VBox>
+			</mx:HBox>
+			<mx:Label text="基础部件:" styleName="textSummaryNumber" />
+			<component:FlowCanvas id="canvas_basePart" width="350" verticalGap="10" horizontalGap="10">
+			</component:FlowCanvas>
+			<mx:Label text="高级部件:" styleName="textSummaryNumber" />
+			<component:FlowCanvas id="canvas_advancedPart" width="350" verticalGap="10" horizontalGap="10">
+			</component:FlowCanvas>
+		</mx:VBox>
+		<mx:HBox id="hbox_button" horizontalCenter="0" bottom="10">
+			<mx:Button label="取 消" width="80" click="this.doCancel()" />
+		</mx:HBox>
+	</mx:Canvas>
+</EclipseConfirmWindow>

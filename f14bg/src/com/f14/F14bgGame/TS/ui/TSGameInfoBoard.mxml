@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="150" height="210" backgroundImage="@Embed('./com/f14/F14bgGame/TS/images/infoback.png')" xmlns:simple="com.f14.F14bgGame.TS.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.TSUtil;
+			import com.f14.core.util.ApplicationUtil;
+			[Bindable]
+			public var defcon:String;
+			[Bindable]
+			public var round:String;
+			[Bindable]
+			public var phase:String;
+			[Bindable]
+			public var deckSize:String;
+			[Bindable]
+			public var discardSize:String;
+			
+			public function init():void{
+				TSUtil.effectManager.addHighlight(image_discard);
+			}
+			
+			public function clear():void{
+				this.defcon = null;
+				this.round = null;
+				this.phase = null;
+				this.deckSize = null;
+				this.discardSize = null;
+			}
+			
+			/**
+			 * 装载游戏基本信息
+			 */
+			public function loadGameParam(param:Object):void{
+				this.defcon = param.defcon;
+				//设置回合状态
+				this.round = param.round + " - " + param.turn + "/" + param.maxTurn;
+				this.phase = param.phase;
+			}
+			
+			/**
+			 * 装载牌堆信息
+			 */
+			public function loadDeckInfo(param:Object):void{
+				this.deckSize = param.playingCardNum;
+				this.discardSize = param.discardNum;
+			}
+			
+			/**
+			 * 打开弃牌堆窗口
+			 */
+			public function trigDeckWindow():void{
+				TSUtil.stateManager.deckWindow.trig(false);
+			}
+		]]>
+	</mx:Script>
+	<mx:Label y="8" text="{phase}" width="100%" textAlign="center" fontWeight="bold" fontSize="20" color="#eeeeee" />
+	<mx:Label y="52" text="{round}" width="100%" textAlign="center" fontWeight="bold" fontSize="18" color="#eeeeee" />
+	<mx:Label x="90" y="100" text="{this.defcon}" fontWeight="bold" fontSize="32" color="#eeeeee" />
+	<mx:Label x="33" y="165" text="{deckSize}" width="40" textAlign="center" fontWeight="bold" fontSize="14" color="#eeeeee" />
+	<mx:Label x="105" y="165" text="{discardSize}" width="40" textAlign="center" fontWeight="bold" fontSize="14" color="#eeeeee" />
+	<simple:HighLightImage id="image_discard" x="77" y="157" source="@Embed('./com/f14/F14bgGame/TS/images/discardBack.png')" selectable="true" click="this.trigDeckWindow()" />
+</mx:Canvas>

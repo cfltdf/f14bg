@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="70">
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import mx.core.FlexBitmap;
+			import com.f14.F14bgGame.TS.consts.TSColor;
+			import com.f14.F14bgGame.TS.components.TSCard;
+			import com.f14.F14bgGame.TS.TSUtil;
+			[Bindable]
+			protected var _name:String;
+			[Bindable]
+			protected var _message:String;
+			
+			public function setRecord(record:Object):void{
+				this._name = record.playerName;
+				this._message = record.message;
+				var label:TSCardLabel = new TSCardLabel();
+				var card:TSCard = TSUtil.resourceManager.createTSCard(record.cardId);
+				if(card!=null){
+					label.object = card;
+					label.y = 40;
+					this.addChild(label);
+				}
+				var index:int = -1;
+				switch(record.superPower){
+					case "USA":
+						index = 1;
+						//this.setStyle("backgroundColor", TSColor.USA);
+						break;
+					case "USSR":
+						index = 0;
+						//this.setStyle("backgroundColor", TSColor.USSR); 
+						break;	
+				}
+				this.setStyle("backgroundColor", "#3C3C3C");
+				if(index!=-1){
+					//装载背景
+					var bitmap:FlexBitmap = new FlexBitmap();
+					bitmap.bitmapData = TSUtil.imageManager.getFlagImage(index);
+					var uc:UIComponent = new UIComponent();
+					uc.addChild(bitmap);
+					this.addChildAt(uc, 0);
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Image id="image_usa" source="" />
+	<mx:Label text="{this._name}" width="100%" fontWeight="bold" color="#ffffff" />
+	<mx:Label text="{this._message}" y="20" width="100%" fontWeight="bold" color="#ffffff" />
+</mx:Canvas>

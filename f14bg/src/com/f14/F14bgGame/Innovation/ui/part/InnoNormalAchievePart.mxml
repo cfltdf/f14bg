@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.component.ImageObject;
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoAchieveCardLabel;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.f14bg.components.ComponentOption;
+			import com.f14.F14bgGame.Innovation.components.DrawDeckCard;
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import com.f14.F14bgGame.Innovation.components.InnoCard;
+			protected var inited:Boolean = false;
+			protected var decks:Array = new Array();
+			protected var option:ComponentOption = new ComponentOption(false, true)
+			protected var _selectable:Boolean;
+			
+			/**
+			 * 设置是否可选
+			 */
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				var deck:InnoAchieveCardLabel;
+				for each(deck in this.decks){
+					if(deck!=null){
+						deck.selectable = selectable;
+					}
+				}
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function clear():void{
+				for(var key:String in decks){
+					this.removeCard(int(key));
+				}
+			}
+			
+			public function loadParam(param:Object):void{
+				this.clear();
+				this.addCards(param.normalCardIds);
+			}
+			
+			public function getDeck(level:int):InnoAchieveCardLabel{
+				return this.decks[level+""] as InnoAchieveCardLabel;
+			}
+			
+			/**
+			 * 取得deck所在的中点坐标
+			 */
+			public function getDeckPosition(level:int):Point{
+				//卡牌的宽,高 74,22
+				var p:Point = new Point();
+				p.x = 10 + (level-1) * (5 + 74) + 74/2;
+				p.y = 22/2;
+				return p;
+			}
+			
+			/**
+			 * 设置是否在选择时就触发事件
+			 */
+			public function setEventTrigOnSelected(trigOnSelected:Boolean):void{
+				if(this.option!=null){
+					this.option.trigOnSelected = trigOnSelected;
+				}
+			}
+			
+			/**
+			 * 点击卡牌时触发的方法
+			 */
+			protected function onClick(evt:MouseEvent):void{
+				var card:InnoAchieveCardLabel = evt.currentTarget as InnoAchieveCardLabel;
+				if(card.selectable){
+					if(this.option.trigOnSelected){
+						InnoUtil.actionManager.drawAchieveCard(card.object.object.id);
+					}else{
+						
+					}
+				}
+			}
+			
+			public function addCards(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				for each(var cardId:String in ids){
+					this.addCard(cardId);
+				}
+			}
+			
+			/**
+			 * 添加成就牌
+			 */
+			public function addCard(cardId:String):void{
+				var card:ImageObject = InnoUtil.resourceManager.createAchieveCard(cardId);
+				var achieveCard:InnoAchieveCardLabel = new InnoAchieveCardLabel();
+				var level:int = card.object.level;
+				achieveCard.x = 10 + (level-1) * (5 + achieveCard.width);
+				this.addChild(achieveCard);
+				achieveCard.init();
+				achieveCard.object = card;
+				achieveCard.selectable = this.selectable;
+				achieveCard.addEventListener(MouseEvent.CLICK, onClick);
+				//添加到选择组件中
+				option.addComponent(achieveCard);
+				this.decks[level+""] = achieveCard;
+			}
+			
+			/**
+			 * 移除成就牌
+			 */
+			public function removeCard(level:int):void{
+				var label:InnoAchieveCardLabel = this.getDeck(level);
+				if(label!=null){
+					label.removeEventListener(MouseEvent.CLICK, onClick);
+					this.decks[level+""] = null;
+					this.removeChild(label);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+</mx:Canvas>

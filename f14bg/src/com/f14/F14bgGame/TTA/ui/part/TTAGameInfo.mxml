@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" styleName="gameBoard"  backgroundColor="#7E7E7E" borderStyle="outset" borderThickness="1">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.TTA.components.TTACard;
+			import com.f14.F14bgGame.TTA.components.TTACardBack;
+			import com.f14.F14bgGame.TTA.consts.ActionType;
+			import com.f14.F14bgGame.TTA.manager.TTAImageManager;
+			import com.f14.F14bgGame.bg.consts.PlayerColor;
+			import com.f14.F14bgGame.TTA.player.TTAPlayer;
+			
+			[Bindable]
+			protected var civilRemain:int;
+			[Bindable]
+			protected var militaryRemain:int;
+			[Bindable]
+			protected var _currentAge:int;
+			
+			protected var civilDeck:TTACardBack;
+			protected var militaryDeck:TTACardBack;
+			protected var futureDeck:TTACardBack;
+			protected var currentDeck:TTACardBack;
+			protected var lastEvent:TTACard;
+			
+			/**
+			 * 初始化
+			 */
+			public function init():void{
+				this.civilDeck = new TTACardBack();
+				this.hbox_deck.addChild(this.civilDeck);
+				this.militaryDeck = new TTACardBack();
+				this.hbox_deck.addChild(this.militaryDeck);
+				this.futureDeck = new TTACardBack();
+				this.hbox_event.addChildAt(this.futureDeck, 0);
+				this.currentDeck = new TTACardBack();
+				this.hbox_event.addChildAt(this.currentDeck, 2);
+				this.lastEvent = new TTACard(0.2);
+				this.hbox_event.addChild(this.lastEvent);
+			}
+			
+			public function clear():void{
+				this.currentAge = -1;
+				this.civilRemain = 0;
+				this.militaryRemain = 0;
+				this.civilDeck.num = 0;
+				this.civilDeck.object = null;
+				this.militaryDeck.num = 0;
+				this.militaryDeck.object = null;
+				this.futureDeck.num = 0;
+				this.futureDeck.object = null;
+				this.currentDeck.num = 0;
+				this.currentDeck.object = null;
+				this.lastEvent.object = null;
+			}
+			
+			public function set currentAge(currentAge:int):void{
+				if(this._currentAge!=currentAge){
+					//时代在0-3之间,超过的时代将不会显示
+					if(currentAge>=0 && currentAge<=3){
+						var obj:Object = new Object();
+						obj.level = currentAge;
+						obj.actionType = ActionType.CIVIL;
+						this.civilDeck.object = obj;
+						
+						obj = new Object();
+						obj.level = currentAge;
+						obj.actionType = ActionType.MILITARY;
+						this.militaryDeck.object = obj;
+					}else{
+						this.civilDeck.object = null;
+						this.militaryDeck.object = null;
+					}
+				}
+				this._currentAge = currentAge;
+			}
+			
+			public function get currentAge():int{
+				return this._currentAge;
+			}
+			
+			/**
+			 * 装载游戏信息
+			 */
+			public function loadGameInfo(param:Object):void{
+				this.currentAge = param.CURRENT_AGE;
+				this.civilRemain = param.CIVIL_REMAIN;
+				this.civilDeck.num = param.CIVIL_REMAIN;
+				this.militaryRemain = param.MILITARY_REMAIN;
+				this.militaryDeck.num = param.MILITARY_REMAIN;
+				//设置最近的事件信息
+				var obj:Object;
+				if(param.lastEventCardId!=null){
+					obj = TTAUtil.resourceManager.getObject(param.lastEventCardId);
+					this.lastEvent.object = obj;
+				}else{
+					this.lastEvent.object = null;
+				}
+				//设置将来事件牌堆信息
+				if(param.nextFutureEventLevel!=null){
+					obj = new Object();
+					obj.level = param.nextFutureEventLevel;
+					obj.actionType = ActionType.MILITARY;
+					this.futureDeck.object = obj;
+					this.futureDeck.num = param.futureDeckNum;
+				}else{
+					this.futureDeck.object = null;
+				}
+				//设置当前事件牌堆信息
+				if(param.nextCurrentEventLevel!=null){
+					obj = new Object();
+					obj.level = param.nextCurrentEventLevel;
+					obj.actionType = ActionType.MILITARY;
+					this.currentDeck.object = obj;
+					this.currentDeck.num = param.currentDeckNum;
+				}else{
+					this.currentDeck.object = null;
+				}
+			}
+		]]>
+	</mx:Script>	
+	<mx:HBox id="hbox_deck" horizontalCenter="0" horizontalGap="20">
+	</mx:HBox>
+	<mx:HBox id="hbox_event" y="60" verticalAlign="middle" horizontalGap="4">
+		<mx:Image source="@Embed('./com/f14/F14bgGame/TTA/images/arrow.png')"/>
+		<mx:Image source="@Embed('./com/f14/F14bgGame/TTA/images/arrow.png')"/>
+	</mx:HBox>
+</mx:Canvas>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="794" height="50" styleName="buttonPanel" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.consts.ConfirmString;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			import com.f14.F14bgGame.Eclipse.consts.EclipseInputState;
+			import mx.core.UIComponent;
+			protected var comps:Array = new Array();
+			protected var _inputState:String;
+			protected var _param:Object;
+			
+			public function init():void{
+				this.comps = new Array();
+				this.comps[EclipseInputState.ROUND_ACTION] = this.hbox_roundAction;
+				this.comps[EclipseInputState.CANCEL_ACTION] = this.hbox_cancelAction;
+				this.comps[EclipseInputState.FREE_ACTION] = this.hbox_freeAction;
+				this.comps[EclipseInputState.CONFIRM_ACTION] = this.hbox_confirmAction;
+				this.comps[EclipseInputState.ACTION_EXPLORE_1] = this.hbox_actionExplore_1;
+				this.comps[EclipseInputState.ACTION_EXPLORE_2] = this.hbox_actionExplore_2;
+				this.comps[EclipseInputState.ACTION_INFLUENCE_5] = this.hbox_actionInfluence_5;
+				this.comps[EclipseInputState.ACTION_BUILD_1] = this.hbox_actionBuild_1;
+				this.comps[EclipseInputState.ACTION_MOVE_3] = this.hbox_actionMove_3;
+				this.comps[EclipseInputState.ACTION_RESEARCH] = this.hbox_actionResearch;
+				this.comps[EclipseInputState.ACTION_UPGRADE] = this.hbox_actionUpgrade;
+			}
+			
+			public function clear():void{
+				
+			}
+			
+			/**
+			 * 禁用所有输入
+			 */
+			public function disableAllInput():void{
+				for each(var c:UIComponent in comps){
+					c.visible = false;
+				}
+			}
+			
+			/**
+			 * 设置显示状态
+			 */
+			public function setInputState(state:String, param:Object=null):void{
+				this._inputState = state;
+				this._param = param;
+				
+				for (var s:String in comps){
+					if(s==state){
+						comps[s].visible = true;
+					}else{
+						comps[s].visible = false;
+					}
+				}
+			}
+			
+			/**
+			 * 创建回应中断监听器的指令
+			 */
+			protected function createCommand():Object{
+				var cmd:Object = new Object();
+				if(this._param!=null){
+					cmd.type = this._param.type;
+					cmd.code = this._param.validCode;
+				}
+				return cmd;
+			}
+			
+			/**
+			 * 发送操作字符串
+			 */
+			public function sendConfirmString(confirmString:String, param:Object=null):void{
+				var cmd:Object = this.createCommand();
+				cmd.confirmString = confirmString;
+				for(var key:Object in param){
+					cmd[key] = param[key];
+				}
+				EclipseUtil.actionManager.sendCommand(cmd);
+			}
+			
+			/**
+			 * 选择行动
+			 */
+			protected function doAction(action:String):void{
+				EclipseUtil.actionManager.doAction(action);
+			}
+			
+			/**
+			 * 选择取消
+			 */
+			protected function doCancel():void{
+				this.sendConfirmString(ConfirmString.CANCEL);
+			}
+			
+			/**
+			 * 确认选择
+			 */
+			protected function doConfirm(param:Object = null):void{
+				this.sendConfirmString(ConfirmString.CONFIRM, param);
+			}
+			
+			/**
+			 * 发送当前state下的指令
+			 */
+			protected function sendCurrentCommand(subact:String, param:Object = null):void{
+				EclipseUtil.actionManager.sendCurrentCommand(subact, param);
+			}
+			
+			
+		]]>
+	</mx:Script>
+	<mx:HBox id="hbox_roundAction" left="25" verticalCenter="0" visible="false">
+		<mx:Button label="探 索" width="75" click="this.doAction('EXPLORE')"/>
+		<mx:Button label="扩 张" width="75" click="this.doAction('INFLUENCE')"/>
+		<mx:Button label="科 研" width="75" click="this.doAction('RESEARCH')"/>
+		<mx:Button label="升 级" width="75" click="this.doAction('UPGRADE')"/>
+		<mx:Button label="建 造" width="75" click="this.doAction('BUILD')"/>
+		<mx:Button label="移 动" width="75" click="this.doAction('MOVE')"/>
+		<mx:Button label="殖 民" width="75" click="this.sendCurrentCommand('DO_COLONY')"/>
+		<mx:Button label="交 易" width="75" click="this.sendCurrentCommand('DO_TRADE')"/>
+		<mx:Button label="Pass" width="75" click="this.doAction('PASS')"/>
+	</mx:HBox>
+	<mx:HBox id="hbox_cancelAction" left="25" verticalCenter="0" visible="false">
+		<mx:Button label="取 消" width="75" click="this.doCancel()"/>
+		<mx:Button label="结 束" width="75" click="this.doConfirm()"/>
+	</mx:HBox>
+	<mx:HBox id="hbox_confirmAction" left="25" verticalCenter="0" visible="false">
+		<mx:Button label="结 束" width="75" click="this.doConfirm()"/>
+	</mx:HBox>
+	<mx:HBox id="hbox_actionExplore_1" left="25" verticalCenter="0" visible="false">
+		<mx:Button label="确 定" width="75" click="this.sendCurrentCommand('PLACE_HEX')"/>
+		<mx:Button label="向左转" width="75" click="this.sendCurrentCommand('TURN_HEX', {'turn':0})"/>
+		<mx:Button label="向右转" width="75" click="this.sendCurrentCommand('TURN_HEX', {'turn':1})"/>
+		<mx:Button label="丢 弃" width="75" click="this.sendCurrentCommand('DISCARD_HEX')"/>
+	</mx:HBox>
+	<mx:HBox id="hbox_actionExplore_2" left="25" verticalCenter="0" visible="false">
+		<mx:Button label="是" width="75" click="this.sendCurrentCommand('PLACE_INFLUENCE')"/>
+		<mx:Button label="否" width="75" click="this.doConfirm()"/>
+	</mx:HBox>
+	<mx:HBox id="hbox_actionInfluence_2" left="25" verticalCenter="0" visible="false">
+		<mx:Button label="是" width="75" click="this.sendCurrentCommand('PLACE_INFLUENCE')"/>
+		<mx:Button label="否" width="75" click="this.doConfirm()"/>
+	</mx:HBox>
+	<mx:HBox id="hbox_actionInfluence_5" left="25" verticalCenter="0" visible="false">
+		<mx:Button label="殖 民" width="75" click="this.sendCurrentCommand('DO_COLONY')"/>
+		<mx:Button label="下一步" width="75" click="this.sendCurrentCommand('DO_NEXT')"/>
+	</mx:HBox>
+	<mx:HBox id="hbox_freeAction" left="25" verticalCenter="0" visible="false">
+		<mx:Button label="殖 民" width="75" click="this.sendCurrentCommand('DO_COLONY')"/>
+		<mx:Button label="结 束" width="75" click="this.doConfirm()"/>
+	</mx:HBox>
+	<mx:HBox id="hbox_actionBuild_1" left="25" verticalCenter="0" visible="false">
+		<mx:Button label="拦截舰" width="75" click="this.sendCurrentCommand('BUILD', {'unitType':'INTERCEPTOR'})"/>
+		<mx:Button label="巡洋舰" width="75" click="this.sendCurrentCommand('BUILD', {'unitType':'CRUISER'})"/>
+		<mx:Button label="无畏舰" width="75" click="this.sendCurrentCommand('BUILD', {'unitType':'DREADNOUGHT'})"/>
+		<mx:Button label="星 站" width="75" click="this.sendCurrentCommand('BUILD', {'unitType':'STARBASE'})"/>
+		<mx:Button label="轨 道" width="75" click="this.sendCurrentCommand('BUILD', {'unitType':'ORBITAL'})"/>
+		<mx:Button label="纪念碑" width="75" click="this.sendCurrentCommand('BUILD', {'unitType':'MONOLITH'})"/>
+		<mx:Button label="取 消" width="75" click="this.doCancel()"/>
+	</mx:HBox>
+	<mx:HBox id="hbox_actionMove_3" left="25" verticalCenter="0" visible="false">
+		<mx:Button label="是" width="75" click="this.sendCurrentCommand('MOVE')"/>
+		<mx:Button label="否" width="75" click="this.doCancel()"/>
+	</mx:HBox>
+	<mx:HBox id="hbox_actionResearch" left="25" verticalCenter="0" visible="false">
+		<mx:Button label="交 易" width="75" click="this.sendCurrentCommand('DO_TRADE')"/>
+		<mx:Button label="取 消" width="75" click="this.doCancel()"/>
+		<mx:Button label="结 束" width="75" click="this.doConfirm()"/>
+	</mx:HBox>
+	<mx:HBox id="hbox_actionUpgrade" left="25" verticalCenter="0" visible="false">
+		<mx:Button label="重 置" width="75" click="this.sendCurrentCommand('DO_RESET')"/>
+		<mx:Button label="取 消" width="75" click="this.doCancel()"/>
+		<mx:Button label="确 定" width="75" click="this.doConfirm()"/>
+	</mx:HBox>
+</mx:Canvas>

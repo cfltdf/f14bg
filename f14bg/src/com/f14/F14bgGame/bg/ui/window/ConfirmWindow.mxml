@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.f14bg.manager.ActionManager;
+			
+			[Bindable]
+			public var msg:String;
+			protected var _param:Object;
+			
+			/**
+			 * 重置参数值
+			 */
+			public function reset():void{
+				this._param = null;
+			}
+			
+			/**
+			 * 初始化相关组件
+			 */
+			public function initComponents():void{
+				
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			public function loadParam(param:Object):void{
+				this.clear();
+				this._param = param;
+				this.msg = param.msg;
+			}
+			
+			/**
+			 * 创建回应消息的指令
+			 */
+			protected function createCommand():Object{
+				var cmd:Object = new Object();
+				cmd.type = this._param.type;
+				cmd.code = this._param.validCode;
+				return cmd;
+			}
+			
+			/**
+			 * 确认窗口内容
+			 */
+			public function doConfirm(inputParam:Object=null):void{
+				var cmd:Object = this.createCommand();
+				cmd.confirm = true;
+				//设置确认参数
+				var key:String = null;
+				var param:Object = this.createConfirmParam();
+				if(param!=null){
+					for(key in param){
+						cmd[key] = param[key];
+					}
+				}
+				if(inputParam!=null){
+					for(key in inputParam){
+						cmd[key] = inputParam[key];
+					}
+				}
+				ApplicationUtil.sendCommandParam(cmd);
+			}
+			
+			/**
+			 * 创建确认时的参数
+			 */
+			protected function createConfirmParam():Object{
+				return null;
+			}
+			
+			/**
+			 * 取消窗口内容
+			 */
+			public function doCancel():void{
+				var cmd:Object = this.createCommand();
+				cmd.confirm = false;
+				ApplicationUtil.sendCommandParam(cmd);
+			}
+			
+			/**
+			 * 发送指令
+			 */
+			public function sendParam(param:Object):void{
+				var cmd:Object = this.createCommand();
+				//设置确认参数
+				var key:String = null;
+				if(param!=null){
+					for(key in param){
+						cmd[key] = param[key];
+					}
+				}
+				ApplicationUtil.sendCommandParam(cmd);
+			}
+			
+		]]>
+	</mx:Script>
+</FloatWindow>

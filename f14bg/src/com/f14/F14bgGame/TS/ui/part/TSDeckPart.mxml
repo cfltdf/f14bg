@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="120" height="120">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.TSUtil;
+			import com.f14.F14bgGame.TS.components.TSCard;
+			
+			[Bindable]
+			public var playingCardNum:String;
+			[Bindable]
+			public var discardNum:String;
+			
+			protected var deck:TSCard;
+			protected var lastCard:TSCard;
+			protected var _inited:Boolean = false;
+		
+			public function init():void{
+				this.deck = TSUtil.resourceManager.createTSBackCard();
+				this.deck.x = 6;
+				this.addChild(this.deck);
+				
+				this.lastCard = new TSCard();
+				this.lastCard.x = 12 + this.deck.width;
+				this.addChild(this.lastCard);
+				this.lastCard.selectable = true;
+				this._inited = true;
+			}
+			
+			public function clear():void{
+				if(this.deck!=null){
+					this.removeChild(deck);
+					this.deck = null;
+				}
+				if(this.lastCard!=null){
+					this.removeChild(lastCard);
+					this.lastCard = null;
+				}
+				
+				this.playingCardNum = null;
+				this.discardNum = null;
+				this._inited = false;
+			}
+			
+			public function get inited():Boolean{
+				return this._inited;
+			}
+			
+			/**
+			 * 装载牌组参数
+			 */
+			public function loadParam(param:Object):void{
+				if(param.lastCardId){
+					var object:Object = TSUtil.resourceManager.getObject(param.lastCardId);
+					this.lastCard.object = object;
+				}else{
+					this.lastCard.object = null;
+				}
+				this.playingCardNum = param.playingCardNum;
+				this.discardNum = param.discardNum;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Label text="{this.playingCardNum}" bottom="5" left="10" textAlign="center" fontWeight="bold" fontSize="14" width="40"/>
+	<mx:Label text="{this.discardNum}" bottom="5" right="10" textAlign="center" fontWeight="bold" fontSize="14" width="40"/>
+</mx:Canvas>

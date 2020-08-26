@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="350" title="选择要保留的货物" xmlns:simple="com.f14.F14bgGame.PuertoRico.ui.simple.*" backgroundColor="#EEEEEE">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			
+			//protected var inputOption:ComponentOption;
+			
+			/**
+			 * 初始化输入组件
+			 */
+			public function initInputs():void{
+				/* this.inputOption = new ComponentOption();
+				this.inputOption.addComponent(this.resource_single);
+				this.inputOption.addComponent(this.resource_multi);
+				this.inputOption.setAllComponentsSelectable(true); */
+				
+				this.resource_selecter.initResourceImage();
+				this.resource_selecter.setResourceSelectable(true);
+				this.resource_selecter.multiSelection = true;
+				
+				this.resource_choose.initResourceImage();
+			}
+			
+			public function reset():void{
+				this.resource_selecter.reset();
+				this.resource_choose.reset();
+				this.resource_choose.player = PRUtil.getLocalPlayer();
+			}
+			
+			/**
+			 * 点击资源时触发的方法
+			 */
+			//public function onResourceClick(evt:PrEvent):void{
+			//	var part:ResourcePart = evt.part as ResourcePart;
+			//	part.selected = !part.selected;
+			//}
+			
+			/**
+			 * 确认
+			 */
+			public function confirm():void{
+				PRUtil.actionManager.captainEnd(this.resource_choose.getResource(), resource_selecter.selectedPartsString);
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox horizontalAlign="center" width="100%">
+		<mx:Canvas height="5">
+		</mx:Canvas>
+		<mx:Canvas borderStyle="solid" borderThickness="2">
+			<mx:VBox>
+				<mx:Label text="选择要保留的货物种类:"  fontWeight="bold"/>
+				<simple:ResourceSelecter id="resource_selecter"  x="30" y="73"/>
+			</mx:VBox>
+		</mx:Canvas>
+		<mx:Canvas borderStyle="solid" borderThickness="2">
+			<mx:VBox>
+				<mx:Label text="选择要保留的货物数量:"  fontWeight="bold"/>
+				<simple:ResourceMultiChoose id="resource_choose" />
+			</mx:VBox>
+		</mx:Canvas>
+		<mx:HBox>
+			<mx:Button label="确 认" click="confirm()"/>
+			<mx:Button label="重新选择" click="reset()"/>
+		</mx:HBox>
+		<mx:Canvas height="5">
+		</mx:Canvas>
+	</mx:VBox>
+</FloatWindow>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Label;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.TTA.components.TTACard;
+			
+			protected var _selectable:Boolean;
+			
+			/**
+			 * 设置卡牌序列是否可选
+			 */
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				for each(var card:TTACard in this.hbox_cards.getChildren()){
+					if(card!=null && card.object!=null){
+						card.selectable = selectable;
+					}
+				}
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			/**
+			 * 清除卡牌序列
+			 */
+			public function clear():void{
+				//移除所有监听的事件
+				for each(var card:TTACard in this.hbox_cards.getChildren()){
+					if(card!=null){
+						card.removeEventListener(MouseEvent.CLICK, onCardClick);
+					}
+				}
+				this.hbox_cards.removeAllChildren();
+			}
+			
+			/**
+			 * 添加卡牌到序列中
+			 */
+			public function addCard(id:String):void{
+				var card:TTACard = TTAUtil.resourceManager.createTTACard(id);
+				if(card==null){
+					card = new TTACard();
+					card.object = null;
+				}else{
+					card.selectable = this.selectable;
+					//添加点击卡牌的事件
+					card.addEventListener(MouseEvent.CLICK, onCardClick);
+				}
+				this.hbox_cards.addChild(card);
+			}
+			
+			/**
+			 * 从序列中移除卡牌(只移除图像)
+			 */
+			public function removeCard(id:String):void{
+				for each(var card:TTACard in this.hbox_cards.getChildren()){
+					if(card!=null && card.object!=null && card.object.id==id){
+						card.object = null;
+						card.selectable = false;
+						card.removeEventListener(MouseEvent.CLICK, onCardClick);
+					}
+				}
+			}
+			
+			/**
+			 * 按照参数装载卡牌序列
+			 */
+			public function loadCards(param:Object):void{
+				this.clear();
+				for each(var id:String in param.cardIds){
+					this.addCard(id);
+				}
+			}
+			
+			/**
+			 * 点击卡牌时触发的方法
+			 */
+			protected function onCardClick(evt:MouseEvent):void{
+				var card:TTACard = evt.currentTarget as TTACard;
+				if(card.selectable && card.object!=null){
+					if(TTAUtil.stateManager.currentConfirmWindow!=null){
+						//如果存在中断窗口,则调用其返回方法
+						var param:Object = {};
+						param.cardId = card.object.id;
+						TTAUtil.stateManager.currentConfirmWindow.doConfirm(param);
+					}else{
+						TTAUtil.actionManager.takeCard(card.object.id);
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Canvas width="1000" height="160" styleName="cardRow" />
+	<mx:HBox id="hbox_cards" x="10" y="29" horizontalGap="4">
+	</mx:HBox>
+</mx:Canvas>

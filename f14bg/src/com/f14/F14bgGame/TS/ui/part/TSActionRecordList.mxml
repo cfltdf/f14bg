@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalGap="0">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.ui.simple.TSActionRecord;
+			
+			public function clear():void{
+				this.removeAllChildren();
+			}
+			
+			public function loadParam(param:Object):void{
+				if(param.record){
+					this.addRecord(param.record);
+				}
+				if(param.records){
+					for each(var record:Object in param.records){
+						this.addRecord(record);
+					}
+				}
+			}
+			
+			public function addRecord(record:Object):void{
+				//最多只显示10条
+				var last:int = this.getChildren().length;
+				if(last>=10){
+					this.removeChildAt(last-1);
+				}
+				var recordLabel:TSActionRecord = new TSActionRecord();
+				this.addChildAt(recordLabel, 0);
+				recordLabel.setRecord(record);
+			}
+		]]>
+	</mx:Script>
+</mx:VBox>

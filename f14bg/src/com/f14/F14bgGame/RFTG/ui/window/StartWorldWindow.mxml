@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" minWidth="500" height="506" title="选择起始牌组" xmlns:ns1="com.f14.F14bgGame.RFTG.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.RFTG.RaceUtil;
+			import com.f14.F14bgGame.RFTG.utils.RaceUtils;
+			import com.f14.f14bg.event.BgEvent;
+			import com.f14.F14bgGame.RFTG.component.RaceCard;
+
+			override public function clear():void{
+				this.startWorldBoard.clear();
+				this.handBoard.clear();
+			}	
+					
+			public function reset():void{
+				this.startWorldBoard.reset();
+				this.handBoard.reset();
+			}
+			
+			/**
+			 * 按照参数装载窗口信息
+			 */
+			public function loadParam(param:Object):void{
+				this.clear();
+				var startWorldIds:String = param.startWorldIds;
+				if(startWorldIds){
+					var sids:Array = startWorldIds.split(",");
+					for each(var id:String in sids){
+						var card:RaceCard = RaceUtil.cardManager.getCard(id);
+						if(card!=null){
+							this.startWorldBoard.addCard(card);
+						}
+					}
+				}
+				var handIds:String = param.handIds;
+				if(handIds){
+					var hids:Array = handIds.split(",");
+					for each(var hid:String in hids){
+						var c2:RaceCard = RaceUtil.cardManager.getCard(hid);
+						if(c2!=null){
+							this.handBoard.addCard(c2);
+						}
+					}
+				}
+				//起始手牌设为可多选
+				this.handBoard.multiSelect = true;
+			}
+			
+			/**
+			 * 设置所有卡牌是否可选
+			 */
+			public function set selectable(selectable:Boolean):void{
+				this.startWorldBoard.setAllSelectable(selectable);
+				this.handBoard.setAllSelectable(selectable);
+			}
+			
+			/**
+			 * 确认弃牌
+			 */
+			public function confirm():void{
+				var cards:Array = this.startWorldBoard.getSelection();
+				var startWorldIds:String = RaceUtils.card2String(cards);
+				cards = this.handBoard.getSelection();
+				var handIds:String = RaceUtils.card2String(cards);
+				RaceUtil.actionManager.selectStartingWorld(startWorldIds, handIds);
+			}
+		]]>
+	</mx:Script>
+	<mx:Label x="10" y="10" text="选择要丢弃的星球"/>
+	<ns1:CardBoard x="10" y="36" id="startWorldBoard">
+	</ns1:CardBoard>
+	<mx:Label x="10" y="215" text="选择要丢弃的手牌"/>
+	<ns1:CardBoard x="10" y="241" id="handBoard">
+	</ns1:CardBoard>
+	<mx:Button y="434" label="丢弃选中的牌" horizontalCenter="0" click="confirm()"/>
+</FloatWindow>

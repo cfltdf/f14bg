@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="550" height="300" showCloseButton="true" title="系统设置">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgClient.login.LoginUtil;
+			import mx.events.PropertyChangeEvent;
+			import mx.validators.Validator;
+			import com.f14.core.util.ApplicationUtil;
+			
+			protected var _modifyParam:Object = new Object();
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.init();
+				this._modifyParam = new Object();
+				
+				this.host_name.text = "";
+				this.host_ip.text = "";
+				this.host_port.text = "";
+				this.update_host.text = "";
+			}
+			
+			/**
+			 * 装载当前设置信息
+			 */
+			public function loadSetup():void{
+				this.clear();
+				
+				var prop:Object = ApplicationUtil.loadLocalProperties();
+				
+				this.host_name.text = prop.host_name;
+				this.host_ip.text = prop.host_ip;
+				this.host_port.text = prop.host_port;
+				this.update_host.text = prop.update_host;
+				
+				this.proxy_active.selected = prop.proxy_active=="true";
+				this.proxy_ip.text = prop.proxy_ip;
+				this.proxy_port.text = prop.proxy_port;
+				
+				this.refreshShowState();
+			}
+			
+			/**
+			 * 校验表单
+			 */
+			protected function validateForm():Boolean{
+				var res:Array = Validator.validateAll([
+					this.val_host_name,
+					this.val_host_ip,
+					this.val_host_port,
+					this.val_update_host
+				]);
+				if(res.length>0){
+					//如果未通过校验,则提示错误信息
+					ApplicationUtil.alert(res[0].message);
+					return false;
+				}
+				
+				//如果选择使用代理服务器,则需要校验
+				if(this.proxy_active.selected){
+					res = Validator.validateAll([
+						this.val_proxy_ip,
+						this.val_proxy_port
+					]);
+					if(res.length>0){
+						//如果未通过校验,则提示错误信息
+						ApplicationUtil.alert(res[0].message);
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			/**
+			 * 保存游戏设置
+			 */
+			public function confirm():void{
+				var valid:Boolean = this.validateForm();
+				if(!valid){
+					return;
+				}
+				
+				var param:Array = new Array();
+				param["host_name"] = this.host_name.text;
+				param["host_ip"] = this.host_ip.text;
+				param["host_port"] = this.host_port.text;
+				param["update_host"] = this.update_host.text;
+				
+				param["proxy_active"] = this.proxy_active.selected?"true":"false";
+				param["proxy_ip"] = this.proxy_ip.text;
+				param["proxy_port"] = this.proxy_port.text;
+				
+				//执行保存操作
+				ApplicationUtil.commonHandler.saveLocalProperties(param);
+				//刷新服务器地址
+				LoginUtil.module.loadLocalProperties();
+				LoginUtil.module.loadDefaultHost();
+				//关闭窗口
+				this.cancel();
+			}
+			
+			/**
+			 * 刷新显示状态
+			 */
+			protected function refreshShowState():void{
+				this.refreshProxyState();
+			}
+			
+			/**
+			 * 刷新代理服务器设置的显示状态
+			 */
+			protected function refreshProxyState():void{
+				if(this.proxy_active.selected){
+					this.proxy_ip.enabled = true;
+					this.proxy_port.enabled = true;
+				}else{
+					this.proxy_ip.enabled = false;
+					this.proxy_port.enabled = false;
+				}
+			}
+			
+			/**
+			 * 设置变化时触发的方法
+			 */
+			/*protected function propertyChange(event:Event):void{
+				var e:PropertyChangeEvent = event as PropertyChangeEvent;
+				ApplicationUtil.alert(e);
+				this._modifyParam[e.property] = e.newValue;
+			}*/
+		]]>
+	</mx:Script>
+	
+	<mx:Validator id="val_host_name" required="true" source="{host_name}" property="text"
+		requiredFieldError="请填写服务器名称!" />
+	<mx:Validator id="val_host_ip" required="true" source="{host_ip}" property="text"
+		requiredFieldError="请填写服务器地址!" /> 
+	<mx:Validator id="val_host_port" required="true" source="{host_port}" property="text"
+		requiredFieldError="请填写服务器端口!" />
+	<mx:Validator id="val_update_host" required="true" source="{update_host}" property="text"
+		requiredFieldError="请填写下载服务器!" />
+	<mx:Validator id="val_proxy_ip" required="true" source="{proxy_ip}" property="text"
+		requiredFieldError="请填写代理服务器地址!" /> 
+	<mx:Validator id="val_proxy_port" required="true" source="{proxy_port}" property="text"
+		requiredFieldError="请填写代理服务器端口!" />
+	
+	<mx:VBox top="5" bottom="5" left="5" right="5" horizontalAlign="center">
+		<mx:TabNavigator id="tab" width="100%" height="100%" creationPolicy="all" >
+			<mx:Canvas label="服务器设置" width="100%" height="100%">
+				<mx:Form horizontalCenter="0" top="10">
+					<mx:FormItem label="服务器名称">
+						<mx:TextInput id="host_name" />
+					</mx:FormItem>
+					<mx:FormItem label="服务器地址">
+						<mx:TextInput id="host_ip" />
+					</mx:FormItem>
+					<mx:FormItem label="服务器端口">
+						<mx:TextInput id="host_port" />
+					</mx:FormItem>
+					<mx:FormItem label="下载服务器地址">
+						<mx:TextInput id="update_host" />
+					</mx:FormItem>
+				</mx:Form>
+			</mx:Canvas>
+			<mx:Canvas label="代理服务器设置" width="100%" height="100%">
+				<mx:Form horizontalCenter="0" top="10">
+					<mx:FormItem label="">
+						<mx:CheckBox id="proxy_active" label="使用HTTP代理" change="this.refreshProxyState()"/>
+					</mx:FormItem>
+					<mx:FormItem label="代理服务器地址">
+						<mx:TextInput id="proxy_ip" />
+					</mx:FormItem>
+					<mx:FormItem label="代理服务器端口">
+						<mx:TextInput id="proxy_port" />
+					</mx:FormItem>
+				</mx:Form>
+			</mx:Canvas>
+		</mx:TabNavigator>
+		<mx:HBox>
+			<mx:Button label="保 存" click="this.confirm()" />
+			<mx:Button label="取 消" click="this.cancel()" />
+		</mx:HBox>
+	</mx:VBox>
+</FloatWindow>

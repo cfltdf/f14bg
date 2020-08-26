@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="60" height="25" borderStyle="solid" cornerRadius="2" borderThickness="2" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			import mx.effects.IEffectInstance;
+			import mx.effects.Glow;
+			[Bindable]
+			public var text:String;
+			private var _active:Boolean;
+			private var _selected:Boolean;
+			private var _selectedEffect:IEffectInstance;
+			private var _activeEffect:IEffectInstance;
+			
+			public function set selected(selected:Boolean):void{
+				this._selected = selected;
+				if(selected){
+					_selectedEffect.end();
+					_activeEffect.end();
+					_selectedEffect.play();
+				}else{
+					_selectedEffect.end();
+				}
+			}
+			
+			public function get selected():Boolean{
+				return this._selected;
+			}
+			
+			public function set active(active:Boolean):void{
+				this._active = active;
+				if(active){
+					_selectedEffect.end();
+					_activeEffect.end();
+					_activeEffect.play();
+				}else{
+					_activeEffect.end();
+				}
+			}
+			
+			public function get active():Boolean{
+				return this._active;
+			}
+			
+			public function reset():void{
+				this._selected = false;
+				this._active = false;
+				this._selectedEffect.end();
+				this._activeEffect.end();
+			}
+			
+			public function init():void{
+				_selectedEffect = PRUtil.effectManager.normalEffect.createInstance(this);
+				_activeEffect = PRUtil.effectManager.activeEffect.createInstance(this);
+			}
+		]]>
+	</mx:Script>
+	<mx:Label text="{text}" width="100%" height="100%" textAlign="center" fontSize="12" fontWeight="bold"/>
+</mx:Canvas>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="36" height="36">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			public var doubloon:int;
+		]]>
+	</mx:Script>
+	<mx:Canvas width="36" height="36" styleName="doubloonImage" />
+	<mx:Label  text="{doubloon}" horizontalCenter="0" verticalCenter="0" width="36" textAlign="center" fontWeight="bold" fontSize="20" color="#000000"/>
+</mx:Canvas>

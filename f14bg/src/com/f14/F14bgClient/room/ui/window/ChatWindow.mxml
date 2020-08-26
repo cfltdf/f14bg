@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<F14MDIWindow xmlns="com.f14.F14bgClient.room.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.core.controls.text.*" title="聊天窗口" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import mx.formatters.DateFormatter;
+			import com.f14.F14bgClient.room.RoomUtil;
+			import mx.events.ListEvent;
+			import com.f14.f14bg.manager.ActionManager;
+			import flexmdi.events.MDIWindowEvent;
+			import com.f14.core.util.ApplicationUtil;
+			import mx.collections.ArrayCollection;
+			
+			public var df:DateFormatter;
+			
+			[Bindable]
+			public var users:ArrayCollection = new ArrayCollection();
+			
+			public function init():void{
+				this.df = new DateFormatter();
+				this.df.formatString = "JJ:NN:SS";
+				//this.addEventListener(MDIWindowEvent.RESTORE, onFocus);
+			}
+			
+			/**
+			 * 发送消息
+			 */
+			public function sendMsg():void{
+				if(text_msg.text){
+					RoomUtil.actionManager.sendMessage(text_msg.text);
+					text_msg.text = "";
+				}
+			}
+			
+			/**
+			 * 按键响应方法
+			 */
+			public function onKeyDown(evt:KeyboardEvent):void{
+				if(evt.keyCode==13){
+					sendMsg();
+				}
+			}
+			
+			/**
+			 * 收到消息
+			 */
+			public function receiveMessage(message:Object):void{
+				var str:String = "[" + this.df.format(new Date()) + "] "
+					+ message.name + ":\n  " + message.msg + "\n";
+				this.chat_area.text += str;
+				this.notify();
+			}
+			
+			/**
+			 * 按照登录名取得用户
+			 */
+			public function getUser(loginName:String):Object{
+				for(var i:int=0;i<this.users.length;i++){
+					if(this.users.getItemAt(i).loginName==loginName){
+						return this.users.getItemAt(i);
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * 添加用户
+			 */
+			public function addUser(user:Object):void{
+				var u:Object = this.getUser(user.loginName);
+				if(u!=null){
+					//如果已经存在该用户则刷新其信息
+					this.updateUser(user);
+				}else{
+					this.users.addItem(user);
+				}
+			}
+			
+			/**
+			 * 移除用户
+			 */
+			public function removeUser(user:Object):void{
+				var u:Object = this.getUser(user.loginName);
+				if(u!=null){
+					this.users.removeItemAt(this.users.getItemIndex(u));
+				}
+			}
+			
+			/**
+			 * 刷新用户信息
+			 */
+			public function updateUser(user:Object):void{
+				var u:Object = this.getUser(user.loginName);
+				if(u!=null){
+					u.userState = user.userState;
+					this.grid_players.invalidateList();
+				}
+			}
+			
+			/**
+			 * 刷新用户积分信息
+			 */
+			public function refreshUserRank(evt:ListEvent):void{
+				var item:Object = this.users.getItemAt(evt.rowIndex);
+				if(item!=null){
+					RoomUtil.actionManager.refreshUserRanking(item.userId);
+				}
+			}
+			
+			override public function show():void{
+				super.show();
+				//显示窗口时聚焦到输入框
+				this.text_msg.setFocus();
+			}
+			
+			/**
+			 * 装载用户列表
+			 */
+			public function loadUserList(param:Object):void{
+				this.users.removeAll();
+				for each(var obj:Object in param.users){
+					this.addUser(obj);
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Canvas width="100%" height="100%">
+		<mx:VDividedBox left="5" right="5" top="5" bottom="5">
+			<mx:Canvas width="100%" height="200">
+				<mx:DataGrid id="grid_players" width="100%" height="100%" dataProvider="{users}" itemDoubleClick="refreshUserRank(event)" doubleClickEnabled="true">
+					<mx:columns>
+						<mx:DataGridColumn headerText="状态" dataField="userState" sortable="false"/>
+						<mx:DataGridColumn headerText="用户名" dataField="name" sortable="false"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:Canvas>
+			<mx:VBox width="100%" height="50%">
+				<ns1:ChatTextArea id="chat_area" width="100%" height="100%"/>
+				<mx:HBox width="100%">
+					<mx:TextInput id="text_msg" width="100%" keyDown="onKeyDown(event)" />
+					<mx:Button label="发 送" click="sendMsg()"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:VDividedBox>
+	</mx:Canvas>
+	
+</F14MDIWindow>

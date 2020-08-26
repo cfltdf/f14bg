@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" minWidth="100" height="200" title="奖励牌堆" showCloseButton="false">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.components.TTACard;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			
+			override public function clear():void{
+				super.clear();
+				this.hbox_card.removeAllChildren();
+			}
+			
+			/**
+			 * 添加卡牌
+			 */
+			public function addCard(cardId:String):void{
+				var card:TTACard = TTAUtil.resourceManager.createTTACard(cardId);
+				this.hbox_card.addChild(card);
+			}
+			
+			/**
+			 * 添加卡牌
+			 */
+			public function addCards(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				for each(var id:String in ids){
+					this.addCard(id);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox id="hbox_card" horizontalGap="5" horizontalCenter="0" top="5">
+	</mx:HBox>
+	<mx:Button label="关闭" horizontalCenter="0" bottom="10" click="this.cancel()"/>
+</ConfirmWindow>

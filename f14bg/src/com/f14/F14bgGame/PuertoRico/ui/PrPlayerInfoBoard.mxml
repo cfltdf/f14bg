@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerInfoBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:simple="com.f14.F14bgGame.PuertoRico.ui.simple.*" width="200" styleName="prBoard">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgGame.PuertoRico.consts.PrConst;
+			import com.f14.F14bgGame.PuertoRico.player.PrPlayer;
+			
+			[Bindable]
+			protected var prPlayer:PrPlayer;
+			[Bindable]
+			public var msg:String;
+			
+			override public function clear():void{
+				super.clear();
+				this.msg = null;
+				this.clearActions();
+			}
+			
+			override public function set player(player:Player):void{
+				super.player = player;
+				this.prPlayer = player as PrPlayer;
+				this.resourceSelecter.player = this.prPlayer;
+			}
+			
+			/**
+			 * 得到效果的目标对象
+			 */
+			override protected function get effectTarget():Object{
+				return this;
+			}
+			
+			/**
+			 * 初始化资源选择组件
+			 */
+			public function initResourceSelecter():void{
+				this.resourceSelecter.initResourceImage();
+				
+				this.label_character.init();
+				this.label_governor.init();
+				this.label_governor.text = "总督";
+			}
+			
+			/**
+			 * 设置玩家是否是总督
+			 */
+			public function set governor(boolean:Boolean):void{
+				if(boolean){
+					this.label_governor.visible = true;
+					this.label_governor.active = true;
+				}else{
+					this.label_governor.visible = false;
+				}
+			}
+			
+			/**
+			 * 设置玩家的角色
+			 */
+			public function set character(character:String):void{
+				if(character==null){
+					this.label_character.text = null;
+					this.label_character.visible = false;
+				}else{
+					this.label_character.text = PrConst.getCharacterName(character);
+					this.label_character.visible = true;
+					this.label_character.reset();
+					this.label_character.selected = true;
+				}
+			}
+			
+			/**
+			 * 设置是否是当前回合
+			 */
+			public function set currentRound(boolean:Boolean):void{
+				if(boolean){
+					this.label_character.active = true;
+				}else{
+					this.label_character.reset();
+					this.label_character.selected = true;
+				}
+			}
+			
+			/**
+			 * 清除玩家的行动阶段
+			 */
+			public function clearActions():void{
+				this.label_character.reset();
+				this.label_governor.reset();
+				this.label_character.visible = false;
+				this.label_governor.visible = false;
+			}
+			
+			/**
+			 * 设置VP是否可见
+			 */
+			public function set vpVisiable(visiable:Boolean):void{
+				this.label_vp.visible = visiable;
+				this.value_vp.visible = visiable;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox id="vbox_main" width="100%" height="100%" verticalGap="2">
+		<mx:Canvas width="100%" height="25">
+			<mx:Label x="20" text="{prPlayer.name}" fontWeight="bold" verticalCenter="0"/>
+			<simple:ActionLabel id="label_governor" x="130" verticalCenter="0" visible="false"/>
+		</mx:Canvas>
+		<mx:Canvas width="100%" height="45">
+			<simple:ActionLabel id="label_character" x="130" visible="false"/>
+			<mx:Label x="15" y="3" text="VP" textAlign="center" fontWeight="bold" id="label_vp"/>
+			<mx:Label x="47" y="3" text="金钱" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="82" y="3" text="移民" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="15" y="23" text="{prPlayer.vp}" textAlign="center" fontWeight="bold" id="value_vp"/>
+			<mx:Label x="47" y="23" text="{prPlayer.doubloon}" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="82" y="23" text="{prPlayer.colonist}" textAlign="center" fontWeight="bold"/>
+		</mx:Canvas>
+		<simple:ResourceSelecter id="resourceSelecter" width="100%" />
+	</mx:VBox>
+</PlayerInfoBoard>

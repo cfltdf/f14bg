@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SetupBoard xmlns="com.f14.F14bgClient.room.ui.part.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			protected var _descr:String;
+		
+			override public function set inputable(inputable:Boolean):void{
+				this._inputable = inputable;
+			}
+			
+			/**
+			 * 装载参数
+			 */
+			override public function loadParam(param:Object):void{
+				var config:Object = param.config;
+				//this.radiogroup1.selectedValue = config.mode;
+				//this.teamMatch.selected = config.teamMatch;
+				//this.checkRadioEnabled();
+			}
+			
+			/**
+			 * 按照设置创建参数
+			 */
+			override public function createParam():Object{
+				var param:Object = super.createParam();
+				//param.teamMatch = this.teamMatch.selected;
+				//param.mode = this.radiogroup1.selectedValue;
+				return param;
+			}
+			
+			/**
+			 * 游戏模式变换时触发的方法
+			 */
+			override protected function onGameModeChange():void{
+				super.onGameModeChange();
+				//this.checkRadioEnabled();
+			}
+			
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas left="10" right="10" top="10" bottom="10">
+		
+	</mx:Canvas>
+</SetupBoard>

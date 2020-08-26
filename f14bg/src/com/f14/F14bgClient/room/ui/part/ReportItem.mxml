@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="45" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			protected var _time:String;
+			[Bindable]
+			protected var _text:String;
+			
+			/**
+			 * 从message中读取参数
+			 */
+			public function loadMessage(message:Object):void{
+				if(message.time!=null){
+					this._time = message.time;
+				}
+				this._text = message.message;
+			}
+		]]>
+	</mx:Script>
+	<mx:Label x="10" y="0" text="{_time}" fontSize="10" width="100%"/>
+	<mx:Label x="15" y="15" text="{_text}" fontSize="10" width="100%" height="100%"/>
+</mx:Canvas>

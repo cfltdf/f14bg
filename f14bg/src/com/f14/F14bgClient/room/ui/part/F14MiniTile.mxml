@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Button xmlns:mx="http://www.adobe.com/2006/mxml" width="120" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.f14bg.effect.GlowTween;
+			import com.f14.F14bgClient.room.ui.window.F14MDIWindow;
+			protected var _window:F14MDIWindow;
+			protected var _glowTween:GlowTween;
+			
+			protected function init():void{
+				this._glowTween = new GlowTween(this, 0xFF8A00);
+			}
+			
+			/**
+			 * 开始闪烁
+			 */
+			public function startGlow():void{
+				this._glowTween.startGlow();
+			}
+			
+			/**
+			 * 停止闪烁
+			 */
+			public function stopGlow():void{
+				this._glowTween.stopGlow();
+			}
+			
+			public function set window(window:F14MDIWindow):void{
+				this._window = window;
+				if(window==null){
+					this.label = null;
+				}else{
+					this.label = window.title;
+				}
+			}
+			
+			public function get window():F14MDIWindow{
+				return this._window;
+			}
+		]]>
+	</mx:Script>
+</mx:Button>

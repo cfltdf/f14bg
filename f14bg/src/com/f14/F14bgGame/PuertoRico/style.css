@@ -1,0 +1,60 @@
+/* CSS file */
+global
+{
+	backgroundSize: "100%";
+	backgroundGradientAlphas: 1.0, 1.0;
+	backgroundGradientColors: #3C3C3C, #3C3C3C;
+	fontSize: 12;
+	color: #000000;
+	theme-color: #DD8C00;
+}
+Button
+{
+	color: #1D1D1D;
+}
+.chatBoardTitle
+{
+	fontFamily: Verdana;
+	fontWeight: bold;
+	fontSize: 12;
+}
+.fullsize
+{
+	width: "100%";
+	height: "100%";
+}
+.prBoard
+{
+	backgroundColor: #D4D4D4;
+	backgroundAlpha: 0.8;
+}
+.mainBoard{
+	backgroundColor: #FFFFFF;
+	borderStyle:none;
+	background-image: Embed("./images/playerBoard.jpg");
+	background-size: "100%";
+}
+.doubloonImage{
+	background-image: Embed("./images/doubloon.png");
+	background-size: "100%";
+}
+.level1{
+	background-image: Embed("./images/level_1.jpg");
+	background-size: "100%";
+}
+.level2{
+	background-image: Embed("./images/level_2.jpg");
+	background-size: "100%";
+}
+.level3{
+	background-image: Embed("./images/level_3.jpg");
+	background-size: "100%";
+}
+.level4{
+	background-image: Embed("./images/level_4.jpg");
+	background-size: "100%";
+}
+.colonistShip{
+	background-image: Embed("./images/colonist.png");
+	background-size: "100%";
+}

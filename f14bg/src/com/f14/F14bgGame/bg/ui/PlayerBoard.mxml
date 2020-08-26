@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.pr.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.f14bg.event.BgEvent;
+			
+			protected var _player:Player;
+			protected var _inputState:String;
+			//protected var _inputingEffect:IEffectInstance;
+			//protected var _responsedEffect:IEffectInstance;
+			
+			public function get player():Player{
+				return this._player;
+			}
+			
+			public function set player(player:Player):void{
+				this._player = player;
+				/* this.playerInfoBoard.player = player;
+				this.playerBuildingBoard.player = player;
+				if(player!=null){
+					player.addEventListener(BgEvent.PLAYER_STATE_CHANGE, playerStateChange);
+				} */
+			}
+			
+			/**
+			 * 取得当前输入状态
+			 */
+			public function get inputState():String{
+				return this._inputState;
+			}
+			
+			/**
+			 * 设置当前输入状态
+			 */
+			public function set inputState(inputState:String):void{
+				this._inputState = inputState;
+			}
+			
+			/**
+			 * 刷新当前的输入状态
+			 */
+			public function refreshInputState():void{
+				this.inputState = this.inputState;
+			}
+			
+			public function init():void{
+				
+			}
+			
+			public function clear():void{
+				this.player = null;
+			}
+			
+			/**
+			 * 玩家状态变化时的回调函数
+			 */
+			public function playerStateChange(evt:Event):void{
+				//this.changeEffect(this.player.playerState);
+			}
+			
+			/**
+			 * 改变玩家信息框的状态
+			 */
+			protected function changeEffect(state:String):void{
+				/* this._inputingEffect.end();
+				this._responsedEffect.end();
+				switch(state){
+					case PlayerState.READY:
+					case PlayerState.RESPONSED:
+						this._responsedEffect.play();
+						break;
+					case PlayerState.INPUTING:
+						this._inputingEffect.play();
+						break;
+					default:
+				} */
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

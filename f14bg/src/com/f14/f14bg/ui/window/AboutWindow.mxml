@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="500" showCloseButton="true">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.core.util.Version;
+			private var _version:Version;
+			
+			public function set version(version:Version):void{
+				this._version = version;
+				this.title = "关于 " + this.getTitleLabel();
+			}
+			
+			public function get version():Version{
+				return this._version;
+			}
+			
+			/**
+			 * 取得显示的标题
+			 */
+			private function getTitleLabel():String{
+				var label:String = "F14桌游平台";
+				if(ApplicationUtil.gameType){
+					label += " - " + ApplicationUtil.commonHandler.getCodeLabel("BOARDGAME", ApplicationUtil.gameType);
+				}
+				return label;
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox bottom="5" left="5" right="5" horizontalAlign="center">
+		<mx:Form width="100%">
+			<mx:Text text="{this.version.title}" fontSize="14" fontWeight="bold"/>
+			<mx:HRule width="50%"/>
+			<mx:FormItem label="版本号:">
+				<mx:Text text="{this.version.version}"/>
+			</mx:FormItem>
+			<mx:FormItem label="作者:">
+				<mx:Text text="{this.version.auther}"/>
+			</mx:FormItem>
+			<mx:FormItem label="联系方式:">
+				<mx:Text text="{this.version.email}"/>
+			</mx:FormItem>
+			<mx:Spacer />
+			<mx:TextArea width="100%" height="100" editable="false" htmlText="{this.version.descr}" />
+		</mx:Form>
+		<mx:Canvas width="100%">
+			<mx:Text left="10" text="{this.version.copyright}"/>
+			<mx:Button right="10" width="70" label="确 定" click="this.cancel()" />
+		</mx:Canvas>
+	</mx:VBox>
+</FloatWindow>

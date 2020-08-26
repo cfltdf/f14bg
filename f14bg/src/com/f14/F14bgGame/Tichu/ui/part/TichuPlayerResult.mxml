@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			public var playerName:String;
+			[Bindable]
+			public var rank:String;
+			[Bindable]
+			public var score:String;
+			[Bindable]
+			public var tichuType:String;
+			[Bindable]
+			public var tichuScore:String;
+			
+			public function clear():void{
+				this.playerName = null;
+				this.rank = null;
+				this.score = null;
+				this.tichuType = null;
+				this.tichuScore = null;
+			}
+			
+			public function loadParam(param:Object):void{
+				this.clear();
+				this.playerName = param.name;
+				this.rank = param.rank;
+				this.score = param.score;
+				this.tichuType = param.tichuType;
+				if(param.tichuScore){
+					this.tichuScore = param.tichuScore;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Label text="{playerName}" width="120"/>
+	<mx:Label text="{rank}" width="40" textAlign="center"/>
+	<mx:Label text="{score}" width="50" textAlign="center"/>
+	<mx:Label text="{tichuType}" width="70" textAlign="center"/>
+	<mx:Label text="{tichuScore}" width="50" textAlign="center"/>
+</mx:HBox>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerInfoBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="200" height="60" styleName="gameBoard" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.player.TSPlayer;
+			import com.f14.f14bg.event.BgEvent;
+			import mx.binding.utils.BindingUtils;
+			import com.f14.F14bgGame.bg.player.Player;
+			
+			[Bindable]
+			protected var _tsPlayer:TSPlayer;
+			protected var _chinaCard:Boolean;
+			
+			override public function set player(player:Player):void{
+				super.player = player;
+				this._tsPlayer = player as TSPlayer;
+			}
+			
+			override public function init():void{
+				super.init();
+			}
+			
+			/**
+			 * 清除内容
+			 */
+			override public function clear():void{
+				super.clear();
+			}
+			
+			/**
+			 * 判断该玩家信息是否可以选择
+			 */
+			public function get selectable():Boolean{
+				return this.selectable;
+			}
+			
+			/**
+			 * 得到效果的目标对象
+			 */
+			override protected function get effectTarget():Object{
+				return this;
+			}
+			
+			public function set chinaCard(chinaCard:Boolean):void{
+				this._chinaCard = chinaCard;
+			}
+			
+		]]>
+	</mx:Script>
+</PlayerInfoBoard>

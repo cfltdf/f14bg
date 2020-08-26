@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="350" height="220">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Tichu.TichuUtil;
+			public var cardIds:String;
+			
+			override public function initComponents():void{
+				super.initComponents();
+			}
+			
+			/**
+			 * 选择数字
+			 */
+			protected function select(point:int):void{
+				var param:Object = {};
+				param.point = point;
+				this.doConfirm(param);
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox verticalCenter="0" horizontalCenter="0">
+		<mx:HBox>
+			<mx:Button width="50" label="2" click="this.select(2)" />
+			<mx:Button width="50" label="3" click="this.select(3)" />
+			<mx:Button width="50" label="4" click="this.select(4)" />
+			<mx:Button width="50" label="5" click="this.select(5)" />
+			<mx:Button width="50" label="6" click="this.select(6)" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Button width="50" label="7" click="this.select(7)" />
+			<mx:Button width="50" label="8" click="this.select(8)" />
+			<mx:Button width="50" label="9" click="this.select(9)" />
+			<mx:Button width="50" label="10" click="this.select(10)" />
+			<mx:Button width="50" label="J" click="this.select(11)" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Button width="50" label="Q" click="this.select(12)" />
+			<mx:Button width="50" label="K" click="this.select(13)" />
+			<mx:Button width="50" label="A" click="this.select(14)" />
+		</mx:HBox>
+	</mx:VBox>
+	<mx:Label text="{msg}" horizontalCenter="0" top="15"/>
+	<mx:Button label="放 弃" bottom="10" horizontalCenter="0" click="this.select(0)" />
+</NewConfirmWindow>

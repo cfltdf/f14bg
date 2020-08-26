@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="200" height="45">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.consts.Part;
+			import com.f14.F14bgGame.PuertoRico.event.PrEvent;
+			import com.f14.F14bgGame.PuertoRico.components.ResourcePart;
+			import com.f14.F14bgGame.PuertoRico.player.PrPlayer;
+			
+			protected var resourceParts:Array = new Array();
+			[Bindable]
+			public var player:PrPlayer;
+			
+			protected var _selectedPart:ResourcePart;
+			protected var _callBackFunction:Function;
+			protected var _multiSelection:Boolean = false;
+			
+			/**
+			 * 是否允许多选
+			 */
+			public function get multiSelection():Boolean{
+				return this._multiSelection;
+			}
+			
+			/**
+			 * 设置是否允许多选
+			 */
+			public function set multiSelection(multiSelection:Boolean):void{
+				this._multiSelection = multiSelection;
+				this.clearSelection();
+			}
+			
+			public function reset():void{
+				this.clearSelection();
+			}
+			
+			/**
+			 * 设置点击资源的回调函数
+			 */
+			public function set callBackFunction(func:Function):void{
+				var part:ResourcePart;
+				//清除原有的回调函数
+				if(this._callBackFunction!=null){
+					for each(part in this.resourceParts){
+						part.removeEventListener(PrEvent.RESOURCE_CLICK, this._callBackFunction);
+					}
+				}
+				this._callBackFunction = func;
+				//设置现有的回调函数
+				if(this._callBackFunction!=null){
+					for each(part in this.resourceParts){
+						part.addEventListener(PrEvent.RESOURCE_CLICK, this._callBackFunction);
+					}
+				}
+			}
+			
+			/**
+			 * 创建资源图标
+			 */
+			public function initResourceImage():void{
+				resourceParts = new Array();
+				var part:ResourcePart;
+				part = new ResourcePart();
+				part.type = Part.CORN;
+				part.color = true;
+				resourceParts[Part.CORN] = part;
+				hbox_resource.addChild(part);
+				part.addEventListener(PrEvent.RESOURCE_CLICK, this.onClick);
+				
+				part = new ResourcePart();
+				part.type = Part.INDIGO;
+				part.color = true;
+				resourceParts[Part.INDIGO] = part;
+				hbox_resource.addChild(part);
+				part.addEventListener(PrEvent.RESOURCE_CLICK, this.onClick);
+				
+				part = new ResourcePart();
+				part.type = Part.SUGAR;
+				part.color = true;
+				resourceParts[Part.SUGAR] = part;
+				hbox_resource.addChild(part);
+				part.addEventListener(PrEvent.RESOURCE_CLICK, this.onClick);
+				
+				part = new ResourcePart();
+				part.type = Part.TOBACCO;
+				part.color = true;
+				resourceParts[Part.TOBACCO] = part;
+				hbox_resource.addChild(part);
+				part.addEventListener(PrEvent.RESOURCE_CLICK, this.onClick);
+				
+				part = new ResourcePart();
+				part.type = Part.COFFEE;
+				part.color = true;
+				resourceParts[Part.COFFEE] = part;
+				hbox_resource.addChild(part);
+				part.addEventListener(PrEvent.RESOURCE_CLICK, this.onClick);
+			}
+			
+			/**
+			 * 设置资源是否可选
+			 */
+			public function setResourceSelectable(selectable:Boolean):void{
+				for each(var part:ResourcePart in this.resourceParts){
+					part.selectable = selectable;
+				}
+			}
+			
+			/**
+			 * 取得当前选择的资源字符串
+			 */
+			public function get selectedPartString():String{
+				if(this._selectedPart!=null){
+					return this._selectedPart.type;
+				}else{
+					return "";
+				}
+			}
+			
+			/**
+			 * 取得所有选中的资源字符串
+			 */
+			public function get selectedPartsString():String{
+				var selectedParts:Array = new Array();
+				for each(var part:ResourcePart in this.resourceParts){
+					if(part.selected){
+						selectedParts.push(part.type);
+					}
+				}
+				return selectedParts.join(",");
+			}
+			
+			/**
+			 * 清空所有选则
+			 */
+			public function clearSelection():void{
+				this._selectedPart = null;
+				for each(var part:ResourcePart in this.resourceParts){
+					part.selected = false;
+				}
+			}
+			
+			/**
+			 * 点击资源时触发的方法
+			 */
+			protected function onClick(evt:PrEvent):void{
+				if(this.multiSelection){
+					evt.part.selected = !evt.part.selected;
+				}else{
+					if(this._selectedPart!=null){
+						this._selectedPart.selected = false;
+					}
+					this._selectedPart = evt.part as ResourcePart;
+					this._selectedPart.selected = true;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox id="hbox_resource" width="180" height="20" y="5" horizontalGap="15" horizontalScrollPolicy="off" verticalScrollPolicy="off" x="14">
+	</mx:HBox>
+	<mx:Label x="15" y="20" text="{player.corn}" textAlign="center" fontWeight="bold"/>
+	<mx:Label x="50" y="20" text="{player.indigo}" textAlign="center" fontWeight="bold"/>
+	<mx:Label x="85" y="20" text="{player.sugar}" textAlign="center" fontWeight="bold"/>
+	<mx:Label x="120" y="20" text="{player.tobacco}" textAlign="center" fontWeight="bold"/>
+	<mx:Label x="155" y="20" text="{player.coffee}" textAlign="center" fontWeight="bold"/>
+</mx:Canvas>

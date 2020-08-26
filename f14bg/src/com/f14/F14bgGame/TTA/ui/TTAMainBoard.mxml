@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MainBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.F14bgGame.TTA.ui.part.*" xmlns:ns2="com.f14.F14bgGame.TTA.ui.*" xmlns:ns3="com.f14.F14bgGame.TTA.ui.window.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.manager.OvertimeCardManager;
+			import com.f14.F14bgGame.bg.ui.PlayerInfoBoard;
+			import com.f14.F14bgGame.bg.consts.InputState;
+			import com.f14.F14bgGame.TTA.ui.part.TTAPlayerInfo;
+			import com.f14.F14bgGame.TTA.player.TTAPlayer;
+			import mx.containers.Canvas;
+			import com.f14.F14bgGame.TTA.ui.window.TTAPlayerWindow;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			
+			/**
+			 * 初始化
+			 */
+			override public function init():void{
+				super.init();
+				this.gameInfo.init();
+				this.localPlayerBoard.init();
+				//设置本地玩家的默认控件
+				this.localPlayerBoard.cardRow = this.cardRow;
+				this.localPlayerBoard.playerHands = this.playerHand;
+				this.disableAllInput();
+			}
+			
+			override public function clear():void{
+				super.clear();
+				this.cardRow.clear();
+				this.gameInfo.clear();
+				this.localPlayerBoard.clear();
+				this.playerHand.clear();
+				this.vbox_playerInfo.removeAllChildren();
+				this.vbox_playerTable.removeAllChildren();
+				//清除所有游戏窗口
+				TTAUtil.stateManager.clear();
+				//禁用奖励牌堆按键
+				this.button_bonusCard.enabled = false;
+				
+				//需要清除持续条约和战争卡牌的缓存
+				TTAUtil.overtimeCardManager.clear();
+			}
+			
+			/**
+			 * 创建指定玩家的面板
+			 */
+			override public function createPlayerBoard(player:Player):void{
+				var ttaplayer:TTAPlayer = player as TTAPlayer;
+				if(TTAUtil.gameManager.isLocalPlayer(player)){
+					//如果是本地玩家,则使用本地游戏面板
+					ttaplayer.playerBoard = this.localPlayerBoard;
+					ttaplayer.playerHands = this.playerHand;
+				}else{
+					//如果是非本地玩家,则创建玩家窗口
+					var win:TTAPlayerWindow = TTAUtil.stateManager.getPlayerWindow(player.position);
+					player.playerBoard = win.playerBoard;
+				}
+				//创建玩家信息面板
+				if(player.playerInfoBoard==null){
+					var info:TTAPlayerInfoBoard = new TTAPlayerInfoBoard();
+					this.vbox_playerInfo.addChild(info);
+					info.init();
+					player.playerInfoBoard = info;
+					//player.playerInfoBoard = this.getPlayerTable(player.position);
+				}
+				//创建玩家文明明细面板
+				if(ttaplayer.playerTableBoard==null){
+					var table:TTAPlayerTable = new TTAPlayerTable();
+					this.vbox_playerTable.addChild(table);
+					table.init();
+					ttaplayer.playerTableBoard = table;
+				}
+				//禁用玩家输入
+				player.playerBoard.inputState = InputState.DISABLE_ALL;
+			}
+			
+			/**
+			 * 取得玩家信息面板
+			 */
+			public function getPlayerTable(position:int):TTAPlayerTable{
+				return this.vbox_playerTable.getChildAt(position) as TTAPlayerTable;
+			}
+			
+			/**
+			 * 禁止所有的输入
+			 */
+			override public function disableAllInput():void{
+				super.disableAllInput();
+				//this.cardRow.selectable = false;
+				this.localPlayerBoard.inputState = InputState.DISABLE_ALL;
+				this.requestWindow.visible = false;
+			}
+			
+			/**
+			 * 设置界面输入的状态
+			 */
+			override public function setInputState(code:int):void{
+				//不管啥状态,都显示所有的输入状态
+				//this.cardRow.selectable = true;
+				this.localPlayerBoard.inputState = InputState.DEFAULT;
+			}
+			
+			/**
+			 * 设置显示的面板状态
+			 */
+			public function setShowState(state:String):void{
+				switch(state){
+					case "PLAYER":
+						this.vbox_playerTable.visible = false;
+						this.localPlayerBoard.visible = true;
+						break;
+					case "SUMMARY":
+						this.vbox_playerTable.visible = true;
+						this.localPlayerBoard.visible = false;
+						break;
+					default:
+						this.vbox_playerTable.visible = false;
+						this.localPlayerBoard.visible = false;
+						break;
+				}
+			}
+			
+			/**
+			 * 转换显示界面
+			 */
+			public function changeShowState():void{
+				if(this.vbox_playerTable.visible){
+					this.setShowState("PLAYER");
+				}else{
+					this.setShowState("SUMMARY");
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<ns1:TTAGameInfo id="gameInfo" x="10" y="178" />
+	<ns1:CardRow id="cardRow" x="10" y="10" />
+	<ns1:TTAPlayerHand id="playerHand" x="183" y="178" />
+	<mx:VBox id="vbox_playerInfo" x="10" y="316">
+	</mx:VBox>
+	<mx:Canvas x="120" y="316">
+		<mx:VBox id="vbox_playerTable">
+		</mx:VBox>
+		<ns2:TTAPlayerBoard id="localPlayerBoard" visible="false"/>
+	</mx:Canvas>
+	<ns3:RequestWindow id="requestWindow" x="147" y="614" visible="false" />
+	<mx:Button x="46" y="295" label="奖励牌堆" id="button_bonusCard" enabled="false" click="TTAUtil.stateManager.bonusCardWindow.trig(false)" visible="false" />
+</MainBoard>

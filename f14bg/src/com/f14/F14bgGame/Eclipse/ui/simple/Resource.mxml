@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="33" height="34" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.consts.ResourceType;
+			protected var _resourceType:String;
+			
+			public function  set resourceType(resourceType:String):void{
+				this._resourceType = resourceType;
+				this.styleName = this.loadStyle();
+			}
+			
+			protected function loadStyle():String{
+				switch(this._resourceType){
+					case ResourceType.MONEY:
+						return "resourceMoney";
+					case ResourceType.SCIENCE:
+						return "resourceScience";
+					case ResourceType.MATERIALS:
+						return "resourceMaterials";
+					default:
+						return "";
+				}	
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

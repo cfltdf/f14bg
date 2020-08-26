@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<f14:F14application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:f14="com.f14.core.controls.*" layout="absolute">
+	<mx:Style source="./F14bg.css" />
+</f14:F14application>

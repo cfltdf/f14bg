@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="920" height="699" showCloseButton="true" xmlns:ui="com.f14.F14bgGame.Eclipse.ui.*" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<ui:EclipsePlayerBoard id="playerBoard">
+	</ui:EclipsePlayerBoard>
+</ConfirmWindow>

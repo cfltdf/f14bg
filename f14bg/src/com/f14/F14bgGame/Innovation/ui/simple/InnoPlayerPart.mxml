@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="150" height="30" styleName="gameBoard" horizontalScrollPolicy="off" verticalScrollPolicy="off" click="onClick(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.manager.DefaultManagerUtil;
+			import mx.effects.IEffectInstance;
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import com.f14.F14bgGame.Innovation.player.InnoPlayer;
+			import com.f14.F14bgGame.bg.consts.PlayerColor;
+			
+			[Bindable]
+			protected var _innoPlayer:InnoPlayer;
+			protected var _selectable:Boolean;
+			protected var _selected:Boolean = false;
+			protected var _selectEffect:IEffectInstance;
+			
+			public function set player(player:InnoPlayer):void{
+				this._innoPlayer = player;
+				if(player!=null){
+					this.setStyle("backgroundColor", PlayerColor.COLORS[player.position]);
+				}else{
+					this.setStyle("backgroundColor", null);
+				}
+			}
+			
+			public function get player():InnoPlayer{
+				return this._innoPlayer;
+			}
+			
+			public function init():void{
+				//设置对象为可选高光
+				InnoUtil.effectManager.addHighlight(this);
+				_selectEffect = DefaultManagerUtil.effectManager.selectEffect.createInstance(this);
+				this.selectable = true;
+			}
+			
+			/**
+			 * 清除内容
+			 */
+			public function clear():void{
+				this.player = null;
+			}
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+			}
+			
+			/**
+			 * 判断该玩家信息是否可以选择
+			 */
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			/**
+			 * 设置图像是否选中
+			 */
+			public function set selected(selected:Boolean):void{
+				this._selected = selected;
+				if(this.selected){
+					DefaultManagerUtil.effectManager.glowEffect.end();
+					this._selectEffect.play();
+				}else{
+					this._selectEffect.end();
+				}
+			}
+			
+			public function get selected():Boolean{
+				return this._selected;
+			}
+			
+			/**
+			 * 点击玩家信息时触发的方法
+			 */
+			protected function onClick(evt:MouseEvent):void{
+				if(evt.currentTarget==this){
+					if(this._selectable){
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Canvas id="canvas_border" width="100%" height="100%" borderStyle="solid" borderThickness="1" alpha="1">
+	</mx:Canvas>
+	<mx:Label id="label_name" text="{_innoPlayer.name}" width="140" horizontalCenter="0" verticalCenter="0" styleName="playerInfoText"/>
+</mx:Canvas>

@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:component="com.f14.F14bgGame.bg.component.*" styleName="gameBoard">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.event.TTAAuctionAdjustEvent;
+			import com.f14.F14bgGame.TTA.event.TTAEvent;
+			import mx.containers.VBox;
+			import com.f14.F14bgGame.TTA.ui.part.TTALabel;
+			import com.f14.F14bgGame.TTA.ui.part.TTALabelColumn;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.TTA.components.TTACard;
+			import com.f14.F14bgGame.bg.consts.PlayerColor;
+			import com.f14.F14bgGame.TTA.player.TTAPlayer;
+			[Bindable]
+			protected var _player:TTAPlayer;
+			[Bindable]
+			protected var _total:String;
+			protected var _inputable:Boolean;
+			protected var units:Array = new Array();
+			protected var bonusCards:Array = new Array();
+			
+			public function set inputable(inputable:Boolean):void{
+				this._inputable = inputable;
+				this.checkStyle();
+			}
+			
+			public function get inputable():Boolean{
+				return this._inputable;
+			}
+			
+			public function set player(player:TTAPlayer):void{
+				this._player = player;
+				if(player!=null){
+					this.setStyle("backgroundColor", PlayerColor.COLORS[player.position]);
+				}else{
+					this.setStyle("backgroundColor", null);
+				}
+			}
+			
+			public function get player():TTAPlayer{
+				return this._player;
+			}
+			
+			public function set total(total:String):void{
+				this._total = total;
+			}
+			
+			public function get total():String{
+				return this._total;
+			}
+			
+			public function clear():void{
+				//移除部队选择器的监听方法
+				for each(var selecter:UnitSelecter in this.units){
+					selecter.removeEventListener(TTAEvent.AUCTION_ADJUST, onUnitAdjust);
+				}
+				this.units = new Array();
+				this.player = null;
+				this.total = null;
+				this.vbox_unit.removeAllChildren();
+				//移除加值卡
+				this.clearBonusCards();
+			}
+			
+			/**
+			 * 重置输入
+			 */
+			public function reset():void{
+				this.total = "";
+				//将所有部队数置0
+				for each(var selecter:UnitSelecter in this.vbox_unit){
+					selecter.num = 0;
+				}
+				if(TTAUtil.gameManager.isLocalPlayer(this.player)){
+					//如果是本地玩家的拍卖组件,则将加值卡设为全部不选中
+					for each(var card:TTACard in this.bonusCards){
+						card.selected = false;
+					}
+				}else{
+					//否则移除所有加值卡
+					this.clearBonusCards();
+				}
+			}
+			
+			/**
+			 * 清除所有加值卡
+			 */
+			public function clearBonusCards():void{
+				//移除加值卡的监听方法
+				for each(var card:TTACard in this.bonusCards){
+					card.removeEventListener(MouseEvent.CLICK, onBonusCardAdjust);
+				}
+				this.bonusCards = new Array();
+				this.hbox_card.removeAllChildren();
+			}
+			
+			/**
+			 * 装载拍卖出价信息 
+			 */
+			public function loadAuctionParam(param:Object):void{
+				//重置出价信息
+				this.reset();
+				if(param.pass){
+					this.total = "放弃";
+				}else{
+					this.total = param.totalValue;
+					//装载选择的部队信息
+					var object:Object = null;
+					for each(object in param.units){
+						var selecter:UnitSelecter = this.getUnit(object.cardId);
+						selecter.num = object.num;
+					}
+					//装载选择的加值卡信息
+					for each(object in param.bonusCards){
+						var card:TTACard = this.getBonusCard(object.cardId);
+						if(card==null && object.selected==true){
+							//如果没有取到该加值卡,并且该卡为选中状态,则创建一个(如果是本地玩家,则必定会取到)
+							card = this.createBonusCard(object.cardId);
+							this.hbox_card.addChild(card);
+							this.bonusCards[object.cardId] = card;
+						}
+						if(card!=null){
+							card.selected = object.selected;
+						}
+					}
+				}
+			}
+			
+			/**
+			 * 创建加值卡
+			 */
+			protected function createBonusCard(cardId:String):TTACard{
+				var card:TTACard = new TTACard(0.2);
+				card.object = TTAUtil.resourceManager.getObject(cardId);
+				card.addEventListener(MouseEvent.CLICK, onBonusCardAdjust);
+				return card;
+			}
+			
+			/**
+			 * 添加加值卡
+			 */
+			public function addBonusCard(cardId:String):void{
+				var card:TTACard = this.createBonusCard(cardId);
+				this.hbox_card.addChild(card);
+				this.bonusCards[cardId] = card;
+			}
+			
+			/**
+			 * 添加加值卡
+			 */
+			public function addBonusCards(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				for each(var cardId:String in ids){
+					this.addBonusCard(cardId);
+				}
+			}
+			
+			/**
+			 * 添加部队信息
+			 */
+			public function addUnit(cardId:String, availableNum:int):void{
+				var card:TTACard = TTAUtil.resourceManager.createTTACard(cardId);
+				if(card!=null){
+					var selecter:UnitSelecter = new UnitSelecter();
+					//var vbox:VBox = this.getVbox(card);
+					vbox_unit.addChild(selecter);
+					card.yellow = availableNum;
+					selecter.ttaLabel.card = card;
+					selecter.addEventListener(TTAEvent.AUCTION_ADJUST, onUnitAdjust);
+					this.units[cardId] = selecter;
+				}
+			}
+			
+			/**
+			 * 添加部队信息
+			 */
+			public function addUnits(units:Array):void{
+				for each(var unit:Object in units){
+					this.addUnit(unit.cardId, unit.num);
+				}
+			}
+			
+			/**
+			 * 拍卖部队数值调整时触发的方法
+			 */
+			protected function onUnitAdjust(event:TTAAuctionAdjustEvent):void{
+				var param:Object = new Object();
+				param.subact = "adjustUnit";
+				param.cardId = event.card.id;
+				param.num = event.num;
+				this.total = "计算中...";
+				TTAUtil.stateManager.territoryWindow.doConfirm(param);
+			}
+			
+			/**
+			 * 拍卖加值卡调整时触发的方法
+			 */
+			protected function onBonusCardAdjust(event:MouseEvent):void{
+				var card:TTACard = event.target as TTACard;
+				if(card!=null && card.selectable){
+					//调整加值卡的选择状态
+					card.selected = !card.selected;
+					//发送加值卡状态的指令
+					var param:Object = new Object();
+					param.subact = "adjustBonusCard";
+					param.cardId = card.id;
+					param.selected = card.selected;
+					this.total = "计算中...";
+					TTAUtil.stateManager.territoryWindow.doConfirm(param);
+				}
+			}
+			
+			/**
+			 * 检查显示的状态
+			 */
+			protected function checkStyle():void{
+				this.hbox_button.visible = this.inputable;
+				this.hbox_card.selectable = this.inputable;
+				//设置所有单位选择器的可选状态
+				for each(var selecter:UnitSelecter in this.vbox_unit.getChildren()){
+					selecter.inputable = this.inputable;
+				}
+			}
+			
+			/**
+			 * 确认拍卖
+			 */
+			protected function doConfirm():void{
+				var param:Object = new Object();
+				param.subact = "confirm";
+				TTAUtil.stateManager.territoryWindow.doConfirm(param);
+			}
+			
+			/**
+			 * 放弃拍卖
+			 */
+			protected function doPass():void{
+				var param:Object = new Object();
+				param.subact = "pass";
+				TTAUtil.stateManager.territoryWindow.doConfirm(param);
+			}
+			
+			/**
+			 * 取得部队选择器
+			 */
+			public function getUnit(cardId:String):UnitSelecter{
+				return this.units[cardId] as UnitSelecter;
+			}
+			
+			/**
+			 * 取得加值卡
+			 */
+			public function getBonusCard(cardId:String):TTACard{
+				return this.bonusCards[cardId] as TTACard;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox width="220">
+		<mx:HBox width="100%">
+			<mx:VBox horizontalCenter="0" horizontalAlign="center" top="40" verticalGap="4">
+				<mx:Label y="10" text="{_player.name}" horizontalCenter="0" width="120" fontWeight="bold" textAlign="center"/>
+				<mx:HBox>
+					<mx:Label text="军事力" textAlign="center" width="60" fontWeight="bold"/>
+					<mx:Label text="{_player.military}" textAlign="center" width="60" fontWeight="bold"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="殖民点数" textAlign="center" width="60" fontWeight="bold"/>
+					<mx:Label text="{_player.colonyBonus}" textAlign="center" width="60" fontWeight="bold"/>
+				</mx:HBox>
+				<mx:HBox id="hbox_button">
+					<mx:Button label="确定" click="this.doConfirm()"/>
+					<mx:Button label="放弃" click="this.doPass()"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:Canvas width="100%" height="100%">
+				<mx:Canvas left="5" right="5" top="5" bottom="5" borderStyle="outset" borderThickness="1">
+					<mx:Label text="总数" textAlign="center" fontWeight="bold" width="60" horizontalCenter="0" top="15"/>
+					<mx:Label text="{_total}" textAlign="center" width="60" fontWeight="bold" fontSize="16" horizontalCenter="0" top="45"/>
+				</mx:Canvas>
+			</mx:Canvas>
+		</mx:HBox>
+		<mx:VBox verticalGap="10">
+			<mx:VBox id="vbox_unit" horizontalGap="4" minHeight="200">
+			</mx:VBox>
+			<component:SelectableHbox id="hbox_card" height="55" horizontalScrollPolicy="auto" verticalScrollPolicy="off">
+			</component:SelectableHbox>
+		</mx:VBox>
+	</mx:VBox>
+</mx:Canvas>

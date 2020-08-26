@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="450" height="40" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.TS.TSUtil;
+			import com.f14.F14bgGame.bg.ui.simple.SimpleCard;
+			protected var _spaceRaceChance:int;
+			protected var _showStatus:String;
+			
+			public function set showStatus(showStatus:String):void{
+				this._showStatus = showStatus;
+				switch(showStatus){
+					case "HEADLINE":
+						this.hbox_normal.visible = false;
+						this.hbox_headline.visible = true;
+						break;
+					default:
+						this.hbox_normal.visible = true;
+						this.hbox_headline.visible = false;
+				}
+			}
+			
+			/**
+			 * 装载显示参数
+			 */
+			public function loadParam(param:Object):void{
+				this.spaceRaceChance = param.spaceRaceChance;
+				this.buttonStyle = param.style;
+				if(param.cardId){
+					//如果存在选中的卡牌,则不允许卡牌的选择
+					TSUtil.getLocalPlayer().tsPlayerBoard.playerHands.selectable = false;
+					TSUtil.getLocalPlayer().tsPlayerBoard.playerHands.setSelectedCard(param.cardId);
+				}
+				this.button_chinacard.enabled = param.chinaCard;
+			}
+			
+			/**
+			 * 设置太空竞赛的可使用次数
+			 */
+			protected function set spaceRaceChance(spaceRaceChance:int):void{
+				this._spaceRaceChance = spaceRaceChance;
+				this.button_spacerace.label = "太空竞赛(" + spaceRaceChance + ")";
+				this.button_spacerace.enabled = _spaceRaceChance>0;
+			}
+			
+			/**
+			 * 设置按键显示样式
+			 */
+			protected function set buttonStyle(style:String):void{
+				switch(style){
+					case "action": //只允许行动按键
+						this.button_op.enabled = true;
+						this.button_event.enabled = false;
+						this.button_spacerace.enabled = false;
+						break;
+					default:
+						this.button_op.enabled = true;
+						this.button_event.enabled = true;
+						this.button_spacerace.enabled = _spaceRaceChance>0;
+						break;
+				}
+			}
+			
+			/**
+			 * 执行回合行动
+			 */
+			protected function doAction(subact:String):void{
+				var card:SimpleCard = TSUtil.getLocalPlayer().tsPlayerBoard.playerHands.getSelectedCard();
+				if(card==null){
+					ApplicationUtil.alert("请先选择要使用的牌!");
+					return;
+				}
+				var param:Object = {};
+				param.cardId = card.object.id;
+				TSUtil.actionManager.sendCurrentCommand(subact, param);
+			}
+			
+			/**
+			 * 执行回合行动
+			 */
+			protected function doNoCardAction(subact:String):void{
+				var param:Object = {};
+				TSUtil.actionManager.sendCurrentCommand(subact, param);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox id="hbox_normal" visible="false">
+		<mx:Button id="button_op" label="使用OP" width="80" click="this.doAction('ACTION_USE_OP')" />
+		<mx:Button id="button_event" label="发生事件" width="80" click="this.doAction('ACTION_ACTIVE_EVENT')" />
+		<mx:Button id="button_spacerace" label="太空竞赛" width="100" click="this.doAction('ACTION_SPACE_RACE')" />
+		<mx:Button id="button_chinacard" label="打中国牌" width="80" click="this.doNoCardAction('ACTION_CHINA_CARD')" />
+		<mx:Button id="button_pass" label="结束行动" width="80" click="this.doNoCardAction('PASS')" />
+	</mx:HBox>
+	<mx:HBox id="hbox_headline" visible="false">
+		<mx:Button id="button_headline" label="发生头条" width="80" click="this.doAction('ACTION_HEAD_LINE')" />
+	</mx:HBox>
+</mx:Canvas>

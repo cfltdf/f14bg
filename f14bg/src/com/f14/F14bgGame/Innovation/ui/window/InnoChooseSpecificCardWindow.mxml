@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<InnoConfirmWindow xmlns="com.f14.F14bgGame.Innovation.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="600" height="250">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoCardLabel;
+			import com.f14.F14bgGame.Innovation.ui.part.InnoPlayerHand;
+			import mx.controls.HRule;
+			
+			private var cardsPart:InnoPlayerHand;
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				//创建分割线...
+				var rule:HRule = new HRule;
+				rule.width = this.width*0.8;
+				rule.x = (this.width-rule.width)/2;
+				rule.y = 80;
+				this.addChild(rule);
+				
+				cardsPart = new InnoPlayerHand();
+				cardsPart.width = this.width*0.8;
+				cardsPart.x = (this.width-cardsPart.width)/2;
+				cardsPart.y = 90;
+				this.addChild(cardsPart);
+				cardsPart.init();
+				//设置为单选
+				cardsPart.selectable = true;
+				cardsPart.autoSort = true;
+				cardsPart.setEventTrigOnSelected(true);
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				this.loadCards(param.specificCardIds);
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				if(this.cardsPart!=null){
+					this.cardsPart.clear();
+				}
+			}
+			
+			/**
+			 * 装载卡牌信息
+			 */
+			protected function loadCards(cardIds:String):void{
+				this.cardsPart.addCards(cardIds);
+			}
+			
+			/**
+			 * 创建确认时的参数
+			 */
+			override protected function createConfirmParam():Object{
+				//取得cardsPart中的所有牌,作为参数传入
+				var cards:Array = this.cardsPart.getAllCards();
+				var param:Object = {};
+				param.cardIds = BgUtils.label2StringEach(cards);
+				return param;
+			}
+			
+			/**
+			 * 移除待选卡牌
+			 */
+			public function removeCards(cardIds:String):void{
+				this.cardsPart.removeCards(cardIds);
+			}
+			
+		]]>
+	</mx:Script>
+</InnoConfirmWindow>

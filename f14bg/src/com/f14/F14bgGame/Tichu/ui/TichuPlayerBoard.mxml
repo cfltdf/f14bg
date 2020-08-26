@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Tichu.player.TichuPlayer;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import com.f14.F14bgGame.bg.consts.InputState;
+			import com.f14.F14bgGame.Tichu.ui.part.TichuButtonPart;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgGame.bg.consts.PlayerColor;
+			import com.f14.F14bgGame.Tichu.ui.part.TichuCardBoard;
+			
+			public var positionType:int = 0;
+			public var tichuPlayerInfoBoard:TichuPlayerInfoBoard;
+			public var playerHand:TichuCardBoard;
+			public var playerCard:TichuCardBoard;
+			public var buttonPart:TichuButtonPart;
+			
+			public static var CARD_BOARD_WIDTH:int = 350;
+			public static var CARD_BOARD_HEIGHT:int = 142;
+			
+			/**
+			 * 所有输入部件
+			 */
+			protected var parts:Array = ["DEFAULT", "HAND", "BIG_TICHU", "EXCHANGE", "ROUND", "BOMB", "BOMB_BUTTON"];
+			
+			public function get tichuPlayer():TichuPlayer{
+				return this.player as TichuPlayer;
+			}
+			
+			override public function init():void{
+				this.tichuPlayerInfoBoard = new TichuPlayerInfoBoard();
+				this.playerHand = new TichuCardBoard();
+				this.playerCard = new TichuCardBoard();
+				
+				//按照positionType生成组件
+				//0下 1左 2上 3右
+				switch(positionType){
+					case 0:
+						this.width = CARD_BOARD_WIDTH + 5 + 270 + 5;
+						this.height = CARD_BOARD_HEIGHT*2 + 1;
+						this.playerCard.x = 0;
+						this.playerCard.y = 0;
+						this.tichuPlayerInfoBoard.x = CARD_BOARD_WIDTH + 5;
+						this.tichuPlayerInfoBoard.y = CARD_BOARD_HEIGHT*2 + 1 - 55;
+						this.playerHand.x = 0;
+						this.playerHand.y = CARD_BOARD_HEIGHT + 1;
+						//只有本地玩家会添加按钮部件
+						this.buttonPart = new TichuButtonPart();
+						this.buttonPart.x = CARD_BOARD_WIDTH + 5;
+						this.buttonPart.y = CARD_BOARD_HEIGHT + 1;
+						this.addChild(buttonPart);
+						this.buttonPart.init();
+						break;
+					case 1:
+						this.width = CARD_BOARD_WIDTH + CARD_BOARD_HEIGHT + 15;
+						this.height = CARD_BOARD_WIDTH + 55 + 5;
+						this.playerCard.x = 0;
+						this.playerCard.y = 145;
+						this.tichuPlayerInfoBoard.x = CARD_BOARD_WIDTH + 5 + CARD_BOARD_HEIGHT - 150;
+						this.tichuPlayerInfoBoard.y = 0;
+						this.playerHand.x = CARD_BOARD_WIDTH + 5;
+						this.playerHand.y = CARD_BOARD_WIDTH + 55 + 5;
+						this.playerHand.rotation = 270;
+						break;
+					case 2:
+						this.width = CARD_BOARD_WIDTH + 10 + 150;
+						this.height = CARD_BOARD_HEIGHT*2 + 1;
+						this.playerCard.x = 0;
+						this.playerCard.y = CARD_BOARD_HEIGHT + 1;
+						this.tichuPlayerInfoBoard.x = CARD_BOARD_WIDTH + 10;
+						this.tichuPlayerInfoBoard.y = 0;
+						this.playerHand.x = 0;
+						this.playerHand.y = 0;
+						break;
+					case 3:
+						this.width = CARD_BOARD_WIDTH + CARD_BOARD_HEIGHT + 15;
+						this.height = CARD_BOARD_WIDTH + 55 + 5;
+						this.playerCard.x = CARD_BOARD_HEIGHT + 5;
+						this.playerCard.y = 145;
+						this.tichuPlayerInfoBoard.x = 0;
+						this.tichuPlayerInfoBoard.y = CARD_BOARD_WIDTH + 5;
+						this.playerHand.x = CARD_BOARD_HEIGHT;
+						this.playerHand.y = 0;
+						this.playerHand.rotation = 90;
+						break;
+				}
+				
+				this.addChild(playerHand);
+				this.addChild(playerCard);
+				this.addChild(tichuPlayerInfoBoard);
+				
+				this.playerHand.init();
+				this.playerCard.init();
+				this.tichuPlayerInfoBoard.init();
+			}
+			
+			override public function clear():void{
+				super.clear();
+				this.playerHand.clear();
+				this.playerCard.clear();
+				this.tichuPlayerInfoBoard.clear();
+				if(this.buttonPart!=null){
+					this.buttonPart.clear();
+				}
+			}
+			
+			override public function set player(player:Player):void{
+				super.player = player;
+				this.tichuPlayerInfoBoard.player = player;
+			}
+			
+			/**
+			 * 设置输入状态
+			 */
+			override public function set inputState(inputState:String):void{
+				super.inputState = inputState;
+				var enableParts:Array = new Array();
+				switch(inputState){
+					case InputState.ENABLE_ALL: //允许所有
+					case InputState.DEFAULT: //默认状态
+						break;
+					case InputState.DISABLE_ALL: //不允许所有
+						break;
+					case "BIG_TICHU": //大地主阶段
+						enableParts.push("BIG_TICHU");
+						break;
+					case "REGROUP": //换牌
+						enableParts.push("HAND");
+						enableParts.push("EXCHANGE");
+						break;
+					case "ROUND": //回合出牌
+						enableParts.push("HAND");
+						enableParts.push("ROUND");
+						break;
+					case "BOMB": //炸弹按钮
+						//如果玩家还有手牌,则显示该按钮
+						if(!this.playerHand.isEmpty()){
+							enableParts.push("BOMB");
+						}
+						break;
+					 case "BOMB_ROUND": //炸弹阶段出牌
+					 	enableParts.push("HAND");
+					 	enableParts.push("BOMB_BUTTON");
+					 	break;
+				}
+				this.setEnableParts(enableParts);
+			}
+			
+			/**
+			 * 设置数组中的部件为可选
+			 */
+			protected function setEnableParts(enableParts:Array):void{
+				for each(var part:String in parts){
+					this.setPartInputable(part, BgUtils.inArray(part, enableParts));
+				}
+			}
+			
+			/**
+			 * 设置各个输入部件是否输入的情况
+			 */
+			protected function setPartInputable(part:String, inputable:Boolean):void{
+				switch(part){
+					case "DEFAULT": //默认部件
+						break;
+					case "HAND": //手牌
+						this.playerHand.selectable = inputable;
+						break;
+					case "BIG_TICHU": //大地主按钮
+						if(this.buttonPart!=null){
+							this.buttonPart.buttons_big.visible = inputable;
+						}
+						break;
+					case "EXCHANGE": //换牌时的按钮
+						if(this.buttonPart!=null){
+							this.buttonPart.buttons_exchange.visible = inputable;
+						}
+						break;
+					case "ROUND": //出牌时的按钮
+						if(this.buttonPart!=null){
+							this.buttonPart.buttons_normal.visible = inputable;
+						}
+						break;
+					case "BOMB": //炸弹的按钮
+						if(this.buttonPart!=null){
+							this.buttonPart.buttons_bomb.visible = inputable;
+						}
+						break;
+					case "BOMB_BUTTON": //炸弹阶段的出牌按钮
+						if(this.buttonPart!=null){
+							this.buttonPart.buttons_normal_bomb.visible = inputable;
+						}
+						break;
+				}
+			}
+		]]>
+	</mx:Script>
+</PlayerBoard>

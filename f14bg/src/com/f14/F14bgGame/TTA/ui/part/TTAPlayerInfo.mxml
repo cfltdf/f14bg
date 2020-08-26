@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100" height="145" styleName="gameBoard" horizontalScrollPolicy="off" verticalScrollPolicy="off" click="onClick(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.event.TTAEvent;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.bg.consts.PlayerColor;
+			import com.f14.F14bgGame.TTA.player.TTAPlayer;
+			
+			[Bindable]
+			protected var _ttaPlayer:TTAPlayer;
+			protected var _selectable:Boolean;
+			
+			public function set player(player:TTAPlayer):void{
+				this._ttaPlayer = player;
+				if(player!=null){
+					this.setStyle("backgroundColor", PlayerColor.COLORS[player.position]);
+				}else{
+					this.setStyle("backgroundColor", null);
+				}
+			}
+			
+			public function get player():TTAPlayer{
+				return this._ttaPlayer;
+			}
+			
+			public function init():void{
+				//设置对象为可选高光
+				TTAUtil.effectManager.addHighlight(this);
+				this.selectable = true;
+			}
+			
+			/**
+			 * 清除内容
+			 */
+			public function clear():void{
+				this.player = null;
+			}
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+			}
+			
+			/**
+			 * 判断该玩家信息是否可以选择
+			 */
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			/**
+			 * 点击玩家信息时触发的方法
+			 */
+			protected function onClick(evt:MouseEvent):void{
+				if(evt.currentTarget==this){
+					if(this._selectable){
+						var event:TTAEvent = new TTAEvent(TTAEvent.CLICK_PLAYER_INFO);
+						this.dispatchEvent(event);
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Canvas id="canvas_border" width="100%" height="100%" borderStyle="solid" borderThickness="1" alpha="1">
+	</mx:Canvas>
+	<mx:Canvas y="27" horizontalCenter="0" alpha="0.5" styleName="playerInfo" width="99" height="115" />
+	<mx:Label id="label_name" text="{_ttaPlayer.name}" y="5" left="6" right="6" styleName="playerInfoText"/>
+	<mx:Label text="{_ttaPlayer.culturePoint}" textAlign="center" width="35" x="7" y="29" styleName="playerInfoText"/>
+	<mx:Label text="{_ttaPlayer.culture}" textAlign="center" width="35" x="61" y="29" styleName="playerInfoText"/>
+	<mx:Label text="{_ttaPlayer.sciencePoint}" textAlign="center" width="35" x="7" y="56" styleName="playerInfoText"/>
+	<mx:Label text="{_ttaPlayer.science}" textAlign="center" width="35" x="61" y="56" styleName="playerInfoText"/>
+	<mx:Label text="{_ttaPlayer.military}" textAlign="center" width="35" x="7" y="83" styleName="playerInfoText"/>
+	<mx:Label text="{_ttaPlayer.happiness}" textAlign="center" width="35" x="61" y="83" styleName="playerInfoText"/>
+	<mx:HBox horizontalGap="1" x="0" y="117">
+		<mx:Label text="{_ttaPlayer.civilAction}" textAlign="center" styleName="playerInfoText"/>
+		<mx:Label text="{_ttaPlayer.militaryAction}" textAlign="center" styleName="playerInfoText"/>
+	</mx:HBox>
+	<mx:HBox horizontalGap="1" x="53" y="117">
+		<mx:Label text="{_ttaPlayer.civilHands}" textAlign="center" styleName="playerInfoText"/>
+		<mx:Label text="{_ttaPlayer.militaryHands}" textAlign="center" styleName="playerInfoText"/>
+	</mx:HBox>
+</mx:Canvas>

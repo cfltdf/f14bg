@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="105" height="20" horizontalScrollPolicy="off" verticalScrollPolicy="off" mouseOver="onMouseOver(event)" mouseOut="onMouseOut(event)" backgroundAlpha="0.7">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.bg.consts.PlayerColor;
+			import mx.core.UIComponent;
+			import mx.core.FlexBitmap;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.TTA.consts.CardType;
+			import com.f14.F14bgGame.TTA.components.TTACard;
+			//ⅠⅡⅢＡ● ●
+			[Bindable]
+			protected var _age:String;
+			[Bindable]
+			protected var _name:String;
+			[Bindable]
+			protected var _descr:String;
+			protected var _card:TTACard;
+			protected var _selectable:Boolean;
+			
+			/**
+			 * 颜色代码 - 红
+			 */
+			private static var RED:String = "#b90000";
+			/**
+			 * 颜色代码 - 白
+			 */
+			private static var WHITE:String = "#cdcdcd";
+			/**
+			 * 颜色代码 - 蓝
+			 */
+			private static var BLUE:String = "#1200c1";
+			/**
+			 * 颜色代码 - 黄
+			 */
+			private static var YELLOW:String = "#ffd200";
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			/**
+			 * 设置该标签显示的卡牌
+			 */
+			public function set card(card:TTACard):void{
+				this._card = card;
+				if(card==null || card.object==null){
+					this._age = null;
+					this._name = null;
+					this._descr = null;
+				}else{
+					this._age = this.getAgeText(card.object.level);
+					this._name = card.object.name;
+				}
+				this.checkStyle();
+			}
+			
+			/**
+			 * 取得该标签显示的卡牌
+			 */
+			public function get card():TTACard{
+				return this._card;
+			}
+			
+			/**
+			 * 取得时代对应的显示文字
+			 */
+			protected function getAgeText(age:int):String{
+				switch(age){
+					case 0:
+						return "Ａ";
+					case 1:
+						return "Ⅰ";
+					case 2:
+						return "Ⅱ";
+					case 3:
+						return "Ⅲ";
+					default:
+						return "";
+				}
+			}
+			
+			/**
+			 * 按照card设置样式
+			 */
+			protected function checkStyle():void{
+				if(this._card==null || this._card.object==null){
+					//this.setStyle("backgroundColor", null);
+				}else{
+					var bitmap:FlexBitmap = new FlexBitmap();
+					bitmap.bitmapData = TTAUtil.imageManager.getLabelImage(this._card.object.cardType);
+					var uc:UIComponent = new UIComponent();
+					uc.addChild(bitmap);
+					this.addChildAt(uc, 0);
+					//this.setStyle("backgroundColor", this.getCardColor(this._card.object.cardType));
+				}
+				this.checkDescr();
+			}
+			
+			/**
+			 * 按照cardType取得对应的颜色
+			 */
+			protected function getCardColor(cardType:String):String{
+				switch(cardType){
+					case CardType.GOVERMENT:
+						return "#f39a00";
+					case CardType.LEADER:
+						return "#00cc00";
+					case CardType.WONDER:
+						return "#ab00a1";
+					case CardType.PRODUCTION:
+						return "#730000";
+					case CardType.BUILDING:
+						return "#7b7b7b";
+					case CardType.UNIT:
+						return "#d50000";
+					case CardType.SPECIAL:
+						return "#0054ff";
+					case CardType.EVENT:
+						return "#1b7200";
+					case CardType.TACTICS:
+						return "#910000";
+					case CardType.PACT:
+						return "#00d3cc";
+					case CardType.WAR:
+						return "#431f1f";
+				}
+				return null;
+			}
+			
+			/**
+			 * 按照card设置descr的内容
+			 */
+			public function checkDescr():void{
+				var str:String = "";
+				if(this._card!=null){
+					if(this._card.white!=0){
+						if(str.length>0){
+							str += "/";
+						}
+						str += "<font color='" + WHITE + "'>" + this._card.white + "</font>";
+					}
+					if(this._card.red!=0){
+						if(str.length>0){
+							str += "/";
+						}
+						str += "<font color='" + RED + "'>" + this._card.red + "</font>";
+					}
+					if(this._card.blue!=0){
+						if(str.length>0){
+							str += "/";
+						}
+						str += "<font color='" + BLUE + "'>" + this._card.blue + "</font>";
+					}
+					if(this._card.yellow!=0){
+						if(str.length>0){
+							str += "/";
+						}
+						str += "<font color='" + YELLOW + "'>" + this._card.yellow + "</font>";
+					}
+					if(this._card.ab!=null){
+						str = "<font color='" + PlayerColor.COLOR_STRING[this._card.ab.a] + "'>■</font>"
+							+ " <font color='" + PlayerColor.COLOR_STRING[this._card.ab.b] + "'>■</font>";
+					}
+				}
+				this._descr = str;
+				//存在内容则显示
+				this.canvas_descr.visible = (this._descr.length>0);
+			}
+			
+			/**
+			 * 鼠标移到图像上时触发的事件
+			 */
+			protected function onMouseOver(evt:MouseEvent):void{
+				if(this.card!=null && this.card.object!=null){
+					//显示tooltip
+					var point:Point = new Point(this.x, this.y);
+					point = this.parent.localToGlobal(point);
+					TTAUtil.tooltipManager.setImage(this.card);
+					var newpoint:Point = new Point(point.x, point.y);
+					if((point.x + this.width + TTAUtil.tooltipManager.getTooltipWidth() + 5) > ApplicationUtil.application.width){
+						newpoint.x = newpoint.x - TTAUtil.tooltipManager.getTooltipWidth() - 5;
+					}else{
+						newpoint.x = newpoint.x + this.width + 5;
+					}
+					if((point.y + TTAUtil.tooltipManager.getTooltipHeight()) > ApplicationUtil.application.height){
+						newpoint.y = ApplicationUtil.application.height - TTAUtil.tooltipManager.getTooltipHeight() - 5;
+					}else{
+					}
+					TTAUtil.tooltipManager.showTooltip(newpoint.x, newpoint.y);
+				}
+			}
+			
+			/**
+			 * 鼠标移出图像时触发的事件
+			 */
+			protected function onMouseOut(evt:MouseEvent):void{
+				//隐藏tooltip
+				TTAUtil.tooltipManager.hideTooltip();
+			}
+		]]>
+	</mx:Script>
+	<mx:Label text="{_age}" width="15" fontWeight="bold"/>
+	<mx:Label text="{_name}" x="16"/>
+	<mx:Canvas id="canvas_descr" width="35" x="72">
+		<mx:Label htmlText="{_descr}" width="35"/>
+	</mx:Canvas>
+</mx:Canvas>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AlertWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="350" height="220" xmlns:simple="com.f14.F14bgGame.TTA.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.TTA.components.TTACard;
+			/**
+			 * 清除窗口
+			 */
+			override public function clear():void{
+				super.clear();
+				this.canvas_card.removeAllChildren();
+			}
+			
+			/**
+			 * 装载参数
+			 */
+			override public function loadParam(msg:String, param:Object):void{
+				super.loadParam(msg, param);
+				if(param){
+					var card:TTACard = TTAUtil.resourceManager.createTTACard(param.cardId);
+					this.canvas_card.addChild(card);
+					this.canvas_card.visible = true;
+					this.image_alert.visible = false;
+				}else{
+					this.canvas_card.visible = false;
+					this.image_alert.visible = true;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Button label="确定" click="this.cancel()" horizontalCenter="0" bottom="10"/>
+	<mx:HBox horizontalCenter="0" top="15" horizontalGap="15" verticalAlign="middle">
+		<mx:Canvas width="75" height="110">
+			<simple:CardCanvas id="canvas_card" horizontalCenter="0" verticalCenter="0" />
+			<mx:Image id="image_alert" horizontalCenter="0" verticalCenter="0" width="55" height="50" source="@Embed('./com/f14/F14bgGame/TTA/images/alert.png')"/>
+		</mx:Canvas>
+		<mx:Text text="{msg}" width="197"/>
+	</mx:HBox>
+</AlertWindow>

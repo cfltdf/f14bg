@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			[Bindable]
+			public var playerName:String;
+			[Bindable]
+			public var totalVP:String;
+			[Bindable]
+			public var vps:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var rank:String;
+			[Bindable]
+			public var score:String;
+			[Bindable]
+			public var rankPoint:String;
+			
+			/**
+			 * 清除所有信息
+			 */
+			public function clear():void{
+				this.playerName = null;
+				this.totalVP = null;
+				this.vps.removeAll();
+				this.rank = null;
+				this.score = null;
+				this.rankPoint = null;
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox top="5" bottom="5" left="5" right="5">
+		<mx:HBox verticalAlign="middle">
+			<mx:Canvas borderStyle="outset">
+				<mx:Label text="{rank}" fontSize="42" textAlign="center" fontWeight="bold" color="#000000"/>
+			</mx:Canvas>
+			<mx:VBox>
+				<mx:Label text="{playerName}" color="#000000" fontSize="16" textAlign="left" fontWeight="bold"/>
+				<mx:HBox horizontalGap="2">
+					<mx:Label text="得分：" color="#000000" textAlign="left" fontWeight="bold"/>
+					<mx:Label text="{totalVP}" color="#000000" textAlign="left" fontWeight="bold"/>
+				</mx:HBox>
+				<mx:HBox horizontalGap="2">
+					<mx:Label text="积分：" color="#000000" textAlign="left" fontWeight="bold"/>
+					<mx:Label text="{score}" color="#000000" textAlign="left" fontWeight="bold"/>
+					<mx:Canvas width="15" />
+					<mx:Label text="排名点：" color="#000000" textAlign="left" fontWeight="bold"/>
+					<mx:Label text="{rankPoint}" color="#000000" textAlign="left" fontWeight="bold"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:DataGrid id="grid_score" width="100%" height="100%" color="#000000" dataProvider="{vps}">
+			<mx:columns>
+				<mx:DataGridColumn headerText="项 目" dataField="label"/>
+				<mx:DataGridColumn headerText="得 分" dataField="vp"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+</mx:Canvas>

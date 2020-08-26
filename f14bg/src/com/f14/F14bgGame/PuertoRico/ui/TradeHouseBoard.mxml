@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="50" styleName="prBoard" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.consts.Part;
+			import com.f14.F14bgGame.PuertoRico.components.ResourcePart;
+			public var goods:Array = new Array();
+			
+			public function clear():void{
+				for each(var part:ResourcePart in this.goods){
+					part.type = null;
+				}
+			}
+			
+			/**
+			 * 创建货物部件
+			 */
+			public function createGoodPart():void{
+				var part:ResourcePart;
+				
+				//创建4格交易所
+				for(var i:int=0;i<4;i++){
+					part = new ResourcePart();
+					part.color = true;
+					this.hbox_goods.addChild(part);
+					goods.push(part);
+				}
+			}
+			
+			/**
+			 * 取得第一个空的货物格子
+			 */
+			public function getEmptyPart():ResourcePart{
+				for(var i:int=0;i<this.goods.length;i++){
+					if(goods[i].type==null){
+						return goods[i] as ResourcePart;
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * 添加货物
+			 */
+			public function addGood(goodType:String):void{
+				var part:ResourcePart = this.getEmptyPart();
+				if(part!=null){
+					part.type = goodType;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Label x="10" text="交易所" verticalCenter="0" fontWeight="bold"/>
+	<mx:HBox id="hbox_goods" x="62" height="25" verticalCenter="0">
+	</mx:HBox>
+</mx:Canvas>

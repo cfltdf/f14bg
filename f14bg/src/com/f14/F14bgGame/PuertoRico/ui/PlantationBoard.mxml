@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="330" height="45" horizontalScrollPolicy="off" verticalScrollPolicy="off" styleName="prBoard">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			import mx.collections.ArrayCollection;
+			import com.f14.F14bgGame.PuertoRico.components.PlantationTile;
+			
+			public var plantations:ArrayCollection = new ArrayCollection();
+			public var quarry:PlantationTile;
+		
+			/**
+			 * 创建采石场板块
+			 */
+			public function createQuarryTile():void{
+				//创建采石场板块
+				quarry = new PlantationTile();
+				var obj:Object = new Object();
+				obj.imageIndex = 3; //采石场图片代码
+				quarry.object = obj;
+				this.canvas_quarry.addChild(quarry);
+				quarry.addEventListener(MouseEvent.CLICK, onQuarryClick);
+			}
+			
+			public function clear():void{
+				this.plantations.removeAll();
+				this.hbox_plantation.removeAllChildren();
+			}
+			
+			/**
+			 * 添加种植园
+			 */
+			public function addPlantation(obj:Object):void{
+				var tile:PlantationTile = new PlantationTile();
+				tile.object = obj;
+				this.hbox_plantation.addChild(tile);
+				this.plantations.addItem(tile);
+				tile.addEventListener(MouseEvent.CLICK, onPlantationClick);
+			}
+			
+			/**
+			 * 取得指定的种植园板块
+			 */
+			public function getPlantation(id:String):PlantationTile{
+				for each(var tile:PlantationTile in this.plantations){
+					if(tile.id==id){
+						return tile;
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * 移除种植园
+			 */
+			public function removePlantation(id:String):void{
+				var tile:PlantationTile = this.getPlantation(id);
+				if(tile!=null){
+					this.hbox_plantation.removeChild(tile);
+					this.plantations.removeItemAt(this.plantations.getItemIndex(tile));
+					//移除监听
+					tile.removeEventListener(MouseEvent.CLICK, onPlantationClick);
+				}
+			}
+			
+			/**
+			 * 设置所有种植园板块是否可选
+			 */
+			public function setAllSelectable(selectable:Boolean):void{
+				this.quarry.selectable = selectable;
+				for each(var tile:PlantationTile in this.plantations){
+					tile.selectable = selectable;
+				}
+			}
+			
+			/**
+			 * 点击种植园时触发的事件
+			 */
+			public function onPlantationClick(evt:Event):void{
+				var tile:PlantationTile = evt.target as PlantationTile;
+				if(tile && tile.selectable){
+					PRUtil.actionManager.settle(false, tile.id);
+				}
+			}
+			
+			/**
+			 * 点击采石场时触发的事件
+			 */
+			public function onQuarryClick(evt:Event):void{
+				var tile:PlantationTile = evt.target as PlantationTile;
+				if(tile && tile.selectable){
+					PRUtil.actionManager.settle(true, null);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas  id="canvas_quarry" height="100%">
+	</mx:Canvas>
+	<mx:HBox id="hbox_plantation" height="100%" horizontalGap="3">
+	</mx:HBox>
+</mx:HBox>

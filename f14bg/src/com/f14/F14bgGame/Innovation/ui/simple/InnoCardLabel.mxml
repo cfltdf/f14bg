@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SimpleCard xmlns="com.f14.F14bgGame.bg.ui.simple.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="120" height="55" alpha="1.0">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import mx.core.UIComponent;
+			import mx.core.FlexBitmap;
+			import com.f14.core.util.ApplicationUtil;
+			
+			[Bindable]
+			protected var _level:String;
+			
+			/**
+			 * 设置显示样式
+			 */
+			override protected function refreshStyle():void{
+				if(this.object!=null && this.object.object!=null){
+					var card:Object = this.object.object;
+					//按照卡牌的类型设置显示的背景
+					this.loadLabelStyle();
+					this._name = card.name;
+					this._level = card.level;
+				}else{
+					this._name = "";
+					this._level = "";
+				}
+			}
+			
+			/**
+			 * 装载卡牌的样式
+			 */
+			protected function loadLabelStyle():void{
+				var card:Object = this.object.object;
+				//装载背景
+				var bitmap:FlexBitmap = new FlexBitmap();
+				bitmap.bitmapData = InnoUtil.imageManager.getLabelImage(card.color);
+				var uc:UIComponent = new UIComponent();
+				uc.addChild(bitmap);
+				this.addChildAt(uc, 0);
+				//装载符号
+				var i:int = 0;
+				for each(var icon in card.topIcons){
+					bitmap = new FlexBitmap();
+					bitmap.bitmapData = InnoUtil.imageManager.getIconImage(icon);
+					bitmap.width = 24;
+					bitmap.height = 24;
+					var uc:UIComponent = new UIComponent();
+					uc.addChild(bitmap);
+					uc.x = 5 + i*(24+5);
+					uc.y = 28;
+					this.addChildAt(uc, 1);
+					i += 1;
+				}
+				
+				
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Label x="5" y="5" text="{this._name}" width="80" fontWeight="bold" color="#000000"/>
+	<mx:Label x="84" y="5" text="{this._level}" width="40" textAlign="center" fontWeight="bold" color="#ffffff"/>
+</SimpleCard>

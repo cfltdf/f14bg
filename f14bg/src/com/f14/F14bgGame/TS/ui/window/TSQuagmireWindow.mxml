@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TSConfirmWindow xmlns="com.f14.F14bgGame.TS.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="300" height="240" xmlns:ns1="com.f14.F14bgGame.TS.ui.simple.*" title="">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.ui.simple.TSCardLabel;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.bg.ui.simple.SimpleCard;
+			import com.f14.F14bgGame.TS.TSUtil;
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				this.cardMessage = this.local_cm;
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				this.vbox_normal.visible = false;
+				this.vbox_force.visible = false;
+				this.canvas_card.removeAllChildren();
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				if(param.title){
+					this.title = param.title;
+				}
+				if(param.forceCardId){
+					var card:TSCardLabel = TSUtil.resourceManager.createTSLabel(param.forceCardId);
+					this.canvas_card.addChild(card);
+					this.vbox_normal.visible = false;
+					this.vbox_force.visible = true;
+				}else{
+					this.vbox_normal.visible = true;
+					this.vbox_force.visible = false;
+				}
+			}
+			
+			public function confirmParam(subact:String):void{
+				var param:Object = {};
+				param.subact = subact;
+				var card:SimpleCard = TSUtil.mainBoard.playerBoard_local.playerHands.getSelectedCard();
+				if(card){
+					param.cardId = card.object.object.id;
+				}
+				this.sendParam(param);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox top="10" bottom="10" left="10" right="10" horizontalAlign="center">
+		<ns1:TSCardMessage id="local_cm" width="100%" />
+		<mx:Spacer height="5" />
+		<mx:Canvas width="100%" height="100%">
+			<mx:VBox id="vbox_normal" horizontalAlign="center" horizontalCenter="0" verticalCenter="0">
+				<mx:Button label="弃牌并掷骰" click="this.confirmParam('DISCARD')" width="150" />
+				<mx:Button label="打计分牌" click="this.confirmParam('SCORE')" width="150" />
+				<mx:Button label="结束行动" click="this.doPass()" width="150" />
+			</mx:VBox>
+			<mx:VBox id="vbox_force" horizontalAlign="center" horizontalCenter="0" verticalCenter="0">
+				<mx:Canvas id="canvas_card" width="120" height="30" />
+				<mx:Button label="弃牌并掷骰" click="this.confirmParam('DISCARD')" width="150" />
+			</mx:VBox>
+		</mx:Canvas>
+	</mx:VBox>
+</TSConfirmWindow>

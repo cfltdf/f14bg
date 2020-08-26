@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="43" height="32" styleName="supplyButton" click="this.trigPublicWindow()">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.ui.window.EclipsePublicWindow;
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			
+			public function get selectable():Boolean{
+				return true;
+			}
+			
+			public function trigPublicWindow():void{
+				var win:EclipsePublicWindow = EclipseUtil.stateManager.publicWindow;
+				win.trig(false);
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

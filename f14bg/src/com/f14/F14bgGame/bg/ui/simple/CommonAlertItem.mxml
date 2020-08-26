@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AlertItem xmlns="com.f14.F14bgGame.bg.ui.simple.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="300" height="50" backgroundColor="#F9FFB1" backgroundAlpha="0.8" cornerRadius="3" borderStyle="solid" dropShadowEnabled="true">
+	<mx:Text text="{this.message}" left="30" right="30" textAlign="center" fontWeight="bold" verticalCenter="0" selectable="false" fontSize="14" color="#7B0000"/>
+</AlertItem>

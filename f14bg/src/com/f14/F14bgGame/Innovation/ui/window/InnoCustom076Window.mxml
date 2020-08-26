@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<InnoConfirmWindow xmlns="com.f14.F14bgGame.Innovation.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="450" height="240">
+	<mx:Script>
+		<![CDATA[
+			import mx.containers.VBox;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.Innovation.consts.InnoColor;
+			import mx.containers.HBox;
+			import mx.controls.Button;
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import mx.controls.HRule;
+			
+			private var buttons:Array = new Array();
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				//创建分割线...
+				var rule:HRule = new HRule;
+				rule.width = this.width*0.8;
+				rule.x = (this.width-rule.width)/2;
+				rule.y = 80;
+				this.addChild(rule);
+				
+				var vbox:VBox = new VBox();
+				vbox.width = 310;
+				var hbox:HBox = null;
+				for(var i:int=1;i<=10;i++){
+					if(i%5==1){
+						hbox = new HBox();
+						hbox.width = 310;
+						vbox.addChild(hbox);
+					}
+					var button:Button = new Button();
+					button.width = 55;
+					button.label = i+"";
+					button.addEventListener(MouseEvent.CLICK, ApplicationUtil.createClickFunction(onClick, i));
+					hbox.addChild(button);
+					buttons.push(button);
+				}
+				vbox.x = (this.width-vbox.width)/2;
+				vbox.y = 100;
+				this.addChild(vbox);
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				for each(var button:Button in buttons){
+					button.selected = false;
+				}
+			}
+			
+			private function onClick(e:Event, i:int):void{
+				var param:Object = {};
+				param.level = i;
+				this.doConfirm(param);
+			}
+			
+		]]>
+	</mx:Script>
+</InnoConfirmWindow>

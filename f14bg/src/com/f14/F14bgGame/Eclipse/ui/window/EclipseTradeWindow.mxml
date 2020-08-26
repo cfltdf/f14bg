@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EclipseConfirmWindow xmlns="com.f14.F14bgGame.Eclipse.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="600" height="300" xmlns:component="com.f14.F14bgGame.bg.component.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.ui.simple.Resource;
+			import com.f14.F14bgGame.Eclipse.components.EclipseShipPart;
+			import com.f14.F14bgGame.Eclipse.manager.EclipseUIManager;
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			import com.f14.F14bgGame.Eclipse.ui.simple.Unit;
+			import com.f14.F14bgGame.bg.component.FlowCanvas;
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoCardLabel;
+			import com.f14.F14bgGame.Innovation.ui.part.InnoPlayerHand;
+			import mx.controls.HRule;
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				this.label_msg.text = null;
+				this.label_from.text = null;
+				this.label_to.text = null;
+				this.canvas_from.removeAllChildren();
+				this.canvas_to.removeAllChildren();
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				this.label_msg.text = param.msg;
+				
+				if(param.resFrom){
+					var resFrom:Resource = EclipseUtil.resourceManager.createResource(param.resFrom);
+					this.canvas_from.addChild(resFrom);
+					var resTo:Resource = EclipseUtil.resourceManager.createResource(param.resTo);
+					this.canvas_to.addChild(resTo);
+					this.label_from.text = (param.tradeFrom * param.tradeTimes) + "";
+					this.label_to.text = (param.tradeTo * param.tradeTimes) + "";
+				}
+			}
+			
+			/**
+			 * 创建确认时的参数
+			 */
+			override protected function createConfirmParam():Object{
+				var param:Object = {};
+				return param;
+			}
+			
+			/**
+			 * 执行交易
+			 */
+			public function doTrade(from:String, to:String):void{
+				var param:Object = {"resFrom":from, "resTo":to};
+				EclipseUtil.actionManager.sendCurrentCommand("DO_TRADE", param);
+			}
+			
+			public function confirmTrade():void{
+				EclipseUtil.actionManager.sendCurrentCommand("CONFIRM_TRADE");
+			}
+			
+			public function resetTrade():void{
+				EclipseUtil.actionManager.sendCurrentCommand("RESET_TRADE");
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas width="100%" height="100%" styleName="bgrepeat">
+		<mx:Label id="label_msg" top="10" horizontalCenter="0" styleName="textSummaryNumber" />
+		
+		<mx:HBox id="hbox_trade" verticalAlign="middle" horizontalCenter="0" top="40">
+			<mx:Label id="label_from" width="50" styleName="textBigCounter" textAlign="right" />
+			<mx:Label text="x" styleName="textBigCounter" textAlign="center" />
+			<mx:Canvas id="canvas_from" width="33" height="34" />
+			<mx:Label text="->" styleName="textBigCounter" textAlign="center" />
+			<mx:Label id="label_to" width="50" styleName="textBigCounter" textAlign="right" />
+			<mx:Label text="x" styleName="textBigCounter" textAlign="center" />
+			<mx:Canvas id="canvas_to" width="33" height="34" />
+		</mx:HBox>
+		<mx:HBox id="hbox_button" horizontalCenter="0" bottom="10">
+			<mx:Button label="确 定" width="80" click="this.confirmTrade()" />
+			<mx:Button label="重 置" width="80" click="this.resetTrade()" />
+			<mx:Button label="取 消" width="80" click="this.doCancel()" />
+		</mx:HBox>
+		<mx:Grid horizontalCenter="0" top="100" horizontalGap="30">
+			<mx:GridRow width="100%" height="100%">
+				<mx:GridItem width="100%" height="100%">
+					<mx:Button styleName="buttonTradeS2M" width="100" height="30" click="this.doTrade('SCIENCE', 'MONEY')"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%" height="100%">
+					<mx:Button styleName="buttonTradeMA2M" width="100" height="30" click="this.doTrade('MATERIALS', 'MONEY')"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow width="100%" height="100%">
+				<mx:GridItem width="100%" height="100%">
+					<mx:Button styleName="buttonTradeM2S" width="100" height="30" click="this.doTrade('MONEY', 'SCIENCE')"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%" height="100%">
+					<mx:Button styleName="buttonTradeMA2S" width="100" height="30" click="this.doTrade('MATERIALS', 'SCIENCE')"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow width="100%" height="100%">
+				<mx:GridItem width="100%" height="100%">
+					<mx:Button styleName="buttonTradeM2MA" width="100" height="30" click="this.doTrade('MONEY', 'MATERIALS')"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%" height="100%">
+					<mx:Button styleName="buttonTradeS2MA" width="100" height="30" click="this.doTrade('SCIENCE', 'MATERIALS')"/>
+				</mx:GridItem>
+			</mx:GridRow>
+		</mx:Grid>
+	</mx:Canvas>
+</EclipseConfirmWindow>

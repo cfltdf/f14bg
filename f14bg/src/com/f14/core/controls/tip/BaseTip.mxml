@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" backgroundAlpha="1.0" cornerRadius="4" borderStyle="solid" maxWidth="250" backgroundColor="#B1B1B1">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			public var msg:String;
+			
+			/**
+			 * 是否显示提示
+			 */
+			public function showTip():Boolean{
+				return (msg!=null && msg.length>0);
+			}
+		]]>
+	</mx:Script>
+	<mx:Text x="10" y="10" htmlText="{msg}"/>
+</mx:Canvas>

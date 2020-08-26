@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off" height="100">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.RFTG.RaceUtil;
+			import com.f14.F14bgGame.RFTG.consts.RaceConst;
+			import com.f14.F14bgGame.RFTG.ui.simple.GoalCard;
+			
+			public var imageWidth:int = 25;
+			public var imageHeight:int = 25;
+			
+			public function clear():void{
+				this.container_most.removeAllChildren();
+				this.container_first.removeAllChildren();
+			}
+			
+			/**
+			 * 添加目标
+			 */
+			public function addGoal(goalId:String):void{
+				var obj:Object = RaceUtil.cardManager.getGoal(goalId);
+				if(obj!=null){
+					var card:GoalCard = new GoalCard(0.2);
+					card.object = obj;
+					if(obj.goalType==RaceConst.MOST){
+						this.container_most.addChild(card);
+					}else{
+						var size:int = this.container_first.getChildren().length;
+						var x:int = (imageWidth + 3)  * int(size%2);
+						var y:int = (imageHeight + 3) * int(size/2);
+						card.x = x;
+						card.y = y;
+						this.container_first.addChild(card);
+					}
+				}
+			}
+			
+			/**
+			 * 移除目标
+			 */
+			public function removeGoal(goalId:String):void{
+				var goal:GoalCard = this.getGoal(goalId);
+				if(goal!=null){
+					if(goal.object.goalType==RaceConst.MOST){
+						this.container_most.removeChild(goal);
+					}else{
+						this.container_first.removeChild(goal);
+					}
+				}
+			}
+			
+			/**
+			 * 取得目标
+			 */
+			public function getGoal(goalId:String):GoalCard{
+				var goal:GoalCard;
+				for each(goal in this.container_most.getChildren()){
+					if(goal.object.id==goalId){
+						return goal;
+					}
+				}
+				for each(goal in this.container_first.getChildren()){
+					if(goal.object.id==goalId){
+						return goal;
+					}
+				}
+				return null;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:HBox id="container_most" x="3" y="3" horizontalGap="3">
+	</mx:HBox>
+	<mx:Canvas id="container_first" x="3" y="31">
+	</mx:Canvas>
+</mx:Canvas>

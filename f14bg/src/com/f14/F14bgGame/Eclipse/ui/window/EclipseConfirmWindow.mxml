@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml"  minWidth="450" height="160" verticalScrollPolicy="off" horizontalScrollPolicy="off" xmlns:simple="com.f14.F14bgGame.bg.ui.simple.*" xmlns:simple1="com.f14.F14bgGame.Innovation.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+</NewConfirmWindow>

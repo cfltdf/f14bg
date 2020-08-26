@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.consts.SuperPower;
+			import com.f14.F14bgGame.TS.TSUtil;
+			import com.f14.F14bgGame.TS.components.TSCard;
+			import com.f14.F14bgGame.TS.ui.simple.TSCardLabel;
+			
+			protected var vboxes:Array = new Array();
+			
+			public function init():void{
+				vboxes = new Array();
+				vboxes.push(this.vbox_global_list);
+				vboxes.push(this.vbox_ussr_list);
+				vboxes.push(this.vbox_usa_list);
+			}
+		
+			public function clear():void{
+				this.vbox_global_list.removeAllChildren();
+				this.vbox_usa_list.removeAllChildren();
+				this.vbox_ussr_list.removeAllChildren();
+			}
+			
+			/**
+			 * 添加生效卡牌
+			 */
+			public function addActivedCard(target:String, cardId:String):void{
+				var label:TSCardLabel = new TSCardLabel();
+				var card:TSCard = TSUtil.resourceManager.createTSCard(cardId);
+				if(card!=null){
+					label.object = card;
+					var vbox:VBox = this.getVbox(target);
+					vbox.addChild(label);
+				}
+			}
+			
+			/**
+			 * 添加生效卡牌
+			 */
+			public function addActivedCards(target:String, cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				for each(var id:String in ids){
+					this.addActivedCard(target, id);
+				}
+			}
+			
+			/**
+			 * 移除生效卡牌
+			 */
+			public function removeActivedCard(cardId:String):void{
+				for each(var vbox:VBox in this.vboxes){
+					for each(var label:TSCardLabel in vbox.getChildren()){
+						if(label.object.object.id==cardId){
+							vbox.removeChild(label);
+							return;
+						}
+					}
+				}
+			}
+			
+			/**
+			 * 移除生效卡牌
+			 */
+			public function removeActivedCards(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				for each(var id:String in ids){
+					this.removeActivedCard(id);
+				}
+			}
+			
+			/**
+			 * 按照超级大国类型取得相应的vbox
+			 */
+			protected function getVbox(superPower:String):VBox{
+				switch(superPower){
+					case SuperPower.USSR:
+						return this.vbox_ussr_list;
+					case SuperPower.USA:
+						return this.vbox_usa_list;
+					default:
+						return this.vbox_global_list;
+				}
+			}
+			
+			
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%" horizontalAlign="center" horizontalGap="1">
+		<mx:Label text="全局事件" />
+		<mx:VBox id="vbox_global_list" width="100%" minHeight="150" horizontalAlign="center" />
+		<mx:Label text="苏联事件" />
+		<mx:VBox id="vbox_ussr_list" width="100%" minHeight="50" horizontalAlign="center" />
+		<mx:Label text="美国事件" />
+		<mx:VBox id="vbox_usa_list" width="100%" minHeight="50" horizontalAlign="center" />
+	</mx:VBox>
+</mx:Canvas>

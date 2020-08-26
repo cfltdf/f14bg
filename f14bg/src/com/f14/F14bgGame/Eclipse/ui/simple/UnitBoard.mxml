@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="150" height="150" backgroundColor="#08088A" backgroundAlpha="0.1" xmlns:component="com.f14.F14bgGame.bg.component.*" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			
+			protected var units:Array = new Array();
+			
+			public function get selectable():Boolean{
+				return true;
+			}
+		
+			public function init():void{
+				EclipseUtil.effectManager.addHighlight(this);
+			}
+			
+			public function addUnit(o:Unit):void{
+				this.units.push(o);
+				this.flowCanvas.addChild(o);
+				var s:int = this.getScale();
+				if(s>1){
+					this.flowCanvas.setScale(s);
+				} 
+			}
+			
+			protected function getScale():int{
+				switch(units.length){
+					case 4:
+					case 16:
+					case 64:
+					case 256:
+						return 2;
+					default:
+						return 1;
+				}
+			}
+		]]>
+	</mx:Script>
+	<component:FlowCanvas id="flowCanvas" width="150" height="150" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+</mx:Canvas>

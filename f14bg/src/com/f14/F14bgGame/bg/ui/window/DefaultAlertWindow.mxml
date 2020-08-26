@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AlertWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:HBox y="30" horizontalCenter="0" horizontalGap="0" horizontalAlign="center">
+		<mx:Spacer width="15" />
+		<mx:Label text="{msg}"  textAlign="center"/>
+		<mx:Spacer width="15" />
+	</mx:HBox>
+	<mx:Button label="确定" click="this.cancel()" horizontalCenter="0" bottom="10"/>
+</AlertWindow>

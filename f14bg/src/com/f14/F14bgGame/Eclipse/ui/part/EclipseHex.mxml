@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="445" height="387" styleName="eclipseHex" horizontalScrollPolicy="off" verticalScrollPolicy="off" click="this.onClick()" xmlns:component="com.f14.F14bgGame.bg.component.*" xmlns:simple="com.f14.F14bgGame.Eclipse.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.ui.simple.UnitNpc;
+			import com.f14.F14bgGame.Eclipse.ui.simple.Unit;
+			import com.f14.F14bgGame.Eclipse.ui.simple.InfluenceDisc;
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			import com.f14.F14bgGame.Eclipse.ui.simple.Planet;
+			import com.f14.core.util.ApplicationUtil;
+			
+			protected var _selectable:Boolean;
+			
+			public var cardIndex:int;
+			public var position:Point;
+			public var explored:Boolean;
+			public var vp:int;
+			public var artifactKey:Boolean;
+			public var wormHoles:Array;
+			public var planetObjects:Array;
+			public var unitObjects:Array;
+			public var ownerPosition:int;
+			public var discoveryTile:Boolean;
+			
+			protected var hexObject:Object;
+			protected var planets:Array = new Array();
+			protected var units:Array = new Array();
+			
+			public function init():void{
+				this.unitBoard.init();
+				EclipseUtil.effectManager.addHighlight(this);
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+			}
+			
+			public function set planetSelectable(selectable:Boolean):void{
+				for each(var o:Planet in this.planets){
+					o.selectable = selectable;
+				}
+			}
+			
+			public function setProperty(param:Object):void{
+				this.hexObject = param;
+				this.cardIndex = param.cardIndex;
+				this.position = new Point(param.position.x, param.position.y);
+				this.explored = param.explored;
+				this.vp = param.vp;
+				this.artifactKey = param.artifactKey;
+				this.wormHoles = param.wormHoles;
+				this.planetObjects = param.planets;
+				this.unitObjects = param.units;
+				this.ownerPosition = param.owner;
+				this.discoveryTile = param.discoveryTile;
+			}
+			
+			public function drawComponent():void{
+				if(this.explored){
+					this.canvas_circle.visible = true;
+					this.canvas_vp.visible = true;
+					this.unitBoard.visible = true;
+					
+					this.label_vp.text = this.vp + "";
+					this.label_cardIndex.text = this.cardIndex + "";
+					
+					this.canvas_artifactKey.visible = this.artifactKey;
+					this.canvas_discoveryTile.visible = this.discoveryTile;
+					
+					//设置虫洞的显示
+					var wms:Array = [
+						canvas_wormhole_0, canvas_wormhole_1, canvas_wormhole_2,
+						canvas_wormhole_3, canvas_wormhole_4, canvas_wormhole_5
+					];
+					for(var i:int = 0; i<6; i++){
+						(wms[i] as Canvas).visible = this.wormHoles[i] == 1;
+					}
+					
+					//添加星球
+					var obj:Object = null;
+					for each(obj in this.planetObjects){
+						var p:Planet = new Planet();
+						p.setPlanetObject(obj);
+						p.setHexObject(this.hexObject);
+						this.addPlanet(p);
+					}
+					//添加单位
+					for each(obj in this.unitObjects){
+						var unit:Unit = EclipseUtil.resourceManager.createUnit(obj);
+						this.addUnit(unit);
+					}
+					
+					//如果存在拥有者,则创建影响力圆片
+					if(this.ownerPosition>=0){
+						var c:InfluenceDisc = EclipseUtil.resourceManager.createInfluenceDisc(ownerPosition);
+						c.x = this.width / 2 - c.width / 2;
+						c.y = this.height / 2 - c.height / 2;
+						this.addChild(c);
+					}
+				}else{
+					EclipseUtil.effectManager.setGrayFilter(this);
+				}
+			}
+			
+			/**
+			 * 添加星球
+			 */
+			protected function addPlanet(planet:Planet):void{
+				var pos:Point = this.getNextPlanetPosition();
+				planet.x = pos.x;
+				planet.y = pos.y;
+				this.canvas_planet.addChild(planet);
+				planet.drawComponent();
+				this.planets.push(planet);
+			}
+			
+			/**
+			 * 取得下一个星球的位置
+			 */
+			protected function getNextPlanetPosition():Point{
+				var positions:Array = [
+					new Point(152, 96), new Point(294, 290), new Point(332, 200),
+					new Point(294, 96), new Point(152, 290)
+				];
+				//取得中点后,计算出左上角点的坐标
+				var p:Point = positions[this.planets.length];
+				p.x -= 100;
+				p.y -= 100;
+				return p;
+			}
+			
+			/**
+			 * 添加单位
+			 */
+			protected function addUnit(unit:Unit):void{
+				this.units.push(unit);
+				if(unit is UnitNpc){
+					this.canvas_npcunit.addChild(unit);
+				}else{
+					this.unitBoard.addUnit(unit);
+				}
+			}
+			
+			/**
+			 * 点击板块触发的事件
+			 */
+			protected function onClick():void{
+				if(this.selectable){
+					var param:Object = {};
+					param.x = this.position.x;
+					param.y = this.position.y;
+					EclipseUtil.actionManager.sendCurrentCommand("SELECT_HEX", param);
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Canvas id="canvas_circle" width="100" height="100" styleName="hexCircle" visible="false" horizontalCenter="0" verticalCenter="0" />
+	<component:CardCanvas id="canvas_npcunit" width="200" horizontalCenter="0" verticalCenter="20" />
+	<mx:Label id="label_cardIndex" width="100" styleName="textBigCounter" right="10" verticalCenter="0" textAlign="right" />
+	<mx:Canvas id="canvas_discoveryTile" width="70" height="66" styleName="hexDiscoveryTile" visible="false" horizontalCenter="-70" verticalCenter="-30"/>
+	<mx:Canvas id="canvas_vp" width="50" height="50" styleName="hexVp" visible="false" horizontalCenter="50" verticalCenter="-30">
+		<mx:Label id="label_vp" width="30" textAlign="center" styleName="textVp" horizontalCenter="0" verticalCenter="0" />
+	</mx:Canvas>
+	<mx:Canvas id="canvas_artifactKey" width="50" height="50" styleName="hexArtifactKey" visible="false" horizontalCenter="80" verticalCenter="-50"/>
+	<mx:Canvas id="canvas_planet" width="445" height="387" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+	
+	<mx:Canvas id="canvas_wormhole_0" width="53" height="27" styleName="hexWormHole" visible="false" horizontalCenter="53" top="27" rotation="180" />
+	<mx:Canvas id="canvas_wormhole_1" width="53" height="27" styleName="hexWormHole" visible="false" right="20" top="136.5" rotation="240" />
+	<mx:Canvas id="canvas_wormhole_2" width="53" height="27" styleName="hexWormHole" visible="false" right="47" bottom="64.5" rotation="300" />
+	<mx:Canvas id="canvas_wormhole_3" width="53" height="27" styleName="hexWormHole" visible="false" horizontalCenter="0" bottom="0"/>
+	<mx:Canvas id="canvas_wormhole_4" width="53" height="27" styleName="hexWormHole" visible="false" left="66.3" bottom="106.5" rotation="60" />
+	<mx:Canvas id="canvas_wormhole_5" width="53" height="27" styleName="hexWormHole" visible="false" left="92.3" top="87.1" rotation="120" />
+	
+	<simple:UnitBoard id="unitBoard" left="30" verticalCenter="0" visible="false" />
+</mx:Canvas>

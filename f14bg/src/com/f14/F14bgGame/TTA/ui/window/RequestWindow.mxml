@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" height="200" xmlns:ns1="com.f14.F14bgGame.TTA.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.consts.InputState;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.TTA.components.TTACard;
+			[Bindable]
+			protected var msg:String;
+			protected var useCardId:String;
+			protected var showCardId:String;
+			protected var param:Object;
+			
+			public function clear():void{
+				this.loadCard(null);
+				this.msg = null;
+				this.useCardId = null;
+				this.showCardId = null;
+				//显示默认界面
+				this.showUI(InputState.DEFAULT);
+			}
+			
+			/**
+			 * 装载卡牌图像
+			 */
+			public function loadCard(cardId:String):void{
+				this.canvas_card.removeAllChildren();
+				var card:TTACard = TTAUtil.resourceManager.createTTACard(cardId);
+				if(card==null){
+					//如果没有找到图像,则不显示图像
+					this.canvas_card.visible = false;
+					this.canvas_content.width = 280;
+					this.canvas_content.x = 10;
+				}else{
+					//如果找到图像,则显示该图像
+					this.canvas_card.visible = true;
+					this.canvas_card.addChild(card);
+					this.canvas_content.width = 200;
+					this.canvas_content.x = 90;
+				}
+			}
+			
+			/**
+			 * 按照参数装载窗口信息
+			 */
+			public function loadParam(param:Object):void{
+				this.useCardId = param.useCardId;
+				this.showCardId = param.showCardId;
+				this.loadCard(this.showCardId);
+				this.showUI(param.cmdString);
+				this.msg = param.msg;
+				this.param = param.param;
+			}
+			
+			/**
+			 * 取消时触发的方法
+			 */
+			protected function onCancel():void{
+				TTAUtil.stateManager.hideRequestWindow();
+			}
+			
+			/**
+			 * 创建当前窗口的参数
+			 */
+			public function createParam():Object{
+				var param:Object = {};
+				if(this.useCardId!=null){
+					param.useCardId = this.useCardId;
+				}
+				if(this.showCardId!=null){
+					param.showCardId = this.showCardId;
+				}
+				if(this.param!=null){
+					for(var key:String in this.param){
+						param[key] = this.param[key];
+					}
+				}
+				return param;
+			}
+			
+			/**
+			 * 按照命令字符串显示相应的界面
+			 */
+			protected function showUI(cmdString:String):void{
+				switch(cmdString){
+					case "ACTION_CHANGE_GOVERMENT": //改变政府
+						this.canvas_msg.visible = false;
+						this.canvas_changegoverment.visible = true;
+						this.canvas_wonder.visible = false;
+						break;
+					case "ACTION_WONDER_STEP": //建造奇迹的步骤
+						this.canvas_msg.visible = false;
+						this.canvas_changegoverment.visible = false;
+						this.canvas_wonder.visible = true;
+						break;
+					default: //默认显示
+						this.canvas_msg.visible = true;
+						this.canvas_changegoverment.visible = false;
+						this.canvas_wonder.visible = false;
+				}
+			}
+			
+			/**
+			 * 改变政府的操作
+			 * 
+			 * @param revolution 是否以革命方式改变
+			 */
+			protected function changeGoverment(revolution:Boolean):void{
+				var param:Object = this.createParam();
+				param.revolution = revolution;
+				TTAUtil.actionManager.changeGoverment(param);
+			}
+			
+			/**
+			 * 选择建造奇迹的步骤
+			 * 
+			 * @param step 建造的步骤
+			 */
+			protected function buildWonderStep(step:int):void{
+				var param:Object = this.createParam();
+				param.buildStep = step;
+				TTAUtil.actionManager.buildWonderStep(param);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Canvas width="300">
+		<ns1:CardCanvas id="canvas_card" x="10" y="10">
+		</ns1:CardCanvas>
+		<mx:Canvas id="canvas_content" y="10" height="108" width="200" x="90">
+			<mx:Canvas id="canvas_msg" width="100%" height="100%" visible="false">
+				<mx:Label text="{msg}" verticalCenter="0" left="10" right="10" textAlign="center"/>
+			</mx:Canvas>
+			<mx:Canvas id="canvas_changegoverment" width="100%" height="100%" visible="false">
+				<mx:Label text="{msg}" left="10" right="10" textAlign="center" y="20"/>
+				<mx:HBox y="57" horizontalCenter="0">
+					<mx:Button label="革 命" click="this.changeGoverment(true)"/>
+					<mx:Button label="和平演变" click="this.changeGoverment(false)"/>
+				</mx:HBox>
+			</mx:Canvas>
+			<mx:Canvas id="canvas_wonder" width="100%" height="100%" visible="true">
+				<mx:Label text="{msg}" left="10" right="10" textAlign="center" y="20"/>
+				<mx:HBox y="57" horizontalCenter="0">
+					<mx:Button label="1" click="this.buildWonderStep(1)"/>
+					<mx:Button label="2" click="this.buildWonderStep(2)"/>
+					<mx:Button label="3" click="this.buildWonderStep(3)"/>
+					<mx:Button label="4" click="this.buildWonderStep(4)"/>
+				</mx:HBox>
+			</mx:Canvas>
+		</mx:Canvas>
+		<mx:HBox y="130" horizontalCenter="0">
+			<mx:Button label="取消" click="onCancel()"/>
+		</mx:HBox>
+	</mx:Canvas>
+</mx:TitleWindow>

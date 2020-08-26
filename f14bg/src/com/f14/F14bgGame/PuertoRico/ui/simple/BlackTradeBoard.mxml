@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="250" xmlns:ns1="com.f14.F14bgGame.PuertoRico.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			import com.f14.F14bgGame.PuertoRico.components.ImageTile;
+			import com.f14.F14bgGame.PuertoRico.player.PrPlayer;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			protected var buildingList:ArrayCollection = new ArrayCollection();
+			
+			public function set editable(editable:Boolean):void{
+				this.canvas_mask.visible = !editable;
+			}
+			
+			public function reset():void{
+				this.cb_vp.selected = false;
+				
+				this.resource_selecter.reset();
+				this.resource_selecter.multiSelection = false;
+				
+				this.buildingList.removeAll();
+				this.buildingList.addItem({value:"", label:"不选择"});
+				this.buildingList.addItem({value:"-1", label:"空闲移民"});
+			}
+			
+			/**
+			 * 重置输入
+			 */
+			public function resetInput():void{
+				this.cb_vp.selected = false;
+				this.resource_selecter.clearSelection();
+				this.list_colonist.selectedItem = null;
+			}
+			
+			/**
+			 * 初始化
+			 */
+			public function init():void{
+				this.resource_selecter.initResourceImage();
+				this.resource_selecter.setResourceSelectable(true);
+			}
+			
+			/**
+			 * 装载黑市交易的信息
+			 */
+			public function loadTradeInfo():void{
+				this.reset();
+				var player:PrPlayer = PRUtil.getLocalPlayer();
+				this.resource_selecter.player = player;
+				
+				//装载玩家的建筑列表
+				for each(var tile:ImageTile in player.getAllTiles()){
+					if(tile!=null && tile.getColonistNum()>0){
+						var item:Object = {};
+						item.value = tile.object.id;
+						item.label = tile.object.name + " (" + tile.getColonistNum() + ")" ;
+						this.buildingList.addItem(item);
+					}
+				}
+			}
+			
+			/**
+			 * 取得黑市面板选择的值
+			 */
+			public function get value():Object{
+				var object:Object = {};
+				object.tradeVP = this.cb_vp.selected;
+				object.goodType = this.resource_selecter.selectedPartString;
+				if(this.list_colonist.selectedItem!=null){
+					object.tileId = this.list_colonist.selectedItem.value;
+				}else{
+					object.tileId = "";
+				}
+				return object;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox left="5" right="5" top="5" bottom="5" borderStyle="solid" themeColor="#000000" horizontalAlign="center">
+		<mx:Canvas height="2" backgroundColor="#cccccc" width="100%" />
+		<mx:Label text="请选择黑市交易的方式:" />
+		<mx:Canvas height="2" backgroundColor="#cccccc" width="100%" />
+		<mx:CheckBox id="cb_vp" label="使用1VP换取1金钱"/>
+		<mx:Canvas height="2" backgroundColor="#cccccc" width="100%" />
+		<mx:Label text="选择1个货物换取1金钱" />
+		<ns1:ResourceSelecter id="resource_selecter">
+		</ns1:ResourceSelecter>
+		<mx:Canvas height="2" backgroundColor="#cccccc" width="100%" />
+		<mx:Label text="选择1个移民换取1金钱" />
+		<mx:List id="list_colonist" dataProvider="{buildingList}" width="200" ></mx:List>
+		<mx:Canvas height="2" backgroundColor="#cccccc" width="100%" />
+		<mx:Button label="重置" click="this.resetInput()" />
+		<mx:Canvas height="2" backgroundColor="#cccccc" width="100%" />
+	</mx:VBox>
+	<mx:Canvas width="100%" height="100%"  id="canvas_mask" backgroundColor="#C4C4C4" backgroundAlpha="0.6" visible="false"/>
+</mx:Canvas>

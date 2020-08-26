@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="240">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.f14bg.components.ComponentOption;
+			import com.f14.F14bgGame.PuertoRico.ui.simple.ShipTile;
+			
+			public var ships:Array = new Array();
+			public var shipOption:ComponentOption = new ComponentOption();
+			
+			public function clear():void{
+				this.ships = new Array();
+				this.removeAllChildren();
+				this.shipOption.removeAllComponent();
+			}
+			
+			/**
+			 * 添加船只
+			 */
+			public function addShip(obj:Object):void{
+				var ship:ShipTile = new ShipTile();
+				this.addChild(ship);
+				this.ships.push(ship);
+				ship.init();
+				ship.shipName = "货船";
+				ship.maxSize = obj.maxSize;
+				ship.goodType = obj.goodType;
+				ship.size = obj.size;
+				shipOption.addComponent(ship);
+			}
+			
+			/**
+			 * 按照容量取得船只
+			 */
+			public function getShip(maxSize:int):ShipTile{
+				for each(var ship:ShipTile in this.ships){
+					if(ship.maxSize==maxSize){
+						return ship;
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * 取得选中的货船
+			 */
+			public function getSelectedShip():ShipTile{
+				return this.shipOption.selectedComponent as ShipTile;
+			}
+			
+			/**
+			 * 更新货船信息
+			 */
+			public function updateShip(obj:Object):void{
+				var ship:ShipTile = this.getShip(obj.maxSize);
+				if(ship!=null){
+					ship.goodType = obj.goodType;
+					ship.size = obj.size;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+</mx:VBox>

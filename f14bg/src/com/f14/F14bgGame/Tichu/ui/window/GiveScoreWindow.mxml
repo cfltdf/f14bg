@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="350" height="200" xmlns:ns1="com.f14.F14bgGame.Tichu.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Tichu.TichuUtil;
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				//装载玩家属性
+				this.info1.player = TichuUtil.mainBoard.playerBoard1.player;
+				this.info3.player = TichuUtil.mainBoard.playerBoard3.player;
+			}
+			
+			protected function giveScore(i:int):void{
+				var param:Object = {};
+				if(i==1){
+					param.targetPosition = this.info1.player.position;
+				}else{
+					param.targetPosition = this.info3.player.position;
+				}
+				this.doConfirm(param);
+			}
+			
+		]]>
+	</mx:Script>
+	<ns1:TichuPlayerInfoBoard id="info3" top="40" left="8">
+	</ns1:TichuPlayerInfoBoard>
+	<ns1:TichuPlayerInfoBoard id="info1" right="8" top="40">
+	</ns1:TichuPlayerInfoBoard>
+	<mx:Label y="10" text="{msg}" horizontalCenter="0"/>
+	<mx:Button label="给 他" width="80" bottom="20" left="45" click="this.giveScore(3)"/>
+	<mx:Button label="给 他" width="80" bottom="20" right="45" click="this.giveScore(1)"/>
+</NewConfirmWindow>

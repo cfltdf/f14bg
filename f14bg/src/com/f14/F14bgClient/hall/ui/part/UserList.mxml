@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgClient.hall.HallUtil;
+			import mx.events.ListEvent;
+			import mx.collections.ArrayCollection;
+			[Bindable]
+			protected var users:ArrayCollection = new ArrayCollection();
+			
+			/**
+			 * 装载用户列表
+			 */
+			public function loadUsers(param:Object):void{
+				this.users = new ArrayCollection(param.users);
+			}
+			
+			/**
+			 * 刷新用户积分信息
+			 */
+			public function refreshUserRank(evt:ListEvent):void{
+				var item:Object = this.users.getItemAt(evt.rowIndex);
+				if(item!=null){
+					HallUtil.actionManager.refreshUserRanking(item.userId);
+				}
+			}
+			
+			/**
+			 * 按照登录名取得用户
+			 */
+			public function getUser(loginName:String):Object{
+				for(var i:int=0;i<this.users.length;i++){
+					if(this.users.getItemAt(i).loginName==loginName){
+						return this.users.getItemAt(i);
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * 添加用户
+			 */
+			public function addUser(user:Object):void{
+				var u:Object = this.getUser(user.loginName);
+				if(u!=null){
+					//如果已经存在该用户则刷新其信息
+					this.updateUser(user);
+				}else{
+					this.users.addItem(user);
+				}
+			}
+			
+			/**
+			 * 移除用户
+			 */
+			public function removeUser(user:Object):void{
+				var u:Object = this.getUser(user.loginName);
+				if(u!=null){
+					this.users.removeItemAt(this.users.getItemIndex(u));
+				}
+			}
+			
+			/**
+			 * 刷新用户信息
+			 */
+			public function updateUser(user:Object):void{
+				var u:Object = this.getUser(user.loginName);
+				if(u!=null){
+					u.room = user.room;
+					this.grid_players.invalidateList();
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:DataGrid id="grid_players" width="100%" height="100%" dataProvider="{users}" itemDoubleClick="refreshUserRank(event)" doubleClickEnabled="true">
+		<mx:columns>
+			<mx:DataGridColumn headerText="用户名" dataField="name" sortable="false"/>
+			<mx:DataGridColumn headerText="房间" dataField="room" sortable="false"/>
+		</mx:columns>
+	</mx:DataGrid>
+</mx:Canvas>

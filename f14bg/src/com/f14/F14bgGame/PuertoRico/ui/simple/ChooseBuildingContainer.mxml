@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.component.ImageObject;
+			
+			[Bindable]
+			protected var _text:String;
+			protected var _image:ImageObject;
+			
+			public function set text(text:String):void{
+				this._text = text;
+				//有文本时才显示该对象
+				if(this._text){
+					this.canvas_text.visible = true;
+				}else{
+					this.canvas_text.visible = false;
+				}
+			}
+			
+			public function get text():String{
+				return this._text;
+			}
+			
+			/**
+			 * 设置图像
+			 */
+			public function set image(image:ImageObject):void{
+				this.removeImage();
+				this._image = image;
+				this.addChildAt(image, 0);
+				this.width = image.width;
+				this.height = image.height;
+			}
+			
+			public function get image():ImageObject{
+				return this._image;
+			}
+			
+			/**
+			 * 移除图像
+			 */
+			public function removeImage():void{
+				if(this._image!=null){
+					this.removeChild(this._image);
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Canvas id="canvas_text" visible="false" horizontalCenter="0" top="5" backgroundColor="#DADADA">
+		<mx:Label text="{_text}" fontWeight="bold" color="#FF0000"/>
+	</mx:Canvas>
+</mx:Canvas>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" minWidth="500" height="506" title="赌博星球" xmlns:ns1="com.f14.F14bgGame.RFTG.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.RFTG.RaceUtil;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.RFTG.player.RacePlayer;
+			import com.f14.F14bgGame.RFTG.utils.RaceUtils;
+			import com.f14.f14bg.event.BgEvent;
+			import com.f14.F14bgGame.RFTG.component.RaceCard;
+			
+			[Bindable]
+			public var player:RacePlayer;
+			private var stepCode:String;
+
+			override public function clear():void{
+				this.player = null;
+				this.betBoard.clear();
+				this.cardBoard.clear();
+				this.reset();
+			}	
+					
+			public function reset():void{
+				this.betBoard.reset();
+				this.cardBoard.reset();
+				this.button_confirm.enabled = false;
+			}
+			
+			/**
+			 * 按照参数装载窗口信息
+			 */
+			public function loadParam(param:Object):void{
+				this.clear();
+				this.stepCode = param.stepCode;
+				this.player = RaceUtil.getPlayer(param.position);
+				var betIds:String = param.betIds;
+				if(betIds){
+					var sids:Array = betIds.split(",");
+					for each(var id:String in sids){
+						var card:RaceCard = RaceUtil.cardManager.getCard(id);
+						if(card!=null){
+							this.betBoard.addCard(card);
+						}
+					}
+				}
+				var cardIds:String = param.cardIds;
+				if(cardIds){
+					var hids:Array = cardIds.split(",");
+					for each(var hid:String in hids){
+						var c2:RaceCard = RaceUtil.cardManager.getCard(hid);
+						if(c2!=null){
+							this.cardBoard.addCard(c2);
+						}
+					}
+				}
+				//如果是本地玩家,并且赢得赌博,才允许奖励选择
+				if(RaceUtil.gameManager.isLocalPosition(player.position)){
+					this.selectable = param.winGamble;
+					this.button_confirm.enabled = param.winGamble;
+				}
+			}
+			
+			/**
+			 * 设置所有卡牌是否可选
+			 */
+			public function set selectable(selectable:Boolean):void{
+				this.cardBoard.setAllSelectable(selectable);
+			}
+			
+			/**
+			 * 选择奖励
+			 */
+			public function confirm():void{
+				if(RaceUtil.gameManager.isLocalPosition(player.position)){
+					var cards:Array = this.cardBoard.getSelection();
+					var cardIds:String = RaceUtils.card2String(cards);
+					RaceUtil.actionManager.gamble(stepCode, false, cardIds);
+				}else{
+					//非本地玩家不能选择赌注
+					ApplicationUtil.alert("你不能选择奖励!");
+				}
+			}
+			
+			/**
+			 * 关闭窗口
+			 */
+			public function doClose():void{
+				if(RaceUtil.gameManager.isLocalPosition(player.position)){
+					//如果是本地玩家,则发送跳过赌博的消息
+					RaceUtil.actionManager.gamble(stepCode, true);
+				}else{
+					//如果不是本地玩家,则直接关闭该窗口
+					this.cancel();
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox x="10" y="10">
+		<mx:Label text="{player.name}"/>
+		<mx:Label text="的赌注"/>
+	</mx:HBox>
+	<ns1:CardBoard x="10" y="36" id="betBoard">
+	</ns1:CardBoard>
+	<mx:Label x="10" y="215" text="翻开的牌"/>
+	<ns1:CardBoard x="10" y="241" id="cardBoard">
+	</ns1:CardBoard>
+	<mx:Button id="button_confirm" y="430" label="拿取奖励" horizontalCenter="-43" click="confirm()"/>
+	<mx:Button y="430" label="关闭窗口" horizontalCenter="43" click="doClose()"/>
+</FloatWindow>

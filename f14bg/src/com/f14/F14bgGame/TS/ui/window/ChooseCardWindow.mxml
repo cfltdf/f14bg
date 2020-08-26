@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TSConfirmWindow xmlns="com.f14.F14bgGame.TS.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="160" title="选择手牌" xmlns:ns1="com.f14.F14bgGame.TS.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.ui.simple.SimpleCard;
+			import com.f14.F14bgGame.TS.TSUtil;
+			import com.f14.core.util.ApplicationUtil;
+			import mx.collections.ArrayCollection;
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				this.cardMessage = this.local_cm;
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+			}
+		
+			/**
+			 * 选择卡牌
+			 */
+			public function chooseCard():void{
+				var card:SimpleCard = TSUtil.getLocalPlayer().tsPlayerBoard.playerHands.getSelectedCard();
+				if(card==null){
+					ApplicationUtil.alert("请选择手牌!");
+					return;
+				}
+				var param:Object = new Object();
+				param.cardId = card.object.id;
+				this.doConfirm(param);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<ns1:TSCardMessage id="local_cm" left="45" right="45" top="10" />
+	<mx:HBox horizontalCenter="0" bottom="10">
+		<mx:Button label="确 定" click="this.chooseCard()"/>
+		<mx:Button label="取 消" click="this.doCancel()"/>
+		<mx:Button label="放 弃" click="this.doPass()"/>
+	</mx:HBox>
+</TSConfirmWindow>

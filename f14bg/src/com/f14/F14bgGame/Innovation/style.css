@@ -1,0 +1,84 @@
+/* CSS file */
+global
+{
+	backgroundSize: "100%";
+	backgroundGradientAlphas: 1, 1;
+	backgroundGradientColors: #dcd27e, #dcd27e;
+	fontSize: 12;
+	color: #000000;
+	theme-color: #DD8C00;
+}
+.gameBoard{
+	backgroundAlpha: 0.2;
+}
+.blackBoldText{
+	color: #000000;
+	font-size: 14;
+	font-weight: bold;
+}
+.whiteBoldText{
+	color: #ffffff;
+	font-size: 16;
+	font-weight: bold;
+}
+.smallNumberText{
+	color: #000000;
+	font-size: 11;
+	font-weight: bold;
+}
+.smallNumberTextCenter{
+	color: #000000;
+	font-size: 11;
+	font-weight: bold;
+	text-align: center;
+}
+.bigNumberTextCenter{
+	color: #000000;
+	font-size: 14;
+	font-weight: bold;
+	text-align: center;
+}
+.confirmText{
+	color: #000000;
+	font-size: 12;
+}
+.actionPoint{
+	background-image: Embed("./images/ap.png");
+	background-size: "100%";
+}
+.totalIcons{
+	background-image: Embed("./images/totalIcons.png");
+	background-size: "100%";
+}
+.achieveCard{
+	background-image: Embed("./images/achieveCard.png");
+	background-size: "100%";
+}
+.arrowLeft{
+	background-image: Embed("./images/arrow-left.png");
+	background-size: "100%";
+}
+.arrowRight{
+	background-image: Embed("./images/arrow-right.png");
+	background-size: "100%";
+}
+.arrowUp{
+	background-image: Embed("./images/arrow-up.png");
+	background-size: "100%";
+}
+.allLevelBoard{
+	background-image: Embed("./images/allLevelBoard.png");
+	background-size: "100%";
+}
+.allIcons{
+	background-image: Embed("./images/allIcons.png");
+	background-size: "100%";
+}
+.backScore{
+	background-image: Embed("./images/backScore.png");
+	background-size: "100%";
+}
+.backHand{
+	background-image: Embed("./images/backHand.png");
+	background-size: "100%";
+}

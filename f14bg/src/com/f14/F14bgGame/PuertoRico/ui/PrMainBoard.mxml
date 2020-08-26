@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MainBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.F14bgGame.PuertoRico.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgGame.bg.ui.PlayerBoard;
+			import com.f14.F14bgGame.PuertoRico.player.PrPlayer;
+			
+			/**
+			 * 初始化
+			 */
+			override public function init():void{
+				super.init();
+				//this.createPlayerBoards();
+				//初始化按钮区
+				this.buttonBoard.init();
+				//this.plantationBoard.createQuarryTile();
+				this.tradeHouseBoard.createGoodPart();
+				//初始化所有玩家面板
+				//for each(var pb:PlayerBoard in this.playerBoards){
+				//	pb.playerInfoBoard.initResourceImage();
+				//}
+			}
+			
+			override public function clear():void{
+				super.clear();
+				/*for each(var pb:PlayerBoard in this.playerBoards){
+					pb.clear();
+				}*/
+				this.hbox_main.removeAllChildren();
+				this.tradeHouseBoard.clear();
+				//清除所有游戏窗口
+				PRUtil.stateManager.clear();
+			}
+			
+			/**
+			 * 创建玩家的面板
+			 */
+			override public function createPlayerBoard(player:Player):void{
+				/*this.playerBoards = new Array();
+				this.hbox_main.removeAllChildren();
+				//创建玩家面板
+				for(var i:int=0;i<5;i++){
+					var pb:PlayerBoard = new PlayerBoard();
+					playerBoards.push(pb);
+					this.hbox_main.addChild(pb);
+					pb.init();
+				}*/
+				var prPlayer:PrPlayer = player as PrPlayer;
+				//当玩家面板不存在时,创建玩家面板
+				//if(prPlayer.playerBoard==null){
+				var pb:PrPlayerBoard = new PrPlayerBoard();
+				//playerBoards[player.position] = pb;
+				this.hbox_main.addChild(pb);
+				pb.init();
+				prPlayer.playerBoard = pb;
+				prPlayer.playerInfoBoard = pb.playerInfoBoard;
+				//本地玩家显示VP
+				var local:Boolean = PRUtil.gameManager.isLocalPlayer(prPlayer);
+				PrPlayerInfoBoard(prPlayer.playerInfoBoard).vpVisiable = local;
+				//}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox horizontalGap="0">
+		<mx:HBox id="hbox_control" horizontalGap="5" height="105" verticalScrollPolicy="off" horizontalScrollPolicy="off" verticalAlign="middle">
+			<ns1:ButtonBoard id="buttonBoard">
+			</ns1:ButtonBoard>
+			<ns1:PartBoard id="partBoard">
+			</ns1:PartBoard>
+			<mx:VBox>
+				<ns1:PlantationBoard id="plantationBoard">
+				</ns1:PlantationBoard>
+				<mx:HBox width="100%" horizontalGap="3">
+					<ns1:TradeHouseBoard id="tradeHouseBoard">
+					</ns1:TradeHouseBoard>
+					<ns1:ColonistShipBoard id="colonistShipBoard">
+					</ns1:ColonistShipBoard>
+				</mx:HBox>
+			</mx:VBox>
+			<ns1:ShipBoard id="shipBoard" height="100%">
+			</ns1:ShipBoard>
+		</mx:HBox>
+		<mx:HBox id="hbox_main" horizontalGap="1">
+		</mx:HBox>
+	</mx:VBox>
+</MainBoard>

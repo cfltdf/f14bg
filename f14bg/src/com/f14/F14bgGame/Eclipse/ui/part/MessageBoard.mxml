@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="30">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			public var msg:String;
+			
+			public function clear():void{
+				this.msg = null;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Label text="{this.msg}" left="30" verticalCenter="0" fontSize="18" fontWeight="bold" />
+</mx:Canvas>

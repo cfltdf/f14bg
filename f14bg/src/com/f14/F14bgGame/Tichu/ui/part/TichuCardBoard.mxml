@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="350" height="142" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import com.f14.F14bgGame.Tichu.consts.TichuGameCmd;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.Tichu.manager.TichuImageManager;
+			import com.f14.F14bgGame.Tichu.manager.TichuResourceManager;
+			import com.f14.F14bgGame.Tichu.TichuUtil;
+			import com.f14.F14bgGame.Tichu.components.TichuCard;
+			import mx.collections.ArrayCollection;
+			
+			public static var PADDING:int = 20;
+			public static var DEFAULT_Y:int = 13;
+			protected var cards:ArrayCollection = new ArrayCollection();
+			
+			public function init():void{
+				
+			}
+			
+			public function clear():void{
+				for each(var card:TichuCard in cards.toArray()){
+					card.removeEventListener(MouseEvent.CLICK, clickCard);
+				}
+				cards.removeAll();
+				this.removeAllChildren();
+			}
+			
+			/**
+			 * 装载卡牌信息
+			 */
+			public function loadCards(cardIds:String):void{
+				//首先清空卡牌
+				this.clear();
+				//将卡牌添加到列表中
+				var ids:Array = cardIds.split(",");
+				for each(var id:String in ids){
+					var card:TichuCard = TichuUtil.resourceManager.createTichuCard(id);
+					card.y = DEFAULT_Y;
+					this.cards.addItem(card);
+					this.addChild(card);
+					card.addEventListener(MouseEvent.CLICK, clickCard);
+				}
+				this.sort();
+			}
+			
+			/**
+			 * 设置显示的卡牌数量
+			 */
+			public function setNumber(num:int):void{
+				var i:int = this.getChildren().length;
+				var offset:int = num - i;
+				var abs:int = Math.abs(offset);
+				if(offset<0){
+					//减牌
+					for(var i:int=0;i<abs;i++){
+						this.removeChildAt(0);
+					}
+				}else if(offset>0){
+					//加牌
+					for(var i:int=0;i<abs;i++){
+						var card:TichuCard = TichuUtil.resourceManager.createTichuBackCard();
+						card.y = DEFAULT_Y;
+						this.addChild(card);
+					}
+				}
+				if(offset!=0){
+					this.sort();
+				}
+			}
+			
+			/**
+			 * 将卡牌排序
+			 */
+			protected function sort():void{
+				var size:int = this.getChildren().length;
+				var width:int = (size-1)*PADDING + TichuImageManager.WIDTH_CARD;
+				var x:int = this.width/2 - width/2 + 5;
+				for each(var card:TichuCard in this.getChildren()){
+					card.x = x;
+					x += PADDING;
+				}
+			}
+			
+			public function set selectable(selectable:Boolean):void{
+				for each(var card:TichuCard in this.cards){
+					card.selectable = selectable;
+				}
+			}
+			
+			/**
+			 * 点击卡牌时触发的事件
+			 */
+			protected function clickCard(event:MouseEvent):void{
+				var card:TichuCard = event.currentTarget as TichuCard;
+				if(card.selectable){
+					this.setCardSelected(card, !card.selected);
+					if(TichuUtil.stateManager.stateCode==TichuGameCmd.GAME_CODE_REGROUP_PHASE){
+						//如果是在换牌阶段,则将选择牌的信息发送换牌的窗口
+						if(card.selected){
+							//选中牌
+							if(TichuUtil.stateManager.exchangeWindow.isFull()){
+								ApplicationUtil.alert("已经为所有的玩家选择了要交换的牌,不能再选了!");
+								this.setCardSelected(card, false);
+							}else{
+								TichuUtil.stateManager.exchangeWindow.addCard(card.object.id);
+							}
+						}else{
+							//取消牌
+							TichuUtil.stateManager.exchangeWindow.removeCard(card.object.id);
+						}
+					}
+				}
+			}
+			
+			/**
+			 * 清除所有选中的牌
+			 */
+			public function clearSelection():void{
+				for each(var card:TichuCard in this.cards){
+					if(card.selected){
+						this.setCardSelected(card, false);
+					}
+				}
+			}
+			
+			/**
+			 * 设置卡牌的选中状态
+			 */
+			protected function setCardSelected(card:TichuCard, selected:Boolean):void{
+				card.selected = selected;
+				if(selected){
+					card.y = 0;
+				}else{
+					card.y = DEFAULT_Y;
+				}
+			}
+			
+			/**
+			 * 取得选中的卡牌
+			 */
+			public function getSelectedCards():Array{
+				var cards:Array = new Array();
+				for each(var card:TichuCard in this.cards){
+					if(card.selected){
+						cards.push(card);
+					}
+				}
+				return cards;
+			}
+			
+			/**
+			 * 判断是否有牌
+			 */
+			public function isEmpty():Boolean{
+				return this.getChildren().length==0;
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="140" title="选择种植园" backgroundColor="#EEEEEE" xmlns:ui="com.f14.F14bgGame.PuertoRico.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			import com.f14.F14bgGame.PuertoRico.components.PlantationTile;
+			import com.f14.F14bgGame.PuertoRico.event.PrEvent;
+			
+			/**
+			 * 重置面板输入信息
+			 */
+			public function reset():void{
+				this.plantationBoard.clear();
+			}
+			
+			/**
+			 * 初始化所有输入组件
+			 */
+			public function initInputs():void{
+				this.plantationBoard.createQuarryTile();
+			}
+			
+			/**
+			 * 装载种植园板块信息
+			 */
+			public function loadPlantationInfo():void{
+				//与游戏面板上的种植园板块信息同步
+				this.plantationBoard.clear();
+				for each(var tile:PlantationTile in PRUtil.mainBoard.plantationBoard.plantations){
+					this.plantationBoard.addPlantation(tile.object);
+				}
+				this.plantationBoard.setAllSelectable(true);
+			}
+			
+		]]>
+	</mx:Script>
+	<ui:PlantationBoard id="plantationBoard" x="15" y="10"/>
+	<mx:Button label="结 束" x="162" y="63" click="PRUtil.actionManager.doPass()"/>
+</FloatWindow>

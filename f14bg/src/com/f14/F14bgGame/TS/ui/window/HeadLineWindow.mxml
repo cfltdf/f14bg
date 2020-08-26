@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="350" height="200" title="选择头条" xmlns:components="com.f14.F14bgGame.TS.components.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.components.TSCard;
+			import com.f14.F14bgGame.TS.TSUtil;
+			import com.f14.core.util.ApplicationUtil;
+			import mx.collections.ArrayCollection;
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				this.ussr.removeAllChildren();
+				this.usa.removeAllChildren();
+			}
+		
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+			}
+			
+			/**
+			 * 装载显示状态
+			 */
+			public function loadStatusParam(param:Object):void{
+				this.clear();
+				if(param.ussrCardId){
+					//如果有选择牌,就显示选择的牌
+					var card:TSCard = TSUtil.resourceManager.createTSCard(param.ussrCardId);
+					this.ussr.addChild(card);
+				}else if(param.isUssrSelected){
+					//如果没有,则看有没有完成选牌
+					var card:TSCard = TSUtil.resourceManager.createTSBackCard();
+					this.ussr.addChild(card);
+				}
+				//下面的逻辑一样
+				if(param.usaCardId){
+					card = TSUtil.resourceManager.createTSCard(param.usaCardId);
+					this.usa.addChild(card);
+				}else if(param.isUsaSelected){
+					var card:TSCard = TSUtil.resourceManager.createTSBackCard();
+						this.usa.addChild(card);
+				}
+				/*if(param.isAllSelected){
+					//如果都选择完成,则显示选择的卡牌
+					var card:TSCard = TSUtil.resourceManager.createTSCard(param.ussrCardId);
+					this.ussr.addChild(card);
+					card = TSUtil.resourceManager.createTSCard(param.usaCardId);
+					this.usa.addChild(card);
+				}else{
+					//如果没有选择完成,则显示是否选择
+					if(param.isUssrSelected){
+						var card:TSCard = TSUtil.resourceManager.createTSBackCard();
+						this.ussr.addChild(card);
+					}
+					if(param.isUsaSelected){
+						var card:TSCard = TSUtil.resourceManager.createTSBackCard();
+						this.usa.addChild(card);
+					}
+				}*/
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas id="ussr" width="54" height="79" verticalCenter="0" left="75"/>
+	<mx:Canvas id="usa" width="54" height="79" verticalCenter="0" right="75"/>
+</NewConfirmWindow>

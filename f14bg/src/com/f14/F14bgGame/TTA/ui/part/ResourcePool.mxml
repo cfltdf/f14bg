@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.manager.TTAImageManager;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.TTA.ui.simple.ImageString;
+			
+			protected var resources:Array = new Array();
+			protected var _num:int;
+			public var selectable:Boolean;
+			
+			public function get num():int{
+				return this._num;
+			}
+			
+			public function set num(num:int):void{
+				this._num = num;
+				//设置工人的 显示情况
+				for(var i:int=0;i<this.resources.length;i++){
+					var resource:ImageString = this.resources[i];
+					resource.visible = (i<num);
+				}
+			}
+			
+			/**
+			 * 初始化
+			 */
+			public function init():void{
+				//总共创建24个位置
+				var can:Canvas;
+				for(var i:int=0;i<24;i++){
+					var resource:ImageString = new ImageString();
+					if(i%2==0){
+						this.hbox_2.addChild(resource);
+						if(i==2 || i==6){
+							//该位置插个空挡
+							can = new Canvas();
+							can.width = 4;
+							this.hbox_2.addChild(can);
+						}
+					}else{
+						this.hbox_1.addChild(resource);
+						if(i==3 || i==7){
+							//该位置插个空挡
+							can = new Canvas();
+							can.width = 4;
+							this.hbox_1.addChild(can);
+						}
+					}
+					resource.image.source = TTAImageManager.BLUE_IMAGE;
+					this.resources[i] = resource;
+				}
+				this.clear();
+			}
+			
+			public function clear():void{
+				this.num = 0;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox id="hbox_1" height="26" horizontalGap="1">
+	</mx:HBox>
+	<mx:HBox id="hbox_2" y="33" height="26" horizontalGap="1">
+	</mx:HBox>
+</mx:Canvas>

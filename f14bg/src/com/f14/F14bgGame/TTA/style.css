@@ -1,0 +1,49 @@
+/* CSS file */
+global
+{
+	backgroundSize: "100%";
+	backgroundGradientAlphas: 1, 1;
+	backgroundGradientColors: #3C3C3C, #3C3C3C;
+	fontSize: 12;
+	color: #000000;
+	theme-color: #DD8C00;
+}
+TTAMainBoard{
+	backgroundColor: #FFFFFF;
+	borderStyle:none;
+	background-image: Embed("./images/bg.jpg");
+	background-size: "100%";
+	background-alpha: 0.2;
+}
+.gameBoard{
+	backgroundAlpha: 0.2;
+}
+.playerInfoText{
+	color: #FFFFFF;
+	font-size: 14;
+	font-weight: bold;
+}
+ConfirmWindow{
+	background-image: Embed("./images/oldbg.png");
+	background-size: "100%";
+	background-alpha: 0.8;
+	borderAlpha: 0.7;
+}
+AlertWindow{
+	background-image: Embed("./images/oldbg.png");
+	background-size: "100%";
+	background-alpha: 0.8;
+	borderAlpha: 0.7;
+}
+.cardRow{
+	background-image: Embed("./images/cardrow.jpg");
+	background-size: "100%";
+}
+.playerBoard{
+	background-image: Embed("./images/playerBoard.jpg");
+	background-size: "100%";
+}
+.playerInfo{
+	background-image: Embed("./images/playerInfo.png");
+	background-size: "100%";
+}

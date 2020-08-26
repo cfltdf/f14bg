@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true" title="建筑面板" xmlns:components="com.f14.F14bgGame.PuertoRico.components.*" xmlns:simple="com.f14.F14bgGame.PuertoRico.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			import com.f14.F14bgGame.PuertoRico.ui.simple.BlackTradeBoard;
+			import com.f14.F14bgGame.PuertoRico.ui.simple.TileContainer;
+			import com.f14.F14bgGame.PuertoRico.components.BigBuildingTile;
+			import com.f14.F14bgGame.PuertoRico.components.BuildingTile;
+
+			public var blackTradeBoard:BlackTradeBoard;
+						
+			protected var _selectable:Boolean = false;
+			protected var buildings:Array = new Array();
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				for each(var tc:TileContainer in this.buildings){
+					if(tc!=null){
+						tc.image.selectable = selectable;
+					}
+				}
+			}
+			
+			override public function init():void{
+				super.init();
+				blackTradeBoard = new BlackTradeBoard();
+				blackTradeBoard.visible = false;
+				this.addChild(blackTradeBoard);
+				blackTradeBoard.init();
+			}
+			
+			override public function clear():void{
+				this.buildings = new Array()
+				this.vbox_1.removeAllChildren();
+				this.vbox_2.removeAllChildren();
+				this.vbox_3.removeAllChildren();
+				this.vbox_4.removeAllChildren();
+				this.vbox_5.removeAllChildren();
+				this.selectable = false;
+			}
+			
+			/**
+			 * 取得等级对应的VBox对象
+			 */
+			protected function getVBox(level:int):VBox{
+				switch(level){
+					case 1:
+						return this.vbox_1;
+					case 2:
+						return this.vbox_2;
+					case 3:
+						return this.vbox_3;
+					case 4:
+						//大建筑每列可以放3个
+						if(this.vbox_4.getChildren().length<3){
+							return this.vbox_4;
+						}else{
+							return this.vbox_5;
+						}
+					default:
+						return null;
+				}
+			}
+			
+			/**
+			 * 装载建筑面板
+			 */
+			public function loadBuildings(param:Object):void{
+				this.clear();
+				var tile:BuildingTile;
+				var tc:TileContainer;
+				for each(var pair:Object in param.buildings.buildings){
+					for(var cardNo:String in pair){
+						this.addBuilding(cardNo, pair[cardNo]);
+					}
+				}
+			}
+			
+			/**
+			 * 添加建筑到列表中
+			 */
+			protected function addBuilding(cardNo:String, num:int):void{
+				var obj:Object = PRUtil.resourceManager.getObjectByCardNo(int(cardNo));
+				var vbox:VBox = this.getVBox(obj.level);
+				if(vbox!=null){
+					var tc:TileContainer = this.createBuildingTile(cardNo, num);
+					vbox.addChild(tc);
+					//只有数量大于0时才加入到建筑队列中,否则将不会变成可选状态
+					if(num>0){
+						this.buildings[cardNo] = tc;
+					}else{
+						tc.nocolor();
+					}
+				}
+			}
+			
+			/**
+			 * 创建显示用的建筑板块
+			 */
+			protected function createBuildingTile(cardNo:String, num:int):TileContainer{
+				var obj:Object = PRUtil.resourceManager.getObjectByCardNo(int(cardNo));
+				var tile:BuildingTile;
+				if(obj.level<=3){
+					tile = new BuildingTile();
+				}else{
+					tile = new BigBuildingTile();
+				}
+				tile.object = obj;
+				tile.addEventListener(MouseEvent.CLICK, onClickBuilding);
+				
+				var tc:TileContainer = new TileContainer();
+				tc.image = tile;
+				tc.num = num;
+				return tc;
+			}
+			
+			/**
+			 * 按照cardNo取得建筑容器
+			 */
+			public function getBuilding(cardNo:String):TileContainer{
+				return this.buildings[cardNo];
+			}
+			
+			/**
+			 * 从建筑面板中拿掉建筑,如果剩余建筑数为0,则从面板上移除该建筑
+			 */
+			public function takeBuilding(cardNo:String):void{
+				var tc:TileContainer = this.getBuilding(cardNo);
+				if(tc!=null){
+					tc.num--;
+					if(tc.num<=0){
+						this.removeBuilding(cardNo);
+					}
+				}
+			}
+			
+			/**
+			 * 将建筑从建筑面板上移除
+			 */
+			public function removeBuilding(cardNo:String):void{
+				var tc:TileContainer = this.getBuilding(cardNo);
+				if(tc!=null){
+					this.buildings[cardNo] = null;
+					tc.nocolor();
+					tc.image.selectable = false;
+					tc.image.removeEventListener(MouseEvent.CLICK, onClickBuilding);
+				}
+			}
+			
+			/**
+			 * 点击建筑时触发的事件
+			 */
+			public function onClickBuilding(evt:Event):void{
+				var tile:BuildingTile = evt.target as BuildingTile;
+				if(tile && tile.selectable){
+					PRUtil.actionManager.build(tile.object.cardNo, this.blackTradeBoard.value);
+				}
+			}
+			
+			/**
+			 * 显示黑市板块
+			 */
+			public function showBlackTradeBoard(param:Object):void{
+				if(param.blackTrade){
+					//如果可以使用黑市交易,则显示黑市板块
+					this.hbox_main.addChild(this.blackTradeBoard);
+					this.blackTradeBoard.visible = true;
+					this.blackTradeBoard.editable = true;
+					this.blackTradeBoard.loadTradeInfo();
+				}
+			}
+			
+			/**
+			 * 隐藏黑市板块
+			 */
+			public function hideBlackTradeBoard():void{
+				this.blackTradeBoard.reset();
+				this.blackTradeBoard.editable = false;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas id="canvas_main">
+		<mx:HBox id="hbox_main" top="5" bottom="5" right="5" left="5">
+			<mx:VBox horizontalCenter="0">
+				<mx:Canvas width="100%" height="5">
+				</mx:Canvas>
+				<mx:HBox horizontalCenter="0">
+					<mx:Canvas width="84" height="36" styleName="level1" />
+					<mx:Canvas width="84" height="36" styleName="level2" />
+					<mx:Canvas width="84" height="36" styleName="level3" />
+					<mx:Canvas width="176">
+						<mx:Canvas width="84" height="36" horizontalCenter="0" styleName="level4" />
+					</mx:Canvas>
+				</mx:HBox>
+				<mx:HBox horizontalCenter="0">
+					<mx:VBox height="100%" id="vbox_1" width="84">
+					</mx:VBox>
+					<mx:VBox height="100%" id="vbox_2" width="84">
+					</mx:VBox>
+					<mx:VBox height="100%" id="vbox_3" width="84">
+					</mx:VBox>
+					<mx:VBox height="100%" id="vbox_4" width="84">
+					</mx:VBox>
+					<mx:VBox height="100%" id="vbox_5" width="84">
+					</mx:VBox>
+				</mx:HBox>
+				<mx:Canvas width="100%" height="5">
+				</mx:Canvas>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:Canvas>
+</FloatWindow>

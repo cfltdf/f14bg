@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="530" title="选择建筑" showCloseButton="false">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			import com.f14.F14bgGame.PuertoRico.ui.simple.ChooseBuildingContainer;
+			import mx.controls.Label;
+			import com.f14.F14bgGame.PuertoRico.ui.simple.TileContainer;
+			import com.f14.F14bgGame.PuertoRico.components.BigBuildingTile;
+			import com.f14.F14bgGame.PuertoRico.components.BuildingTile;
+			
+			protected var _selectable:Boolean = false;
+			protected var buildings:Array = new Array();
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				for each(var bc:ChooseBuildingContainer in this.buildings){
+					bc.image.selectable = selectable;
+				}
+			}
+		
+			/**
+			 * 清除建筑列表
+			 */
+			override public function clear():void{
+				this.buildings = new Array();
+				this.vbox_1.removeAllChildren();
+				this.vbox_2.removeAllChildren();
+				this.vbox_3.removeAllChildren();
+				this.vbox_4.removeAllChildren();
+				this.vbox_5.removeAllChildren();
+				this.selectable = false;
+			}
+			
+			/**
+			 * 取得等级对应的VBox对象
+			 */
+			protected function getVBox(level:int):VBox{
+				switch(level){
+					case 1:
+						return this.vbox_1;
+					case 2:
+						return this.vbox_2;
+					case 3:
+						return this.vbox_3;
+					case 4:
+						//大建筑每列可以放4个
+						if(this.vbox_4.getChildren().length<4){
+							return this.vbox_4;
+						}else{
+							return this.vbox_5;
+						}
+					default:
+						return null;
+				}
+			}
+			
+			/**
+			 * 装载建筑列表
+			 */
+			public function loadBuildings(param:Object):void{
+				this.clear();
+				//装载所有待选建筑
+				var buildings:Object = param.buildings;
+				if(buildings){
+					for(var key:String in buildings){
+						var level:int = int(key);
+						var cardNos:String = buildings[key];
+						var stra:Array = cardNos.split(",");
+						for each(var cardNo:String in stra){
+							this.addBuilding(level, cardNo);
+						}
+					}
+				}
+				//装载所有已选建筑
+				var selectedBuildings:Object = param.selectedBuildings;
+				if(selectedBuildings){
+					for(var lv:String in selectedBuildings){
+						var pairs:Object = selectedBuildings[lv];
+						for(var cardNo2:String in pairs){
+							this.chooseBuilding(pairs[cardNo2], cardNo2);
+						}
+					}
+				}
+				this.selectable = false;
+			}
+			
+			/**
+			 * 添加建筑到列表中
+			 */
+			protected function addBuilding(level:int, cardNo:String):void{
+				var vbox:VBox = this.getVBox(level);
+				if(vbox!=null){
+					var bc:ChooseBuildingContainer = this.createBuildingTile(level, cardNo);
+					vbox.addChild(bc);
+					this.buildings[cardNo] = bc;
+				}
+			}
+			
+			/**
+			 * 创建显示用的建筑板块
+			 */
+			protected function createBuildingTile(level:int, cardNo:String):ChooseBuildingContainer{
+				var obj:Object = PRUtil.resourceManager.getObjectByCardNo(int(cardNo));
+				var tile:BuildingTile;
+				if(level<=3){
+					tile = new BuildingTile();
+				}else{
+					tile = new BigBuildingTile();
+				}
+				tile.object = obj;
+				tile.addEventListener(MouseEvent.CLICK, onClickBuilding);
+				
+				var bc:ChooseBuildingContainer = new ChooseBuildingContainer();
+				bc.image = tile;
+				return bc;
+			}
+			
+			/**
+			 * 点击建筑时触发的事件
+			 */
+			public function onClickBuilding(evt:MouseEvent):void{
+				var tile:BuildingTile = evt.target as BuildingTile;
+				if(tile && tile.selectable){
+					PRUtil.actionManager.chooseBuilding(tile.object.cardNo);
+				}
+			}
+			
+			/**
+			 * 标记玩家选择建筑
+			 */
+			public function chooseBuilding(userName:String, cardNo:String):void{
+				var bc:ChooseBuildingContainer = this.buildings[cardNo];
+				if(bc!=null){
+					bc.image.selected = true;
+					bc.text = userName;
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Canvas width="100%" id="canvas_main">
+		<mx:VBox horizontalCenter="0">
+			<mx:Canvas width="100%" height="5">
+			</mx:Canvas>
+			<mx:HBox horizontalCenter="0">
+				<mx:Canvas width="84" height="36" styleName="level1" />
+				<mx:Canvas width="84" height="36" styleName="level2" />
+				<mx:Canvas width="84" height="36" styleName="level3" />
+				<mx:Canvas width="176">
+					<mx:Canvas width="84" height="36" horizontalCenter="0" styleName="level4" />
+				</mx:Canvas>
+			</mx:HBox>
+			<mx:HBox horizontalCenter="0">
+				<mx:VBox height="100%" id="vbox_1" width="84">
+				</mx:VBox>
+				<mx:VBox height="100%" id="vbox_2" width="84">
+				</mx:VBox>
+				<mx:VBox height="100%" id="vbox_3" width="84">
+				</mx:VBox>
+				<mx:VBox height="100%" id="vbox_4" width="84">
+				</mx:VBox>
+				<mx:VBox height="100%" id="vbox_5" width="84">
+				</mx:VBox>
+			</mx:HBox>
+			<mx:Canvas width="100%" height="5">
+			</mx:Canvas>
+		</mx:VBox>
+	</mx:Canvas>
+</FloatWindow>

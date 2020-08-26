@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="140" maxHeight="600" horizontalScrollPolicy="off" borderStyle="solid" borderThickness="2" borderColor="#999999" cornerRadius="3" backgroundColor="#FFFFFF">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import com.f14.F14bgGame.Innovation.components.InnoCard;
+			import mx.controls.Label;
+			import com.f14.F14bgGame.Innovation.ui.part.InnoCardStack;
+			private var _cardIdString:String;
+			private var _inited:Boolean;
+			
+			public function init():void{
+				this.addEventListener(MouseEvent.ROLL_OUT, onMouseOut);
+			}
+			
+			public function set cardIds(cardIds:String):void{
+				//当id变化时才会重新设置该置
+				if(this._cardIdString!=cardIds){
+					this.clear();
+					this._cardIdString = cardIds;
+					this.loadCardList();
+				}
+			}
+			
+			public function clear():void{
+				this._inited = false;
+				this._cardIdString = null;
+				this.vbox_list.removeAllChildren();
+			}
+			
+			/**
+			 * 显示当前卡牌列表
+			 */
+			public function showCardList(cardIds:String):void{
+				this.cardIds = cardIds;
+			}
+			
+			private function loadCardList():void{
+				//初始化过就不用再次生成列表了
+				if(!this._inited){
+					this._inited = true;
+					this.addCards(this._cardIdString);
+					//设置组件的长度
+					var i:int = this.vbox_list.getChildren().length;
+					this.height = i*(55+2) + 3;
+				}
+			}
+			
+			/**
+			 * 添加卡牌
+			 */
+			public function addCard(id:String):void{
+				var card:InnoCard = InnoUtil.resourceManager.createInnoCard(id);
+				if(card!=null){
+					var sc:InnoCardLabel = new InnoCardLabel();
+					this.vbox_list.addChild(sc);
+					sc.init();
+					sc.object = card;
+				}
+			}
+			
+			/**
+			 * 添加卡牌
+			 */
+			public function addCards(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				for each(var id:String in ids){
+					this.addCard(id);
+				}
+			}
+			
+			public function onMouseOut(event:MouseEvent):void{
+				this.visible = false;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox id="vbox_list" width="100%" verticalGap="2">
+	</mx:VBox>
+</mx:Canvas>

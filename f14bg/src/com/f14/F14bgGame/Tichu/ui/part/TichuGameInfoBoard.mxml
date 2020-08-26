@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" backgroundColor="#FFFFFF" backgroundAlpha="0.8">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Tichu.consts.TichuPlayerColor;
+			[Bindable]
+			protected var round:String;
+			[Bindable]
+			protected var player1:String;
+			[Bindable]
+			protected var player2:String;
+			[Bindable]
+			protected var player3:String;
+			[Bindable]
+			protected var player4:String;
+			[Bindable]
+			protected var score1:int;
+			[Bindable]
+			protected var score2:int;
+			[Bindable]
+			protected var wishedPoint:String;
+			
+			public function init():void{
+				this.hbox_group1.setStyle("backgroundColor", TichuPlayerColor.COLORS[0]);
+				this.hbox_group2.setStyle("backgroundColor", TichuPlayerColor.COLORS[1]);
+			}
+			
+			public function clear():void{
+				this.round = null;
+				this.player1 = null;
+				this.player2 = null;
+				this.player3 = null;
+				this.player4 = null;
+				this.score1 = null;
+				this.score2 = null;
+				this.wishedPoint = null;
+			}
+			
+			/**
+			 * 装载游戏信息
+			 */
+			public function loadGameInfo(param:Object):void{
+				this.clear();
+				this.round = "第 " + param.round + " 回合";
+				this.player1 = param.player1;
+				this.player2 = param.player2;
+				this.player3 = param.player3;
+				this.player4 = param.player4;
+				this.score1 = param.score1;
+				this.score2 = param.score2;
+				if(param.wishedPoint>0){
+					this.wishedPoint = this.getPointDescr(param.wishedPoint);
+				}
+			}
+			
+			/**
+			 * 取得点数对应的显示值
+			 */
+			protected function getPointDescr(point:int):String{
+				switch(point){
+					case 11:
+						return "J";
+					case 12:
+						return "Q";
+					case 13:
+						return "K";
+					case 14:
+						return "A";
+					default:
+						return point+"";
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox id='mainBox' left="5" right="5" top="5" bottom="5">
+		<mx:HBox backgroundColor="#FFF600" backgroundAlpha="0.5" width="100%">
+			<mx:Label text="{round}" width="140"/>
+			<mx:Label text="许愿"/>
+			<mx:Label text="{wishedPoint}" fontWeight="bold"/>
+		</mx:HBox>
+		<mx:HBox id="hbox_group1" verticalAlign="middle" backgroundAlpha="0.5">
+			<mx:VBox width="100%" height="100%">
+				<mx:Label text="{player1}" width="120"/>
+				<mx:Label text="{player3}" width="120"/>
+			</mx:VBox>
+			<mx:Label text="{score1}" width="60" textAlign="center" fontWeight="bold"/>
+		</mx:HBox>
+		<mx:HBox id="hbox_group2" verticalAlign="middle" backgroundAlpha="0.5">
+			<mx:VBox width="100%" height="100%">
+				<mx:Label text="{player2}" width="120"/>
+				<mx:Label text="{player4}" width="120"/>
+			</mx:VBox>
+			<mx:Label text="{score2}" width="60" textAlign="center" fontWeight="bold"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+</mx:Canvas>

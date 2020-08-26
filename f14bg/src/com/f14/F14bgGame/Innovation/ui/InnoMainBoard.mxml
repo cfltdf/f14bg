@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MainBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:part="com.f14.F14bgGame.Innovation.ui.part.*" xmlns:ui="com.f14.F14bgGame.Innovation.ui.*" width="1000" height="910">
+<mx:Script>
+	<![CDATA[
+		import com.f14.core.util.ApplicationUtil;
+		import com.f14.F14bgGame.Innovation.consts.InnoInputState;
+		import com.f14.F14bgGame.Innovation.consts.InnoGameCmd;
+		import com.f14.F14bgGame.bg.player.Player;
+		import com.f14.F14bgGame.Innovation.player.InnoPlayer;
+		import com.f14.F14bgGame.bg.consts.InputState;
+		import com.f14.F14bgGame.Innovation.InnoUtil;
+		
+		public var origWidth:int = 1000;
+		public var origHeight:int = 910;
+		
+		/**
+		 * 初始化
+		 */
+		override public function init():void{
+			super.init();
+			this.playerBoard_local.init();
+			this.disableAllInput();
+		}
+		
+		override public function clear():void{
+			super.clear();
+			this.playerBoard_local.clear();
+			this.canvas_playerTable.removeAllChildren();
+			this.achieveCardsDeck.clear();
+			this.normalAchieveDeck.clear();
+			
+			InnoUtil.stateManager.clear();
+			InnoUtil.stateManager.hideGameBoard();
+		}
+		
+		/**
+		 * 创建指定玩家的面板
+		 */
+		override public function createPlayerBoard(player:Player):void{
+			var gamePlayer:InnoPlayer = player as InnoPlayer;
+			if(InnoUtil.gameManager.isLocalPlayer(player)){
+				//如果是本地玩家,则使用本地游戏面板
+				gamePlayer.playerBoard = this.playerBoard_local;
+			}else{
+				
+			}
+			
+			var playerTable:InnoPlayerTable = new InnoPlayerTable();
+			var x:int = 5;
+			var y:int = 5 + int(player.position)*(playerTable.height+5);
+			playerTable.x = x;
+			playerTable.y = y;
+			this.canvas_playerTable.addChild(playerTable);
+			playerTable.init();
+			gamePlayer.playerTable = playerTable;
+			
+			if(InnoUtil.gameManager.isLocalPlayer(player)){
+				playerTable.setLocalParts();
+			}
+		}
+		
+		/**
+		 * 装载摸牌堆的参数
+		 */
+		public function loadDrawDeckParam(param:Object):void{
+			this.drawDeckPart.loadParam(param);
+		}
+		
+		/**
+		 * 装载成就牌堆的参数
+		 */
+		public function loadAchieveCardDeckParam(param:Object):void{
+			this.achieveCardsDeck.loadParam(param);
+			this.normalAchieveDeck.loadParam(param);
+		}
+		
+		/**
+		 * 禁止所有的输入
+		 */
+		override public function disableAllInput():void{
+			super.disableAllInput();
+			this.playerBoard_local.inputState = InputState.DISABLE_ALL;
+		}
+		
+		/**
+		 * 设置界面输入的状态
+		 */
+		override public function setInputState(code:int):void{
+			var state:String = InputState.DEFAULT;
+			switch(code){
+				case InnoGameCmd.GAME_CODE_SETUP_CARD:
+					state = InnoInputState.ACTION_SELECT_CARD;
+					break;
+				case InnoGameCmd.GAME_CODE_ROUND:
+					state = InnoInputState.ACTION_ROUND;
+					break;
+			}
+			this.playerBoard_local.inputState = state;
+		}
+		
+		/**
+		 * 刷新主游戏界面的大小
+		 */
+		override public function refreshMainBoardSize():void{
+			super.refreshMainBoardSize();
+			//如果少于4个玩家,则每个玩家减少160的高度
+			var num:int = InnoUtil.gameManager.getPlayerNumber();
+			var y:int = (4-num)*160;
+			this.canvas_playerTable.height = 660-y;	//这里两个高度应该是固定的,偷懒没有做成常量
+			this.height = 910-y;	//这里两个高度应该是固定的,偷懒没有做成常量
+			//刷新游戏界面大小			
+			this.origWidth = this.width;
+			this.origHeight = this.height;
+			InnoUtil.module.onResize(null);
+		}
+		
+	]]>
+</mx:Script>
+<mx:VBox y="10">
+	<mx:HBox verticalAlign="middle" >
+		<mx:VBox>
+			<part:DrawDeckPart id="drawDeckPart" />
+			<part:InnoNormalAchievePart id="normalAchieveDeck" />
+			<ui:InnoPlayerBoard id="playerBoard_local" width="100%" height="70" />
+		</mx:VBox>
+		<part:InnoAchieveCardsDeck id="achieveCardsDeck" />
+	</mx:HBox>
+	<mx:Canvas id="canvas_playerTable" width="950" height="660" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	</mx:Canvas>
+</mx:VBox>
+</MainBoard>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100" height="25" borderStyle="outset">
+	<mx:Script>
+		<![CDATA[
+			import mx.formatters.NumberFormatter;
+			import flash.utils.clearInterval;
+			import flash.utils.setInterval;
+			[Bindable]
+			protected var _hour:int = 0;
+			[Bindable]
+			protected var _minute:int = 0;
+			protected var _clockId:uint;
+			[Bindable]
+			protected var _hourStr:String;
+			[Bindable]
+			protected var _minuteStr:String;
+			
+			protected var formatter:NumberFormatter = new NumberFormatter();
+			
+			public function set hour(hour:int):void{
+				this._hour = hour;
+				this._hourStr = this.format(hour);
+			}
+			
+			public function get hour():int{
+				return this._hour;
+			}
+			
+			public function set minute(minute:int):void{
+				this._minute = minute;
+				this._minuteStr = this.format(minute);
+			}
+			
+			public function get minute():int{
+				return this._minute;
+			}
+			
+			/**
+			 * 停止并重置计时器
+			 */
+			public function reset():void{
+				this.stop();
+				this.hour = 0;
+				this.minute = 0;
+			}
+			
+			/**
+			 * 设置时间
+			 */
+			public function setTime(hour:int, minute:int):void{
+				this.hour = hour;
+				this.minute = minute;
+			}
+			
+			/**
+			 * 开始计时
+			 */
+			public function start():void{
+				this.reset();
+				this._clockId = setInterval(perMinute, 60000);
+			}
+			
+			/**
+			 * 停止计时
+			 */
+			public function stop():void{
+				if(this._clockId){
+					clearInterval(this._clockId);
+					this._clockId = 0;
+				}
+			}
+			
+			/**
+			 * 每分钟触发的事件
+			 */
+			protected function perMinute():void{
+				if(this.minute==59){
+					this.minute = 0;
+					this.hour += 1;
+				}else{
+					this.minute += 1;
+				}
+			}
+			
+			/**
+			 * 格式化数字
+			 */
+			protected function format(num:int):String{
+				if(String(num).length<2){
+					return "0"+num;
+				}else{
+					return String(num);
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:HBox horizontalGap="6" verticalCenter="0" horizontalCenter="0" borderStyle="none">
+		<mx:HBox horizontalGap="1">
+			<mx:Label width="32" text="{_hourStr}" fontWeight="bold"  textAlign="right"/>
+			<mx:Label width="8" text=":" fontWeight="bold" />
+			<mx:Label width="32" text="{_minuteStr}" fontWeight="bold" />
+		</mx:HBox>
+	</mx:HBox>
+</mx:Canvas>

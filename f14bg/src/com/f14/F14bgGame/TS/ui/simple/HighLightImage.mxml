@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Image xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			protected var _selectable:Boolean;
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+			}
+		]]>
+	</mx:Script>
+</mx:Image>

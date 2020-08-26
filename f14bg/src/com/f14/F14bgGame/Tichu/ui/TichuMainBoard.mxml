@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MainBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.F14bgGame.Tichu.ui.*" xmlns:ns2="com.f14.F14bgGame.Tichu.ui.part.*" width="1010" height="730">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Tichu.Tichu;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.Tichu.consts.TichuGameCmd;
+			import com.f14.F14bgGame.bg.consts.InputState;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgGame.Tichu.player.TichuPlayer;
+			import com.f14.F14bgGame.Tichu.TichuUtil;
+			
+			public static var BOARD_WIDTH:int = 1010;
+			public static var BOARD_HEIGHT:int = 730;
+			protected var playerBoards:Array = new Array();
+			
+			/**
+			 * 初始化
+			 */
+			override public function init():void{
+				super.init();
+				
+				playerBoards.push(playerBoard0);
+				playerBoards.push(playerBoard1);
+				playerBoards.push(playerBoard2);
+				playerBoards.push(playerBoard3);
+				
+				for(var i:int=0;i<playerBoards.length;i++){
+					var pb:TichuPlayerBoard = playerBoards[i] as TichuPlayerBoard;
+					pb.positionType = i;
+					pb.init();
+				}
+				this.gameInfoBoard.init();
+				this.disableAllInput();
+			}
+			
+			override public function clear():void{
+				super.clear();
+				for each(var pb:TichuPlayerBoard in this.playerBoards){
+					pb.clear();
+				}
+				this.gameInfoBoard.clear();
+				//清除所有游戏窗口
+				TichuUtil.stateManager.clear();
+			}
+			
+			/**
+			 * 创建指定玩家的面板
+			 */
+			override public function createPlayerBoard(player:Player):void{
+				var tichuPlayer:TichuPlayer = player as TichuPlayer;
+				if(TichuUtil.gameManager.isLocalPlayer(player)){
+					//如果是本地玩家,则使用本地游戏面板
+					//ApplicationUtil.debugManager.printDebug("local player position " + player.position);
+					tichuPlayer.playerBoard = this.playerBoard0;
+				}else{
+					var positionType:int = this.getPositionType(player);
+					tichuPlayer.playerBoard = this.playerBoards[positionType];
+					//ApplicationUtil.debugManager.printDebug("player position " + player.position + " positionType=" + positionType);
+				}
+				//禁用玩家输入
+				//player.playerBoard.inputState = InputState.DISABLE_ALL;
+			}
+			
+			/**
+			 * 取得指定玩家的位置类型
+			 */
+			protected function getPositionType(player:Player):int{
+				if(TichuUtil.gameManager.isLocalPlayer(player)){
+					//本地玩家则返回下边的位置
+					return 0;
+				}else{
+					var local:int = 0;
+					if(TichuUtil.gameManager.localPlayer!=null){
+						local = TichuUtil.gameManager.localPlayer.position;
+					}
+					for(var i:int=1;i<4;i++){
+						if((local+i)%4==player.position){
+							local = i;
+							break;
+						}
+					}
+					return local;
+				}
+			}
+			
+			/**
+			 * 禁止所有的输入
+			 */
+			override public function disableAllInput():void{
+				super.disableAllInput();
+				this.playerBoard0.inputState = InputState.DISABLE_ALL;
+			}
+			
+			/**
+			 * 设置界面输入的状态
+			 */
+			override public function setInputState(code:int):void{
+				switch(code){
+					case TichuGameCmd.GAME_CODE_BIG_TICHU_PHASE: //大地主阶段
+						this.playerBoard0.inputState = "BIG_TICHU";
+						break;
+					case TichuGameCmd.GAME_CODE_REGROUP_PHASE: //换牌阶段
+						this.playerBoard0.inputState = "REGROUP";
+						break;
+					case TichuGameCmd.GAME_CODE_ROUND_PHASE: //普通回合阶段
+						this.playerBoard0.inputState = "ROUND";
+						break;
+					default:
+						this.playerBoard0.inputState = InputState.DEFAULT;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<ns2:TichuGameInfoBoard id="gameInfoBoard" top="307" left="410">
+	</ns2:TichuGameInfoBoard>
+	<ns1:TichuPlayerBoard id="playerBoard0" left="340" top="441" />
+	<ns1:TichuPlayerBoard id="playerBoard1" right="5" top="152"/>
+	<ns1:TichuPlayerBoard id="playerBoard2" left="340" top="10"/>
+	<ns1:TichuPlayerBoard id="playerBoard3" left="5" top="152"/>
+</MainBoard>

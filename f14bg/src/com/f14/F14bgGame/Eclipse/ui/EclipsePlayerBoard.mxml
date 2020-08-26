@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:part="com.f14.F14bgGame.Eclipse.ui.part.*" width="900" height="662" xmlns:ns1="com.f14.F14bgGame.Eclipse.ui.simple.*" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.consts.UnitType;
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			import com.f14.F14bgGame.Eclipse.components.EclipseTechnology;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgGame.Eclipse.player.EclipsePlayer;
+			import mx.states.SetEventHandler;
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import com.f14.F14bgGame.bg.consts.InputState;
+			
+			[Bindable]
+			public var eclipsePlayer:EclipsePlayer;
+			
+			protected var _blueprintSelectable:Boolean;
+			protected var blueprints:Array = new Array();
+		
+			override public function init():void{
+				super.init();
+				
+				this.blueprints[UnitType.INTERCEPTOR] = this.blueprint_interceptor;
+				this.blueprints[UnitType.CRUISER] = this.blueprint_cruiser;
+				this.blueprints[UnitType.DREADNOUGHT] = this.blueprint_dreadnought;
+				this.blueprints[UnitType.STARBASE] = this.blueprint_starbase;
+			}
+			
+			override public function clear():void{
+				super.clear();
+				this.blueprints = new Array();
+				
+				this.track_money.clear();
+				this.track_science.clear();
+				this.track_materials.clear();
+				this.track_tech_military.clear();
+				this.track_tech_grid.clear();
+				this.track_tech_nano.clear();
+				this.track_reputation.clear();
+				
+				this.blueprint_interceptor.clear();
+				this.blueprint_cruiser.clear();
+				this.blueprint_dreadnought.clear();
+				this.blueprint_starbase.clear();
+			}
+			
+			override public function set player(player:Player):void{
+				super.player = player;
+				//if(this.playerInfo!=null){
+				//	this.playerInfo.player = player as TTAPlayer;
+				//}
+				this.eclipsePlayer = player as EclipsePlayer;
+				
+				this.track_money.player = eclipsePlayer;
+				this.track_science.player = eclipsePlayer;
+				this.track_materials.player = eclipsePlayer;
+			}
+			
+			public function get blueprintSelectable():Boolean{
+				return this._blueprintSelectable;
+			}
+			
+			public function set blueprintSelectable(selectable:Boolean):void{
+				this._blueprintSelectable = selectable;
+				for each(var o:Blueprint in this.blueprints){
+					o.selectable = selectable;
+				}
+			}
+			
+			/**
+			 * 添加科技
+			 */
+			public function addTechnology(type:String):void{
+				var c:Object = EclipseUtil.resourceManager.getTechnology(type);
+				var category:String = c.category;
+				var track:TechnologyTrack = this.getTechnologyTrack(category);
+				if(track!=null){
+					track.addTechnology(c.type);
+				}
+			}
+			
+			/**
+			 * 取得科技类型对应的容器
+			 */
+			protected function getTechnologyTrack(category:String):TechnologyTrack{
+				switch(category){
+					case "MILITARY":
+						return this.track_tech_military;
+					case "GRID":
+						return this.track_tech_grid;
+					case "NANO":
+						return this.track_tech_nano;
+				}
+				return null;
+			}
+			
+			/**
+			 * 取得飞船类型对应的蓝图控件
+			 */
+			public function getBlueprint(shipType:String):Blueprint{
+				return this.blueprints[shipType];
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas styleName="playerBoard" width="900" height="662">
+	</mx:Canvas>
+	<mx:Image source="com/f14/F14bgGame/Eclipse/images/playerBoard.jpg" width="900" height="662" autoLoad="true" visible="false">
+	</mx:Image>
+	<ns1:RacePhoto id="racePhoto" x="707" y="249">
+	</ns1:RacePhoto>
+	<mx:Label x="49" y="15" text="{this.eclipsePlayer.costOrbital}" styleName="textSmallCounter"/>
+	<mx:Label x="45" y="48" text="{this.eclipsePlayer.costMonolith}" styleName="textSmallCounter"/>
+	<mx:Label x="194" y="215" text="{this.eclipsePlayer.costInterceptor}" styleName="textSmallCounter"/>
+	<mx:Label x="422" y="215" text="{this.eclipsePlayer.costCruiser}" styleName="textSmallCounter"/>
+	<mx:Label x="652" y="215" text="{this.eclipsePlayer.costDreadnought}" styleName="textSmallCounter"/>
+	<mx:Label x="871" y="215" text="{this.eclipsePlayer.costStarbase}" styleName="textSmallCounter"/>
+	
+	<mx:Label x="574" y="492" text="{this.eclipsePlayer.resMoney}" styleName="textSmallCounter"/>
+	<mx:Label x="574" y="528" text="{this.eclipsePlayer.resScience}" styleName="textSmallCounter"/>
+	<mx:Label x="574" y="561" text="{this.eclipsePlayer.resMaterials}" styleName="textSmallCounter"/>
+	
+	<ns1:PopulationTrack id="track_money"  x="99" y="480"/>
+	<ns1:PopulationTrack id="track_science"  x="99" y="517"/>
+	<ns1:PopulationTrack id="track_materials"  x="99" y="552"/>
+	
+	<ns1:TechnologyTrack id="track_tech_military"  x="129" y="254"/>
+	<ns1:TechnologyTrack id="track_tech_grid"  x="129" y="331"/>
+	<ns1:TechnologyTrack id="track_tech_nano"  x="129" y="410"/>
+	
+	<ns1:ReputationTrack id="track_reputation"  y="246" x="7"/>
+	
+	<ns1:Blueprint id="blueprint_interceptor"  x="22" y="11">
+	</ns1:Blueprint>
+	<ns1:Blueprint id="blueprint_cruiser"  x="248" y="11">
+	</ns1:Blueprint>
+	<ns1:Blueprint id="blueprint_dreadnought"  x="480" y="11">
+	</ns1:Blueprint>
+	<ns1:Blueprint id="blueprint_starbase"  x="699" y="11"/>
+</PlayerBoard>

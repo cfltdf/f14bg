@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:part="com.f14.F14bgGame.TS.ui.part.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.consts.TSInputState;
+			import com.f14.F14bgGame.TS.TSUtil;
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import com.f14.F14bgGame.bg.consts.InputState;
+			/**
+			 * 所有输入部件
+			 */
+			protected var parts:Array = ["DEFAULT", "MAP", "BUTTON", "HANDS", "HEADLINE"];
+			/**
+			 * 选择手牌时是否多选
+			 */
+			protected var multiSelection:Boolean = false;
+		
+			override public function init():void{
+				super.init();
+				this.playerHands.init();
+			}
+			
+			override public function clear():void{
+				super.clear();
+				this.playerHands.clear();
+			}
+			
+			/**
+			 * 设置输入状态
+			 */
+			override public function set inputState(inputState:String):void{
+				super.inputState = inputState;
+				var enableParts:Array = new Array();
+				switch(inputState){
+					case InputState.ENABLE_ALL: //允许所有
+					case InputState.DEFAULT: //默认状态
+						break;
+					case InputState.DISABLE_ALL: //不允许所有
+						break;
+					case TSInputState.ACTION_SELECT_COUNTRY: //选择国家
+						enableParts.push("MAP");
+						break;
+					case TSInputState.ACTION_ROUND: //回合行动
+						enableParts.push("BUTTON");
+						enableParts.push("HANDS");
+						this.multiSelection = false;
+						break;
+					case TSInputState.ACTION_HEADLINE: //头条
+						enableParts.push("HEADLINE");
+						enableParts.push("HANDS");
+						this.multiSelection = false;
+						break;
+					case TSInputState.ACTION_SELECT_CARD: //选择卡牌
+						enableParts.push("HANDS");
+						this.multiSelection = false;
+						break;
+					case TSInputState.ACTION_SELECT_CARD_MULTI: //选择卡牌(多选)
+						enableParts.push("HANDS");
+						this.multiSelection = true;
+						break;
+				}
+				this.setEnableParts(enableParts);
+			}
+			
+			/**
+			 * 设置数组中的部件为可选
+			 */
+			protected function setEnableParts(enableParts:Array):void{
+				for each(var part:String in parts){
+					this.setPartInputable(part, BgUtils.inArray(part, enableParts));
+				}
+			}
+			
+			/**
+			 * 设置各个输入部件是否输入的情况
+			 */
+			protected function setPartInputable(part:String, inputable:Boolean):void{
+				switch(part){
+					case "DEFAULT": //默认部件
+						//this.workerPool.selectable = inputable;
+						break;
+					case "MAP": //地图部件
+						TSUtil.mainBoard.tsmap.selectable = inputable;
+						break;
+					case "BUTTON": //按键
+						this.buttonPart.hbox_normal.visible = inputable;
+						break;
+					case "HANDS": //手牌
+						this.playerHands.multiSelection = this.multiSelection;
+						this.playerHands.selectable = inputable;
+						break;
+					case "HEADLINE": //头条
+						this.buttonPart.hbox_headline.visible = inputable;
+						break;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<part:TSButtonPart id="buttonPart" top="10" horizontalCenter="0" />
+	<part:TSPlayerHand id="playerHands" bottom="5" width="100%" />
+</PlayerBoard>

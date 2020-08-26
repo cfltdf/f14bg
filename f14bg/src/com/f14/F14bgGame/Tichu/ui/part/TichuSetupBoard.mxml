@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SetupBoard xmlns="com.f14.F14bgClient.room.ui.part.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			protected var _descr:String;
+		
+			override public function set inputable(inputable:Boolean):void{
+				this._inputable = inputable;
+				this.radio_mode_random.enabled = inputable;
+				this.radio_mode_fixed.enabled = inputable;
+			}
+			
+			/**
+			 * 装载参数
+			 */
+			override public function loadParam(param:Object):void{
+				var config:Object = param.config;
+				this.radiogroup1.selectedValue = config.mode;
+			}
+			
+			/**
+			 * 按照设置创建参数
+			 */
+			override public function createParam():Object{
+				var param:Object = super.createParam();
+				param.mode = this.radiogroup1.selectedValue;
+				return param;
+			}
+			
+			/**
+			 * 游戏模式变换时触发的方法
+			 */
+			override protected function onGameModeChange():void{
+				super.onGameModeChange();
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas left="10" right="10" top="10" bottom="10">
+		<mx:VBox horizontalCenter="0">
+			<mx:Label text="选择座位模式"/>
+			<mx:RadioButtonGroup id="radiogroup1" change="this.onGameModeChange()"/>
+			<mx:RadioButton id="radio_mode_random" label="随机分配座位" groupName="radiogroup1" value="RANDOM"/>
+			<mx:RadioButton id="radio_mode_fixed" label="13 VS 24" groupName="radiogroup1" value="FIXED"/>
+		</mx:VBox>
+	</mx:Canvas>
+</SetupBoard>

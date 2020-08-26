@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			protected var closed:Boolean = true;
+			
+			/**
+			 * 初始化
+			 */
+			public function init():void{
+				this.addEventListener(CloseEvent.CLOSE, onClose);
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			public function clear():void{
+				
+			}
+			
+			/**
+			 * 触发关闭事件
+			 */
+			public function cancel():void{
+				this.dispatchEvent(new Event(CloseEvent.CLOSE));
+			}
+			
+			/**
+			 * 关闭时的回调函数
+			 */
+			public function onClose(evt:Event):void{
+				PopUpManager.removePopUp(evt.target as TitleWindow);
+				this.closed = true;
+			}
+			
+			/**
+			 * 显示本窗口
+			 */
+			public function show(modal:Boolean=true, center:Boolean=true, parent:DisplayObject=null):void{
+				if(!this.closed){
+					this.cancel();
+				}
+				if(parent!=null){
+					PopUpManager.addPopUp(this, parent, modal);
+				}else{
+					PopUpManager.addPopUp(this, ApplicationUtil.application as DisplayObject, modal);
+				}
+				if(center){
+					PopUpManager.centerPopUp(this);
+				}
+				this.closed = false;
+			}
+			
+			/**
+			 * 显示或关闭本窗口
+			 */
+			public function trig(modal:Boolean=true, center:Boolean=true, parent:DisplayObject=null):void{
+				if(this.closed){
+					this.show(modal, center, parent);
+				}else{
+					this.cancel();
+				}
+			}
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

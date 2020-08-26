@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module:F14module xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:module="com.f14.core.controls.module.*" layout="absolute" width="100%" height="100%" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgClient.FlashHandler.QueryHandler;
+			import com.f14.net.smartinvoke.QueryCommandHandler;
+			import com.f14.core.util.ApplicationUtil;
+			import mx.collections.ArrayCollection;
+			[Bindable]
+			public var username:String;
+			[Bindable]
+			protected var rankingList:ArrayCollection;
+			protected var queryHandler:QueryHandler;
+			
+			override public function init():void{
+				QueryUtil.module = this;
+				QueryUtil.init();
+				
+				//初始化时查询用户信息
+				queryHandler = new QueryHandler();
+				queryHandler.viewUser();
+			}
+			
+			public function clear():void{
+				this.username = null;
+				this.rankingList = new ArrayCollection();
+			}
+			
+			/**
+			 * 装载用户积分信息
+			 */
+			public function loadParam(param:Object):void{
+				this.username = param.username;
+				this.rankingList = new ArrayCollection(param.list);
+				for(var i:int=0;i<this.rankingList.length;i++){
+					var item:Object = this.rankingList.getItemAt(i);
+					//读取游戏类型代码的显示名称
+					item.boardGameName = ApplicationUtil.commonHandler.getCodeLabel("BOARDGAME", item.boardGameId);
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox left="5" right="5" bottom="5" top="5">
+		<mx:Canvas width="100%">
+			<mx:HBox x="0" y="0" width="100%" height="100%" horizontalGap="4">
+				<mx:Label text="{username}" fontSize="12"/>
+				<mx:Label text="的游戏积分列表" fontSize="12"/>
+			</mx:HBox>
+		</mx:Canvas>
+		<mx:DataGrid id="table_ranking" dataProvider="{rankingList}" width="100%" height="100%">
+			<mx:columns>
+				<mx:DataGridColumn headerText="游戏类型" dataField="boardGameName" width="160"/>
+				<mx:DataGridColumn headerText="胜" dataField="numWins" width="75"/>
+				<mx:DataGridColumn headerText="负" dataField="numLoses" width="75"/>
+				<mx:DataGridColumn headerText="总数" dataField="numTotal" width="75"/>
+				<mx:DataGridColumn headerText="胜率(%)" dataField="rate" width="75"/>
+				<mx:DataGridColumn headerText="总积分" dataField="score"/>
+				<mx:DataGridColumn headerText="排名点数" dataField="rankPoint"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+</module:F14module>

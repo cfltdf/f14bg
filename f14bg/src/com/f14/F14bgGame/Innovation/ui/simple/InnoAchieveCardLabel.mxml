@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SimpleCard xmlns="com.f14.F14bgGame.bg.ui.simple.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="74" height="22" styleName="achieveCard">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import mx.core.UIComponent;
+			import mx.core.FlexBitmap;
+			import com.f14.core.util.ApplicationUtil;
+			
+			/**
+			 * 设置显示样式
+			 */
+			override protected function refreshStyle():void{
+				if(this.object!=null && this.object.object!=null){
+					var card:Object = this.object.object;
+					this._name = card.name;
+				}else{
+					this._name = "";
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Label text="{this._name}" width="100%" height="20" verticalCenter="0" fontWeight="bold" color="#000000" textAlign="center"/>
+</SimpleCard>

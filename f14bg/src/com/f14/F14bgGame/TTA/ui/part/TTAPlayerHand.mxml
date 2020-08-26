@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" height="116">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.consts.ActionType;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.TTA.components.TTACard;
+			
+			protected var _cards:Array = new Array();
+			protected var _selectable:Boolean;
+			
+			public function clear():void{
+				//移除所有卡牌的监听器
+				for each(var card:TTACard in this._cards){
+					if(card!=null){
+						card.removeEventListener(MouseEvent.CLICK, onClick);
+					}
+				}
+				this._cards = new Array();
+				this.hbox_civil.removeAllChildren();
+				this.hbox_military.removeAllChildren();
+			}
+			
+			/**
+			 * 设置是否可选
+			 */
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				var card:TTACard;
+				for each(card in this.hbox_civil.getChildren()){
+					card.selectable = selectable;
+				}
+				for each(card in this.hbox_military.getChildren()){
+					card.selectable = selectable;
+				}
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			/**
+			 * 添加卡牌
+			 */
+			public function addCard(id:String):void{
+				var card:TTACard = TTAUtil.resourceManager.createTTACard(id);
+				if(card!=null){
+					var hbox:HBox = this.getHbox(card.object.actionType);
+					hbox.addChild(card);
+					card.selectable = this.selectable;
+					this._cards[id] = card;
+					card.addEventListener(MouseEvent.CLICK, onClick);
+				}
+			}
+			
+			/**
+			 * 添加卡牌
+			 */
+			public function addCards(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				for each(var id:String in ids){
+					this.addCard(id);
+				}
+			}
+			
+			/**
+			 * 取得行动类型对应的hbox容器
+			 */
+			protected function getHbox(actionType:String):HBox{
+				switch(actionType){
+					case ActionType.CIVIL:
+						return this.hbox_civil;
+					case ActionType.MILITARY:
+						return this.hbox_military;
+				}
+				return null;
+			}
+			
+			/**
+			 * 按照id取得卡牌
+			 */
+			public function getCard(id:String):TTACard{
+				return this._cards[id] as TTACard;
+			}
+			
+			/**
+			 * 移除卡牌
+			 */
+			public function removeCard(id:String):void{
+				var card:TTACard = this.getCard(id);
+				if(card!=null){
+					this._cards[card.id] = null;
+					card.removeEventListener(MouseEvent.CLICK, onClick);
+					card.parent.removeChild(card);
+				}
+			}
+			
+			/**
+			 * 移除卡牌
+			 */
+			public function removeCards(cardIds:String):void{
+				var ids:Array = cardIds.split(",");
+				for each(var id:String in ids){
+					this.removeCard(id);
+				}
+			}
+			
+			/**
+			 * 点击卡牌时触发的方法
+			 */
+			protected function onClick(evt:MouseEvent):void{
+				var card:TTACard = evt.currentTarget as TTACard;
+				if(card.selectable){
+					var param:Object;
+					if(TTAUtil.stateManager.currentConfirmWindow!=null){
+						//如果存在询问窗口,则由该窗口返回指令参数
+						param = {};
+						param.cardId = card.id;
+						TTAUtil.stateManager.currentConfirmWindow.doConfirm(param);
+					}else{
+						param = TTAUtil.mainBoard.requestWindow.createParam();
+						TTAUtil.actionManager.playCard(card.id, param);
+					}
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox x="5">
+		<mx:HBox id="hbox_civil">
+		</mx:HBox>
+		<mx:HBox id="hbox_military">
+		</mx:HBox>
+	</mx:HBox>
+</mx:Canvas>

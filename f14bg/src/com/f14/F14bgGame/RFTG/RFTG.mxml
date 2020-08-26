@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module:F14GameModule xmlns:module="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%" creationComplete="init()" xmlns:ui="com.f14.F14bgGame.RFTG.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.Version;
+			import com.f14.F14bgGame.RFTG.ui.part.RaceSetupBoard;
+			import com.f14.F14bgGame.RFTG.net.RacePlayerHandler;
+			import com.f14.F14bgGame.RFTG.player.RacePlayer;
+			import com.f14.F14bgClient.room.RoomUtil;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgClient.room.ui.part.SetupBoard;
+			import com.f14.F14bgGame.bg.handler.InGameHandler;
+			
+			/**
+			 * 创建version对象
+			 */
+			override protected function createVersion():Version{
+				var v:Version = super.createVersion();
+				v.descr = "感谢网友 Master.Lin 提供基本版素材.\n"
+					+ "感谢网友 CDong 提供1扩和2扩素材.\n"
+					+ "感谢所有朋友的测试和支持.";
+				return v;
+			}
+		
+			override public function init():void{
+				this.loadVersionInfo();
+				super.init();
+				this.mainBoard = this.raceMainBoard;
+				
+				RoomUtil.gameModule = this;
+				RaceUtil.initGameModule(this);
+				
+				//初始化图片资源管理器
+				this.createLoadingMask();
+				RaceUtil.initImageManager();
+				//检查图片管理器是否执行完成
+				RaceUtil.imageManager.checkImageLoadComplete();
+			}
+			
+			/**
+			 * 图片资源装载完成时的回调函数
+			 */
+			override public function onImageLoadComplete():void{
+				super.onImageLoadComplete();
+				RaceUtil.init();
+				
+				//装载资源字符串
+				RaceUtil.resourceManager.loadResourceString();
+				this.mainBoard.init();
+				
+				//装载房间信息
+				RoomUtil.actionManager.loadRoomInfo();
+			}
+			
+			override protected function createGameCommandHandler():InGameHandler{
+				return new RacePlayerHandler();
+			}
+			
+			override protected function createSetupBoard():SetupBoard{
+				return new RaceSetupBoard();
+			}
+			
+			override public function createPlayer():Player{
+				return new RacePlayer();
+			}
+			
+		]]>
+	</mx:Script>
+	<ui:RaceMainBoard id="raceMainBoard" width="100%" height="100%" />
+</module:F14GameModule>

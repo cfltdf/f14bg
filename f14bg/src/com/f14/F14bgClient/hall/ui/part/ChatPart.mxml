@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:text="com.f14.core.controls.text.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgClient.hall.HallUtil;
+			import mx.formatters.DateFormatter;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.f14bg.manager.ActionManager;
+			
+			public static var df:DateFormatter = new DateFormatter();
+			df.formatString = "JJ:NN:SS";
+			
+			/**
+			 * 收到消息
+			 */
+			public function receiveMessage(message:Object):void{
+				var str:String = "[" + df.format(new Date()) + "] "
+					+ message.name + ":  " + message.msg + "\n";
+				this.chat_area.text += str;
+			}
+		
+			/**
+			 * 发送聊天信息
+			 */
+			public function sendMsg():void{
+				var text:String = this.input_msg.text;
+				if(text){
+					this.input_msg.text = "";
+					this.input_msg.setFocus();
+					HallUtil.actionManager.sendMessage(text);
+				}
+			}
+			
+			/**
+			 * 输入框按键触发事件
+			 */
+			protected function onKeyDown(evt:KeyboardEvent):void{
+				if(evt.keyCode==13){
+					this.sendMsg();
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%" height="100%">
+		<text:ChatTextArea id="chat_area" width="100%" height="100%" />
+		<mx:HBox width="100%" verticalAlign="middle">
+			<mx:TextInput id="input_msg" width="100%" keyDown="onKeyDown(event)" />
+			<mx:Button label="发送" width="80" height="35" click="this.sendMsg()" />
+		</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

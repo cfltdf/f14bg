@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MDIWindow xmlns="flexmdi.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgClient.room.ui.part.F14MiniTile;
+			
+			public var miniTile:F14MiniTile;
+		
+			override public function updateContextMenu():void{
+				//不要菜单!!
+				if(this.contextMenu==null){
+					this.contextMenu = new ContextMenu();
+					this.contextMenu.hideBuiltInItems();
+				}
+			}
+			
+			/**
+			 * 该窗口不能关闭,将执行最小化的行为
+			 */
+			override public function close(event:MouseEvent = null):void{
+				this.minimize(event);
+			}
+			
+			/**
+			 * 该窗口最小化时,设为不可见
+			 */
+			override public function minimize(event:MouseEvent = null):void{
+				this.hide();
+			}
+			
+			/**
+			 * 显示窗口
+			 */
+			public function show():void{
+				this.visible = true;
+				this.miniTile.stopGlow();
+			}
+			
+			/**
+			 * 隐藏窗口
+			 */
+			public function hide():void{
+				this.visible = false;
+			}
+			
+			/**
+			 * 如果当前窗口不可见,则闪烁其最小化的部件
+			 */
+			public function notify():void{
+				if(!this.visible){
+					this.miniTile.startGlow();
+				}
+			}
+			
+		]]>
+	</mx:Script>
+</MDIWindow>

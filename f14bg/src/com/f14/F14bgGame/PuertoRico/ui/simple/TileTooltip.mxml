@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageTooltip xmlns="com.f14.f14bg.ui.simple.*" xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.components.ImageTile;
+			
+			/**
+			 * 设置tooltip显示的板块
+			 */
+			public function setTile(tile:ImageTile):void{
+				if(tile!=null){
+					this.width = tile.imageWidth * 3;
+					this.height = tile.imageHeight * 3;
+					
+					if(this.bit!=null){
+						this.bit.bitmapData = tile.bitmapData;
+					}
+				}else{
+					this.width = 0;
+					this.height = 0;
+					
+					if(this.bit!=null){
+						this.bit.bitmapData = null;
+					}
+				}
+				
+			}
+		]]>
+	</mx:Script>
+</ImageTooltip>

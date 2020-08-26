@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.F14bgGame.PuertoRico.ui.*" width="200">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.consts.PlayerState;
+			import com.f14.F14bgGame.bg.player.Player;
+			import mx.effects.IEffectInstance;
+			import com.f14.f14bg.event.BgEvent;
+			import com.f14.F14bgGame.PuertoRico.player.PrPlayer;
+			
+			protected var prPlayer:PrPlayer;
+			
+			override public function init():void{
+				super.init();
+				this.playerInfoBoard.init();
+				this.playerInfoBoard.initResourceSelecter();
+			}
+			
+			override public function set player(player:Player):void{
+				super.player = player;
+				this.prPlayer = player as PrPlayer;
+				this.playerInfoBoard.player = prPlayer;
+				this.playerBuildingBoard.player = prPlayer;
+				if(player!=null){
+					player.addEventListener(BgEvent.PLAYER_STATE_CHANGE, playerStateChange);
+				}
+			}
+			
+			override public function clear():void{
+				super.clear();
+				this.playerInfoBoard.clear();
+				this.playerBuildingBoard.clear();
+				//this.changeEffect(null);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox width="200">
+		<ns1:PrPlayerInfoBoard id="playerInfoBoard">
+		</ns1:PrPlayerInfoBoard>
+		<ns1:PlayerBuildingBoard id="playerBuildingBoard">
+		</ns1:PlayerBuildingBoard>
+	</mx:VBox>
+</PlayerBoard>

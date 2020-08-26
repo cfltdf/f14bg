@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgClient.hall.HallUtil;
+			import com.f14.core.util.ApplicationUtil;
+			import mx.collections.ArrayCollection;
+			[Bindable]
+			protected var rooms:ArrayCollection = new ArrayCollection();
+			
+			/**
+			 * 装载房间列表
+			 */
+			public function loadRooms(param:Object):void{
+				this.rooms = new ArrayCollection(param.rooms);
+			}
+			
+			/**
+			 * 加入房间
+			 */
+			public function joinRoom():void{
+				var i:int = this.grid_rooms.selectedIndex;
+				if(i<0){
+					ApplicationUtil.alert("请选择要加入的房间!");
+					return;
+				}
+				var room:Object = this.rooms.getItemAt(i);
+				/*if(!room){
+					ApplicationUtil.alert("请选择要加入的房间!");
+					return;
+				}*/
+				if(room.password){
+					//如果有密码则弹出密码输入窗口
+					HallUtil.stateManager.showPasswordWindow(room.id);
+				}else{
+					//没有密码则直接检查加入
+					HallUtil.actionManager.joinRoomCheck(room.id, "");
+				}
+			}
+			
+			/**
+			 * 按照房间id取得房间
+			 */
+			public function getRoom(id:String):Object{
+				for(var i:int=0;i<this.rooms.length;i++){
+					if(this.rooms.getItemAt(i).id==id){
+						return this.rooms.getItemAt(i);
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * 添加房间
+			 */
+			public function addRoom(room:Object):void{
+				this.rooms.addItem(room);
+			}
+			
+			/**
+			 * 移除房间
+			 */
+			public function removeRoom(id:String):void{
+				var u:Object = this.getRoom(id);
+				if(u!=null){
+					this.rooms.removeItemAt(this.rooms.getItemIndex(u));
+				}
+			}
+			
+			/**
+			 * 刷新房间信息
+			 */
+			public function updateRoom(room:Object):void{
+				var u:Object = this.getRoom(room.id);
+				if(u!=null){
+					u.bgState = room.bgState;
+					u.players = room.players;
+					this.grid_rooms.invalidateList();
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:DataGrid id="grid_rooms" width="100%" height="100%" dataProvider="{rooms}" doubleClickEnabled="true" doubleClick="joinRoom()">
+		<mx:columns>
+			<mx:DataGridColumn headerText="密码" dataField="password" width="35"/>
+			<mx:DataGridColumn headerText="房间名称" dataField="name"/>
+			<mx:DataGridColumn headerText="房间类型" dataField="gameType"/>
+			<mx:DataGridColumn headerText="房间状态" dataField="bgState"/>
+			<mx:DataGridColumn headerText="人数" dataField="players"/>
+			<mx:DataGridColumn headerText="房间描述" dataField="descr"/>
+		</mx:columns>
+	</mx:DataGrid>
+</mx:Canvas>

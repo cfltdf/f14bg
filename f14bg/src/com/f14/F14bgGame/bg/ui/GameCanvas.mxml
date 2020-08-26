@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:flexmdi="http://flexmdi.googlecode.com/" width="100%" height="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off" xmlns:ns1="com.f14.F14bgGame.bg.ui.simple.*" xmlns:ns2="com.f14.F14bgGame.bg.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.bg.manager.ApplicationManager;
+			import com.f14.F14bgGame.bg.manager.TooltipManager;
+			import com.f14.F14bgGame.bg.manager.SoundManager;
+			import com.f14.F14bgGame.bg.manager.ResourceManager;
+			import com.f14.F14bgGame.bg.manager.ImageManager;
+			import com.f14.F14bgGame.bg.manager.EffectManager;
+			
+			/**
+			 * 主游戏面板
+			 */
+			protected var mainBoard:MainBoard;
+			
+			/**
+			 * 创建与主应用程序的连接
+			 */
+			public function connectF14bg(mainApplication:Object, mainActionManager:Object, mainStateManager:Object):void{
+				//如果是首次连接,则初始化所有连接
+				ApplicationManager.mainApplicationUtil = mainApplication;
+				ApplicationManager.mainActionManager = mainActionManager;
+				ApplicationManager.mainStateManager = mainStateManager;
+				
+				//初始化应用管理类
+				ApplicationManager.init();
+				ApplicationManager.stateManager.initControlBar(this);
+				
+				//装载所有卡牌的资料
+				ApplicationManager.actionManager.loadResources();
+			}
+			
+			/**
+			 * 显示游戏时触发的方法
+			 */
+			public function onload():void{
+				this.canvas_float.clear();
+				
+				//清除所有玩家
+				ApplicationManager.gameManager.resetPlayers();
+				//创建主游戏面板
+				createMainBoard();
+				//装载游戏面板
+				//mainBoard.onload();
+				//mainBoard.buttonBoard.showInitButtons();
+				ApplicationManager.stateManager.clear();
+				//重置时间
+				ApplicationManager.stateManager.timeBoard.reset();
+				//读取游戏配置和玩家列表
+				ApplicationManager.actionManager.loadConfig();
+				ApplicationManager.actionManager.loadPlayers();
+				//刷新用户列表
+				ApplicationManager.mainActionManager.refreshUserList();
+				if(ApplicationManager.mainApplicationUtil.localUser.audience){
+					//如果是观战,则读取游戏当前信息
+					ApplicationManager.mainActionManager.refreshPlayingInfo();
+				}else if(ApplicationManager.mainApplicationUtil.localUser.reconnect){
+					//如果是重新连接,则读取游戏信息后,继续连接游戏状态
+					ApplicationManager.mainActionManager.reconnectGame();
+					ApplicationManager.mainApplicationUtil.localUser.reconnect = false;
+				}else{
+					//如果是正常加入,则读取游戏设置
+					//ApplicationManager.actionManager.loadConfig();
+				}
+			}
+			
+			/**
+			 * 创建新的游戏主界面
+			 */
+			public function createMainBoard():void{
+				removeMainBoard();
+				mainBoard = this.createNewMainBoard();
+				this.canvas_main.addChild(mainBoard);
+				mainBoard.init();
+				ApplicationManager.application = mainBoard;
+				mainBoard.width = ApplicationUtil.application.width;
+				mainBoard.height = ApplicationUtil.application.height;
+			}
+			
+			/**
+			 * 移除当前游戏主界面
+			 */
+			public function removeMainBoard():void{
+				if(mainBoard!=null){
+					//移除所有弹出窗口
+					ApplicationManager.stateManager.hideGameBoard();
+					this.canvas_main.removeChild(mainBoard);
+					ApplicationManager.application = null;
+					mainBoard = null;
+				}
+			}
+			
+			/**
+			 * 处理指令
+			 */
+			public function processCommand(param:Object):void{
+				ApplicationManager.actionManager.handler.processCommand(param);
+			}
+			
+			/**
+			 * 创建新的主游戏面板对象
+			 */
+			protected function createNewMainBoard():MainBoard{
+				return new MainBoard();
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas id="canvas_main" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	</mx:Canvas>
+	<ns2:F14MDICanvas id="canvas_float" width="100%" height="100%">
+	</ns2:F14MDICanvas>
+</mx:Canvas>

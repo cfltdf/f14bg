@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off" mouseWheel="onWheel(event)" resize="onResize(event)" borderStyle="outset" xmlns:part="com.f14.F14bgGame.Eclipse.ui.part.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import mx.events.ResizeEvent;
+			import mx.effects.Move;
+			import mx.effects.Zoom;
+			
+			protected var _planetSelectable:Boolean;
+			protected var _selectable:Boolean;
+			protected var _scale:Number = 1;
+			protected var _zoom:Zoom;
+			protected var _move:Move;
+			
+			[Bindable]
+			protected var _orgMapWidth:int = 4000;
+			[Bindable]
+			protected var _orgMapHeight:int = 4000;
+			protected var _mouseX:int;
+			protected var _mouseY:int;
+			protected var _minScale:Number = 0.1;
+			
+			public function init():void{
+				this.onResize();
+				this._zoom = new Zoom(this.canvas_map);
+				this._move = new Move(this.canvas_map);
+				
+				this.canvas_map.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+				this.canvas_map.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+				this.canvas_map.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+				
+				this.scale = 0.1;
+			}
+			
+			public function clear():void{
+				for each(var hex:EclipseHex in this.hexes){
+					this.canvas_map.removeChild(hex);
+				}
+				this.hexes = new Array();
+				this.moveTrack.clear();
+			}
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				for each(var h:Object in this.hexes){
+					h.selectable = selectable;
+				}
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function set planetSelectable(selectable:Boolean):void{
+				this._planetSelectable = selectable;
+				for each(var h:EclipseHex in this.hexes){
+					h.planetSelectable = selectable;
+				}
+			}
+			
+			public function get planetSelectable():Boolean{
+				return this._planetSelectable;
+			}
+			
+			public function set scale(scale:Number):void{
+				var s:Number = scale;
+				if(s>0.8) s = 0.8;
+				if(s<_minScale) s = _minScale;
+				
+				if(s!=this._scale){
+					//设置缩放后的位置
+					var p:Point = this.getTargetPoint(this._orgMapWidth*s, this._orgMapHeight*s, this.canvas_map.width, this.canvas_map.height);
+					_move.xTo = p.x;
+					_move.yTo = p.y;
+					_move.play();
+					//计算缩放后的大小
+					_zoom.zoomHeightFrom = this._scale;
+					_zoom.zoomWidthFrom = this._scale;
+					_zoom.zoomHeightTo = s;
+					_zoom.zoomWidthTo = s;
+					_zoom.play();
+					
+					this._scale = s;
+				}
+			}
+			
+			public function get scale():Number{
+				return this._scale;
+			}
+			
+			protected var currentScale:Number = 0.8;
+			protected var scaleArray:Array = [0.1, 0.55, 0.8];
+			
+			protected function onWheel(evt:MouseEvent):void{
+				if(!this._zoom.isPlaying){
+					/*var factor:int = 10;
+					if(this.canvas_map.width<this._orgMapWidth*0.4){
+						factor = 20;
+					}
+					this.scale = (this.scale + evt.delta/factor);*/
+					var i:int = 0;
+					if(evt.delta>0){
+						for(i = 0;i<scaleArray.length;i++){
+							if(scaleArray[i] > this.currentScale){
+								this.currentScale = scaleArray[i];
+								this.scale = this.currentScale;
+								break;
+							}
+						}
+					}else{
+						for(i = scaleArray.length-1;i>=0;i--){
+							if(scaleArray[i] < this.currentScale){
+								this.currentScale = scaleArray[i];
+								this.scale = this.currentScale;
+								break;
+							}
+						}
+					}
+				}
+			}
+			
+			protected var movemap:Boolean = false;
+			protected var cx:int;
+			protected var cy:int;
+			
+			protected function onMouseDown(evt:MouseEvent):void{
+				movemap = true;
+				var p:Point = this.toMapPoint(evt.stageX, evt.stageY);
+				cx = p.x;
+				cy = p.y;
+			}
+			
+			protected function onMouseMove(evt:MouseEvent):void{
+				var p:Point = this.toMapPoint(evt.stageX, evt.stageY);
+				this._mouseX = p.x;
+				this._mouseY = p.y;
+				if(movemap){
+					var ox:int = p.x - cx;
+					var oy:int = p.y - cy;
+					
+					this.layoutMap(ox, oy);
+				}
+			}
+			
+			protected function onMouseUp(evt:MouseEvent):void{
+				movemap = false;
+				var p:Point = this.toMapPoint(evt.stageX, evt.stageY);
+				cx = p.x;
+				cy = p.y;
+			}
+			
+			protected function onResize(evt:ResizeEvent=null):void{
+				//调整大小时,需要计算允许的最小缩放尺寸
+				var s1:Number = this.width / this._orgMapWidth;
+				var s2:Number = this.height / this._orgMapHeight;
+				var s:Number = Math.min(s1, s2);
+				if(s!=this._minScale){
+					this._minScale = s;
+				}
+			}
+			
+			/**
+			 * 调整地图的显示未知,ox oy为横竖坐标的偏移量
+			 */
+			public function layoutMap(ox:int, oy:int):void{
+				var tx:int = 0;
+				if(this.canvas_map.width<this.width){
+					//如果地图的宽度比界面小,则居中地图
+					//tx = (this.width - this.canvas_map.width) / 2;
+					//如果地图的宽度比界面小,则靠左地图
+					tx = 0;
+				}else{
+					tx = this.canvas_map.x + ox;
+					if(tx>0) tx = 0;
+					if(tx<this.width-this.canvas_map.width) tx = this.width-this.canvas_map.width;
+				}
+				
+				var ty:int = 0;
+				if(this.canvas_map.height<this.height){
+					//如果地图的高度比界面小,则居中地图
+					ty = (this.height - this.canvas_map.height) / 2;
+				}else{
+					ty = this.canvas_map.y + oy;
+					if(ty>0) ty = 0;
+					if(ty<this.height-this.canvas_map.height) ty = this.height-this.canvas_map.height;
+				}
+				
+				this.canvas_map.move(tx, ty);
+				//this.canvas_map.x = tx;
+				//this.canvas_map.y = ty;
+			}
+			
+			/**
+			 * 调整地图的显示未知,ox oy为横竖坐标的偏移量
+			 */
+			protected function getTargetPoint(toWidth:int, toHeight:int, fromWidth:int, fromHeight:int):Point{
+				var toscale:Number = toWidth / _orgMapWidth;
+				var fromscale:Number = fromWidth / _orgMapWidth;
+				var factor:int = toscale>fromscale?1:-1;
+				var tx:int = 0;
+				if(toWidth<this.width){
+					//如果地图的宽度比界面小,则居中地图
+					//tx = (this.width - toWidth) / 2;
+					//如果地图的宽度比界面小,则靠左地图
+					tx = 0;
+				}else{
+					//设置缩放后的位置
+					tx = this.canvas_map.x - (this._mouseX-fromWidth/2)*fromscale/toscale;
+					if(tx>0) tx = 0;
+					if(tx<this.width-toWidth) tx = this.width-toWidth;
+				}
+				
+				var ty:int = 0;
+				if(toHeight<this.height){
+					//如果地图的高度比界面小,则居中地图
+					ty = (this.height - toHeight) / 2;
+				}else{
+					//设置缩放后的位置
+					ty = this.canvas_map.y - (this._mouseY-fromHeight/2)*fromscale/toscale;
+					if(ty>0) ty = 0;
+					if(ty<this.height-toHeight) ty = this.height-toHeight;
+				}
+				
+				var p:Point = new Point();
+				p.x = tx;
+				p.y = ty;
+				return p;
+			}
+			
+			/**
+			 * 将stage的坐标转换成canvas_map的坐标
+			 */
+			protected function toMapPoint(x:int, y:int):Point{
+				var p:Point = new Point(x, y);
+				return this.canvas_map.globalToLocal(p);
+			}
+			
+			protected var hexes:Array = new Array();
+			
+			public function loadParam(param:Object):void{
+				this.clear();
+				
+				for each(var o:Object in param.hexes){
+					var hex:EclipseHex = new EclipseHex();
+					hex.setProperty(o);
+					this.addHex(hex);
+				}
+			}
+			
+			/**
+			 * 刷新板块
+			 */
+			public function refreshHex(param:Object):void{
+				var hex:EclipseHex = new EclipseHex();
+				hex.setProperty(param);
+				this.addHex(hex);
+			}
+			
+			public function getHex(p:Point):EclipseHex{
+				return this.hexes[this.getPositionKey(p)];
+			}
+			
+			public function addHex(hex:EclipseHex):void{
+				//检查该位置是否已经存在板块,如果已经有,则先移除该板块
+				var h:EclipseHex = this.getHex(hex.position);
+				if(h!=null){
+					this.removeHex(h);
+				}
+				//添加板块到地图中
+				hex.x = this._orgMapWidth / 2 + (hex.position.x - 100) * hex.width * 3 / 4 - hex.width / 2;
+				hex.y = this._orgMapHeight / 2 + (hex.position.y - 100) * hex.height / 2 - hex.height / 2;
+
+				var k:String = this.getPositionKey(hex.position);
+				this.hexes[k] = hex;
+				this.canvas_map.addChildAt(hex, 1);
+				
+				hex.init();
+				hex.drawComponent();
+				//添加板块时需要检查是否可选择的状态
+				hex.planetSelectable = this.planetSelectable;
+			}
+			
+			/**
+			 * 取得坐标对应的键值
+			 */
+			protected function getPositionKey(p:Point):String{
+				return p.x + "_" + p.y;
+			}
+			
+			/**
+			 * 从地图中移除板块
+			 */
+			public function removeHex(hex:EclipseHex):void{
+				var k:String = this.getPositionKey(hex.position);
+				this.hexes[k] = null;
+				this.canvas_map.removeChild(hex);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Canvas id="canvas_map">
+		<mx:Canvas width="{this._orgMapWidth}" height="{this._orgMapHeight}" styleName="spaceMap">
+		</mx:Canvas>
+		<part:MoveTrack id="moveTrack" />
+	</mx:Canvas>
+</mx:Canvas>

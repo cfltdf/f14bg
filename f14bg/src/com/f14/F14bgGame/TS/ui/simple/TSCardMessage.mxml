@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.components.TSCard;
+			import com.f14.F14bgGame.TS.TSUtil;
+			[Bindable]
+			public var msg:String;
+			
+			public function clear():void{
+				this.msg = null;
+				this.canvas_card.removeAllChildren();
+			}
+			
+			/**
+			 * 设置显示的卡牌
+			 */
+			public function setCard(cardId:String):void{
+				var card:TSCard = TSUtil.resourceManager.createTSCard(cardId);
+				if(card!=null){
+					var simple:TSCardLabel = new TSCardLabel();
+					this.canvas_card.addChild(simple);
+					simple.object = card;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Canvas id="canvas_card" width="120" height="30">
+	</mx:Canvas>
+	<mx:Text text="{this.msg}" width="100%" minWidth="150" selectable="false" textAlign="center" styleName="fontStyle"/>
+	<mx:Spacer />
+</mx:VBox>

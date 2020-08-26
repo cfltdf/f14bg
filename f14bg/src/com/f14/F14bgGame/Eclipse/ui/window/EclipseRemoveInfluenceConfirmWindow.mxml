@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EclipseConfirmWindow xmlns="com.f14.F14bgGame.Eclipse.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="600" height="120" xmlns:component="com.f14.F14bgGame.bg.component.*" xmlns:simple="com.f14.F14bgGame.Eclipse.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.ui.simple.ResourceOptionItem;
+			import com.f14.F14bgGame.Eclipse.manager.EclipseUIManager;
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			import com.f14.F14bgGame.Eclipse.ui.simple.Unit;
+			import com.f14.F14bgGame.bg.component.FlowCanvas;
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoCardLabel;
+			import com.f14.F14bgGame.Innovation.ui.part.InnoPlayerHand;
+			import mx.controls.HRule;
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				this.label_msg.text = null;
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				this.label_msg.text = param.msg;
+			}
+			
+			/**
+			 * 创建确认时的参数
+			 */
+			override protected function createConfirmParam():Object{
+				var param:Object = {};
+				return param;
+			}
+			
+			/**
+			 * 执行移除影响力的动作
+			 */
+			protected function doRemoveConfirm():void{
+				EclipseUtil.actionManager.sendCurrentCommand("REMOVE_INFLUENCE");
+			}
+			
+			/**
+			 * 执行重置动作
+			 */
+			protected function doRemoveReset():void{
+				EclipseUtil.actionManager.sendCurrentCommand("DO_RESET");
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Label id="label_msg" top="10" horizontalCenter="0" />
+	<mx:HBox id="hbox_button" horizontalCenter="0" bottom="10">
+		<mx:Button label="确 定" width="80" click="this.doRemoveConfirm()" />
+		<mx:Button label="取 消" width="80" click="this.doRemoveReset()" />
+	</mx:HBox>
+</EclipseConfirmWindow>

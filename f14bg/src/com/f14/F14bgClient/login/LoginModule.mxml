@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module:F14module xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:module="com.f14.core.controls.module.*" layout="absolute" width="100%" height="100%" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.Version;
+			import com.f14.F14bgClient.login.handler.LoginCommandHandler;
+			import com.f14.f14bg.manager.TooltipManager;
+			import mx.collections.ArrayCollection;
+			import cn.smartinvoke.executor.Executor;
+			import com.adobe.serialization.json.JSON;
+			import com.f14.F14bgClient.FlashHandler.SystemHandler;
+			import com.f14.core.util.ApplicationUtil;
+			[Bindable]
+			public var hosts:XMLList;
+			public var systemHandler:SystemHandler;
+			protected var localProp:Object;
+			
+			override public function init():void{
+				ApplicationUtil.commandHandler = new LoginCommandHandler();
+				LoginUtil.module = this;
+				LoginUtil.init();
+				
+				systemHandler = new SystemHandler();
+				//装载客户端版本
+				this.loadVersionInfo();
+				//装载本地缓存参数
+				this.loadLocalProperties();
+				this.setShowState("DEFAULT");
+				//设置默认服务器
+				//this.loadDefaultHostList();
+				this.loadDefaultHost();
+				this.loadDefaultUser();
+				//读取远程服务器列表
+				//this.systemHandler.loadServerList();
+				
+				this.loadNotice();
+				this.loadHosts();
+			}
+			
+			/**
+			 * 读取本地缓存的参数
+			 */
+			public function loadLocalProperties():void{
+				this.localProp = ApplicationUtil.loadLocalProperties();
+			}
+			
+			/**
+			 * 设置最近的服务器列表
+			 */
+			private function loadDefaultHostList():void{
+				/*hosts.removeAll();
+				if(localProp.hosts){
+					var recs:Array = JSON.decode(localProp.hosts) as Array;
+					for each(var rec:Object in recs){
+						var object:Object = new Object();
+						object.name = rec.hostname;
+						object.host = rec.host;
+						object.port = rec.port;
+						hosts.addItem(object);
+					}
+				}
+				//刷新列表
+				this.grid_host.invalidateList();*/
+			}
+			
+			/**
+			 * 设置默认服务器
+			 */
+			public function loadDefaultHost():void{
+				//this.loadLocalProperties();
+				this.host_name.text = localProp.host_name;
+				this.text_host.text = localProp.host_ip;
+				this.text_port.text = localProp.host_port;
+			}
+			
+			/**
+			 * 设置默认用户
+			 */
+			private function loadDefaultUser():void{
+				this.text_loginName.text = localProp.loginname;
+				this.text_password.text = localProp.password;
+			}
+			
+			/**
+			 * 设置界面的显示状态
+			 */
+			public function setShowState(state:String):void{
+				switch(state){
+					case "ACCOUNT": //输入账号
+						this.canvas_host.visible = false;
+						this.canvas_account.visible = true;
+						this.grid_host.selectable = false;
+						break;
+					default:
+						this.canvas_host.visible = true;
+						this.canvas_account.visible = false;
+						this.grid_host.selectable = true;
+						break;
+				}
+			}
+			
+			/**
+			 * 列表选择变化时的回调函数
+			 */
+			public function onChange(evt:Event):void{
+				var item:Object = evt.target.selectedItem;
+				if(item!=null){
+					this.host_name.text = item.@name;
+					this.text_host.text = item.@host;
+					this.text_port.text = item.@port;
+				}
+			}
+			
+			/**
+			 * 连接服务器
+			 */
+			public function doConnect():void{
+				if(!this.text_host.text){
+					ApplicationUtil.alert("请输入主机地址!");
+					return;
+				}
+				if(!this.text_port.text){
+					ApplicationUtil.alert("请输入端口!");
+					return;
+				}
+				TooltipManager.showLoadingTip("连接服务器...", 60000);
+				this.systemHandler.connectToServer(this.text_host.text, int(this.text_port.text));
+			}
+			
+			/**
+			 * 执行登录
+			 */
+			public function doLogin():void{
+				if(!this.text_loginName.text){
+					ApplicationUtil.alert("请输入帐号!");
+					return;
+				}
+				LoginUtil.actionManager.doLogin(this.text_loginName.text, this.text_password.text);
+				//保存帐号密码到本地参数
+				var param:Array = new Array();
+				param.loginname = this.text_loginName.text;
+				param.password = this.text_password.text;
+				ApplicationUtil.commonHandler.saveLocalProperties(param);
+			}
+			
+			/**
+			 * 装载公告信息
+			 */
+			public function loadNotice():void{
+				//this.systemHandler.loadNotice();
+				var loader:URLLoader = new URLLoader();
+				//设置参数从而防止取得缓存...
+				var req:URLRequest = new URLRequest(this.localProp.update_host+"f14notice.html?ram="+Math.random()*65535);
+				loader.dataFormat = URLLoaderDataFormat.TEXT;
+				loader.addEventListener(Event.COMPLETE, onLoadNotice);
+				loader.addEventListener(IOErrorEvent.IO_ERROR, onLoadNoticeError);
+				loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadNoticeError);
+				loader.load(req);
+			}
+			
+			/**
+			 * 公告读取后的回调函数
+			 */
+			private function onLoadNotice(evt:Event):void{
+				try{
+					var text:String = evt.target.data;
+					this.text_notice.htmlText = text;
+				}catch(e:Error){
+				}
+			}
+			
+			/**
+			 * 读取公告失败时的回调函数
+			 */
+			private function onLoadNoticeError(evt:Event):void{
+				this.text_notice.htmlText = "公告读取失败...";
+			}
+			
+			/**
+			 * 读取服务器列表
+			 */
+			public function loadHosts():void{
+				//Security.allowDomain("*");
+				//Security.loadPolicyFile(CROSSDOMAIN);
+				var loader:URLLoader = new URLLoader();
+				//设置参数从而防止取得缓存...
+				var req:URLRequest = new URLRequest(localProp.update_host+"f14hosts.xml?ram="+Math.random()*65535);
+				loader.dataFormat = URLLoaderDataFormat.TEXT;
+				loader.addEventListener(Event.COMPLETE, onLoadHost);
+				loader.addEventListener(IOErrorEvent.IO_ERROR, onRemoteError);
+				loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onRemoteError);
+				loader.load(req);
+			}
+			
+			/**
+			 * 服务器列表文件读取后的回调函数
+			 */
+			private function onLoadHost(evt:Event):void{
+				try{
+					var xml:XML = new XML(evt.target.data);
+					this.hosts = xml.server;
+					/*for each(var h:XML in hosts){
+						var ct:ConnectionTester = new ConnectionTester(h);
+						ct.test();
+					}*/
+				}catch(e:Error){
+				}
+			}
+			
+			/**
+			 * 远程服务器列表文件读取失败后的回调函数
+			 */
+			private function onRemoteError(evt:Event):void{
+				try{
+					//读取本地文件
+					ApplicationUtil.alert("读取服务器列表失败!");
+				}catch(e:Error){
+				}
+			}
+			
+			/**
+			 * 列表选择变化时的回调函数
+			 */
+			/*public function onChange(evt:Event):void{
+				var item:Object = evt.target.selectedItem;
+				if(item!=null){
+					this.text_host.text = item.@host;
+					this.text_port.text = item.@port;
+				}
+			}*/
+			
+		]]>
+	</mx:Script>
+	<mx:VBox top="5" bottom="5" left="5" right="5">
+		<mx:Canvas width="100%" height="0">
+		</mx:Canvas>
+		<mx:HBox width="100%" height="100%">
+			<mx:Canvas width="50%" height="100%" borderStyle="solid" borderThickness="1">
+				<mx:Text id="text_notice" top="10" bottom="10" left="10" right="10" textAlign="left"/>
+			</mx:Canvas>
+			<mx:VBox width="50%" height="100%">
+				<mx:Canvas width="100%" height="100%">
+					<mx:DataGrid id="grid_host" width="100%" height="100%" dataProvider="{hosts}" change="onChange(event)">
+						<mx:columns>
+							<mx:DataGridColumn headerText="主机名" dataField="@name"/>
+							<mx:DataGridColumn headerText="IP地址" dataField="@host"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:Canvas>
+				<mx:Canvas width="100%" height="160" borderStyle="solid" borderThickness="1">
+					<mx:Canvas id="canvas_host" visible="true" horizontalCenter="0" verticalCenter="0" height="138">
+						<mx:Form x="10">
+							<mx:FormItem label="服务器名称">
+								<mx:TextInput id="host_name" width="120" editable="false"/>
+							</mx:FormItem>
+							<mx:FormItem label="服务器地址">
+								<mx:TextInput id="text_host" width="120" color="#000000" editable="false"/>
+							</mx:FormItem>
+							<mx:FormItem label="服务器端口">
+								<mx:TextInput id="text_port" width="52" color="#000000" editable="false"/>
+							</mx:FormItem>
+						</mx:Form>
+						<mx:HBox horizontalCenter="0" bottom="2">
+							<mx:Button label="系统设置" click="LoginUtil.stateManager.showSetupWindow()" />
+							<mx:Button label="连接服务器" click="doConnect()" />
+						</mx:HBox>
+					</mx:Canvas>
+					<mx:Canvas id="canvas_account" visible="false" verticalCenter="0" horizontalCenter="0">
+						<mx:Label x="23" y="47" text="帐号" color="#000000"/>
+						<mx:TextInput id="text_loginName" x="76" y="45" width="120" color="#000000"/>
+						<mx:Label x="23" y="75" text="密码"/>
+						<mx:TextInput x="75.5" y="73" width="120" displayAsPassword="true" id="text_password"/>
+						<mx:Button x="225" y="45" label="登 录" click="doLogin()" height="52"/>
+						<mx:LinkButton x="99" y="124" label="注册新用户" click="LoginUtil.stateManager.showRegistWindow()" />
+						<mx:LinkButton x="183" y="124" label="返回服务器列表" click="ApplicationUtil.commonHandler.closeConnection()" />
+					</mx:Canvas>
+				</mx:Canvas>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:Canvas width="100%" height="40" borderStyle="solid">
+			<mx:Label left="0" verticalCenter="0" text="[=F14=]Eagle出品!   QQ:15596739 MSN:scomb_2@hotmail.com QQ群:42840017" selectable="true" />
+			<mx:LinkButton right="0" verticalCenter="0" label="版本号: {this.version.version}" enabled="false" />
+		</mx:Canvas>
+		<mx:Spacer />
+	</mx:VBox>
+</module:F14module>

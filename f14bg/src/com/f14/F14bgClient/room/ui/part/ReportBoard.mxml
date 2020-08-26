@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.core.controls.text.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			public var maxRow:int = 30;
+			//protected var _messages:ArrayCollection = new ArrayCollection();
+			protected var row:int = 0;
+			
+			/**
+			 * 清空所有信息
+			 */
+			public function clear():void{
+				//this._messages.removeAll();
+				this.row = 0;
+				this.textArea.text = "";
+				//this.vbox_message.removeAllChildren();
+			}
+			
+			/**
+			 * 添加信息
+			 */
+			public function addMessage(message:Object):void{
+				//var item:ReportItem = new ReportItem();
+				//item.loadMessage(message);
+				/* if(this._messages.length>=maxRow){
+					//最多只显示50条记录
+					this._messages.removeItemAt(0);
+					this.vbox_message.removeChildAt(0);
+				} */
+				//this._messages.addItem(item);
+				var text:String = this.textArea.text;
+				if(this.row>=this.maxRow){
+					var i:int = text.indexOf("\r");
+					if(i!=-1){
+						text = text.substring(i+1, text.length);
+					}
+				}
+				this.textArea.text = text + message.time + " " + message.message + "\r";
+				this.row++;
+				//this.vbox_message.addChild(item);
+				//this.autoScroll();
+			}
+			
+			/**
+			 * 自动滚屏
+			 */
+			protected function autoScroll():void{
+				//自动滚屏
+	            this.textArea.verticalScrollPosition = this.textArea.maxVerticalScrollPosition;
+			}
+		]]>
+	</mx:Script>
+	<ns1:ChatTextArea id="textArea" width="100%" height="100%" />
+</mx:Canvas>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerInfoBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="150" height="55" borderStyle="solid" borderThickness="1">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Tichu.consts.TichuPlayerColor;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgGame.Tichu.player.TichuPlayer;
+			[Bindable]
+			protected var tichuPlayer:TichuPlayer;
+			[Bindable]
+			protected var tichuType:String;
+			[Bindable]
+			protected var rank:String;
+			
+			override public function set player(player:Player):void{
+				super.player = player;
+				this.tichuPlayer = player as TichuPlayer;
+				if(player!=null){
+					this.label_name.setStyle("color", TichuPlayerColor.COLORS[player.position]);
+				}else{
+					this.label_name.setStyle("color", null);
+				}
+			}
+			
+			override public function init():void{
+				super.init();
+			}
+			
+			/**
+			 * 清除内容
+			 */
+			override public function clear():void{
+				super.clear();
+				this.tichuPlayer = null;
+				this.tichuType = null;
+				this.rank = null;
+			}
+			
+			/**
+			 * 得到效果的目标对象
+			 */
+			override protected function get effectTarget():Object{
+				return this.canvas_mark;
+			}
+			
+			/**
+			 * 刷新玩家信息
+			 */
+			public function refreshPlayerInfo():void{
+				this.tichuType = this.tichuPlayer.tichuType;
+				if(this.tichuPlayer.rank>0){
+					this.rank = this.tichuPlayer.rank + "";
+				}else{
+					this.rank = null;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas id="canvas_mark" width="100%" height="100%" backgroundAlpha="0.6" backgroundColor="#FFFFFF"/>
+	<mx:Label id="label_name" text="{tichuPlayer.name}" width="100" top="5" textAlign="center" fontWeight="bold" left="5"/>
+	<mx:Label text="{this.tichuType}" bottom="5" height="20" left="10" width="80"/>
+	<mx:Label text="{this.rank}" bottom="28" right="0" width="40" textAlign="center" fontWeight="bold"/>
+	<mx:Label text="{tichuPlayer.score}" bottom="5" right="10" width="40" textAlign="center"/>
+</PlayerInfoBoard>

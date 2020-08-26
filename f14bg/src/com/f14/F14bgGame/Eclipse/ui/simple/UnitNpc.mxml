@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Unit xmlns="com.f14.F14bgGame.Eclipse.ui.simple.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="156" height="156">
+	<mx:Script>
+		<![CDATA[
+			
+			protected override function loadStyle():String{
+				switch(this.object.unitCode){
+					case "GCDS":
+						return "unitGCDS";
+					case "AS001":
+						return "unitAncientShip";
+				}
+				return "";
+			}
+		]]>
+	</mx:Script>
+</Unit>

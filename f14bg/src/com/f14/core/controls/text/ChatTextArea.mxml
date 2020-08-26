@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TextArea xmlns:mx="http://www.adobe.com/2006/mxml" wordWrap="true" editable="false" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			public function init():void{
+				this.addEventListener(FlexEvent.VALUE_COMMIT,onValueCommit);
+			}
+			
+	        private function onValueCommit(event:FlexEvent):void{
+	        	//自动滚屏
+	        	this.validateNow();
+	            this.verticalScrollPosition = this.maxVerticalScrollPosition;
+	        }
+		]]>
+	</mx:Script>
+</mx:TextArea>

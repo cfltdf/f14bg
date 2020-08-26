@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.consts.Part;
+			import com.f14.F14bgGame.PuertoRico.event.PrEvent;
+			import com.f14.F14bgGame.PuertoRico.components.ResourcePart;
+			import com.f14.F14bgGame.PuertoRico.player.PrPlayer;
+			
+			[Bindable]
+			public var totalNum:int;
+			protected var _partType:String;
+			protected var _num:int;
+			
+			public function reset():void{
+				this.num = 0;
+				this.totalNum = 0;
+			}
+			
+			/**
+			 * 设置数量
+			 */
+			public function set num(num:int):void{
+				//不允许负数
+				if(num<0){
+					num = 0;
+				}
+				this._num = num;
+				this.text_num.text = String(num);
+			}
+			
+			public function get num():int{
+				return this._num;
+			}
+			
+			/**
+			 * 设置资源类型
+			 */
+			public function set partType(partType:String):void{
+				var part:ResourcePart;
+				part = new ResourcePart();
+				part.type = partType;
+				part.color = true;
+				hbox_main.addChildAt(part, 0);
+			}
+			
+			/**
+			 * 数量+num
+			 */
+			protected function increase(num:int):void{
+				this.num = this.num + num;
+			}
+			
+			/**
+			 * 数量-num
+			 */
+			protected function decrease(num:int):void{
+				this.num = this.num - num;
+			}
+			
+			/**
+			 * 数量取最大值
+			 */
+			protected function toMax():void{
+				this.num = this.totalNum;
+			}
+			
+			/**
+			 * 数量取最小值
+			 */
+			protected function toMin():void{
+				this.num = 0;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox id="hbox_main" x="0" y="0" width="100%" height="100%" verticalAlign="middle">
+		<mx:Label text="{totalNum}"/>
+		<mx:Button label="&lt;" width="35" click="toMin()"/>
+		<mx:Button label="-" width="35" click="decrease(1)"/>
+		<mx:TextInput id="text_num" width="50" editable="false"/>
+		<mx:Button label="+" width="35" click="increase(1)"/>
+		<mx:Button label="&gt;" width="35" click="toMax()"/>
+	</mx:HBox>
+</mx:Canvas>

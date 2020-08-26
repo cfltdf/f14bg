@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="60">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.consts.Colors;
+			import mx.utils.ColorUtil;
+			import com.f14.F14bgGame.bg.ui.simple.GlowLabel;
+			import mx.controls.Button;
+			import com.f14.F14bgGame.RFTG.consts.CmdConst;
+			
+			[Bindable]
+			public var totalVP:int = 0;
+			[Bindable]
+			public var deckSize:int = 0;
+			public var actionLabels:Array = new Array();
+			
+			/**
+			 * 初始化
+			 */
+			public function init():void{
+				var actions:Array = [
+					{"value":CmdConst.GAME_CODE_STARTING_DISCARD+"", "label":"选 牌"},
+					{"value":CmdConst.GAME_CODE_CHOOSE_ACTION+"", "label":"选择行动"},
+					{"value":CmdConst.GAME_CODE_EXPLORE+"", "label":"探 索"},
+					{"value":CmdConst.GAME_CODE_DEVELOP+"", "label":"开 发"},
+					{"value":CmdConst.GAME_CODE_SETTLE+"", "label":"扩 张"},
+					{"value":CmdConst.GAME_CODE_CONSUME+"", "label":"消 费"},
+					{"value":CmdConst.GAME_CODE_PRODUCE+"", "label":"生 产"},
+					{"value":CmdConst.GAME_CODE_ROUND_DISCARD+"", "label":"弃 牌"}
+				];
+				
+				actions.forEach(function(obj:Object, i:int, arr:Array):void{
+					var label:GlowLabel = new GlowLabel();
+					label.text = obj.label;
+					label.width = 60;
+					vbox_action.addChild(label);
+					actionLabels[obj.value] = label;
+					/*var label:ActionLabel = new ActionLabel();
+					label.text = obj.label;
+					vbox_action.addChild(label);
+					actionLabels[obj.value] = label;
+					label.init();*/
+				});
+			}
+			
+			/**
+			 * 取得对应的行动阶段
+			 */
+			public function getActionValue(str:String):int{
+				var i:int = str.indexOf("_");
+				var s:String = (i>=0) ? str.substring(0, i) : str;
+				switch(s){
+					case "EXPLORE":
+						return CmdConst.GAME_CODE_EXPLORE;
+					case "DEVELOP":
+						return CmdConst.GAME_CODE_DEVELOP;
+					case "SETTLE":
+						return CmdConst.GAME_CODE_SETTLE;
+					case "CONSUME":
+						return CmdConst.GAME_CODE_CONSUME;
+					case "PRODUCE":
+						return CmdConst.GAME_CODE_PRODUCE;
+				}
+				return 0;
+			}
+			
+			/**
+			 * 将指定的行动阶段设为选中
+			 */
+			public function setActionSelected(actionTypes:String):void{
+				var actions:Array = actionTypes.split(",");
+				actions.forEach(function(action:String, i:int, arr:Array):void{
+					var a:int = getActionValue(action);
+					(actionLabels[a+""] as GlowLabel).glow(Colors.red);
+				});
+			}
+			
+			/**
+			 * 清除所有选中的行动阶段
+			 */
+			public function clearSelection():void{
+				actionLabels.forEach(function(a:GlowLabel, i:int, arr:Array):void{
+					if(a!=null){
+						a.reset();
+					}
+				});
+			}
+			
+			/**
+			 * 设置行动阶段生效
+			 */
+			public function setActionActive(action:int, active:Boolean):void{
+				var label:GlowLabel = (actionLabels[action+""] as GlowLabel);
+				if(label!=null){
+					if(active){
+						label.glow(Colors.green);
+					}else{
+						label.reset();
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%">
+		<mx:VBox verticalGap="4" id="vbox_action">
+		</mx:VBox>
+		<mx:Canvas height="70" width="100%">
+			<mx:Label y="10" text="剩余VP" horizontalCenter="0"/>
+			<mx:Label y="36" text="{totalVP}" horizontalCenter="0"/>
+		</mx:Canvas>
+		<mx:Canvas height="70" width="100%">
+			<mx:Label y="10" text="牌堆数量" horizontalCenter="0"/>
+			<mx:Label y="36" text="{deckSize}" horizontalCenter="0"/>
+		</mx:Canvas>
+	</mx:VBox>
+</mx:Canvas>

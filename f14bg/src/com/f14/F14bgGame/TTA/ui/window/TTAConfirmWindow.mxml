@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" minWidth="300" height="160" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	<mx:Label text="{msg}" horizontalCenter="0" top="30"/>
+	<mx:HBox horizontalCenter="0" bottom="20" horizontalGap="20">
+		<mx:Button label="确定" click="this.doConfirm()"/>
+		<mx:Button label="取消" click="this.doCancel()"/>
+	</mx:HBox>
+</ConfirmWindow>

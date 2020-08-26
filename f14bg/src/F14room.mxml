@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<f14:F14application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:f14="com.f14.core.controls.*" layout="absolute" xmlns:ui="com.f14.F14bgClient.room.ui.*" creationComplete="initManagers()" addedToStage="initKeyEvent()">
+	<mx:Style source="./F14bg.css" />
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgClient.room.handler.RoomCommandHandler;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgClient.room.RoomUtil;
+			
+			override public function init():void{
+				super.init();
+			}
+			
+			protected function initManagers():void{
+				ApplicationUtil.commandHandler = new RoomCommandHandler();
+				ApplicationUtil.initDebugManager();
+				
+				RoomUtil.application = this;
+				RoomUtil.init();
+			}
+			
+			protected function initKeyEvent():void{
+				this.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			}
+			
+			protected function onKeyDown(evt:KeyboardEvent):void{
+				switch(evt.keyCode){
+					case 13: //回车显示聊天窗口
+						RoomUtil.stateManager.chatWindow.show();
+						break;
+					case 27: //ESC隐藏聊天窗口
+						RoomUtil.stateManager.chatWindow.hide();
+						break;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<ui:F14MDICanvas id="f14mdi" width="100%" height="100%">
+	</ui:F14MDICanvas>
+</f14:F14application>

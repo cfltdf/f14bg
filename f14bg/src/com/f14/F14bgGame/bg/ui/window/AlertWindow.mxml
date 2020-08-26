@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" title="注意!" minWidth="200" minHeight="150">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			public var msg:String;
+			
+			/**
+			 * 清除窗口
+			 */
+			override public function clear():void{
+				this.msg = null;
+			}
+			
+			/**
+			 * 装载参数
+			 */
+			public function loadParam(msg:String, param:Object):void{
+				this.clear();
+				this.msg = msg;
+			}
+		]]>
+	</mx:Script>
+</FloatWindow>

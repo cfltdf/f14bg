@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="200" height="100" horizontalScrollPolicy="off" verticalScrollPolicy="off" styleName="prBoard">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			[Bindable]
+			public var vp:int;
+			[Bindable]
+			public var colonist:int;
+			[Bindable]
+			public var quarry:int;
+			[Bindable]
+			public var corn:int;
+			[Bindable]
+			public var indigo:int;
+			[Bindable]
+			public var sugar:int;
+			[Bindable]
+			public var tobacco:int;
+			[Bindable]
+			public var coffee:int;
+			
+			public function clear():void{
+				this.vp = 0;
+				this.colonist = 0;
+				this.shipColonist = 0;
+				this.quarry = 0;
+				this.corn = 0;
+				this.indigo = 0;
+				this.sugar = 0;
+				this.tobacco = 0;
+				this.coffee = 0;
+			}
+			
+			public function set shipColonist(shipColonist:int):void{
+				PRUtil.mainBoard.colonistShipBoard.colonist = shipColonist;
+			}
+			
+			public function get shipColonist():int{
+				return PRUtil.mainBoard.colonistShipBoard.colonist;
+			}
+			
+			/**
+			 * 设置配件数量
+			 */
+			public function setParts(parts:Object):void{
+				for(var part:String in parts){
+					switch(part){
+						case "vp":
+							this.vp = parts[part];
+							break;
+						case "COLONIST":
+							this.colonist = parts[part];
+							break;
+						case "SHIP_COLONIST":
+							this.shipColonist = parts[part];
+							break;
+						case "QUARRY":
+							this.quarry = parts[part];
+							break;
+						case "CORN":
+							this.corn = parts[part];
+							break;
+						case "INDIGO":
+							this.indigo = parts[part];
+							break;
+						case "SUGAR":
+							this.sugar = parts[part];
+							break;
+						case "TOBACCO":
+							this.tobacco = parts[part];
+							break;
+						case "COFFEE":
+							this.coffee = parts[part];
+							break;
+					}
+				}
+			}
+			
+			/**
+			 * 得到配件数量
+			 */
+			public function addParts(parts:Object):void{
+				for(var part:String in parts){
+					switch(part){
+						case "vp":
+							this.vp += parts[part];
+							break;
+						case "COLONIST":
+							this.colonist += parts[part];
+							break;
+						case "SHIP_COLONIST":
+							this.shipColonist += parts[part];
+							break;
+						case "QUARRY":
+							this.quarry += parts[part];
+							break;
+						case "CORN":
+							this.corn += parts[part];
+							break;
+						case "INDIGO":
+							this.indigo += parts[part];
+							break;
+						case "SUGAR":
+							this.sugar += parts[part];
+							break;
+						case "TOBACCO":
+							this.tobacco += parts[part];
+							break;
+						case "COFFEE":
+							this.coffee += parts[part];
+							break;
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox y="23" width="100%" height="100%" verticalGap="0">
+		<mx:Canvas width="100%" height="38" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+			<mx:Label x="49.5" y="5" text="VP" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="84.5" y="5" text="移民" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="119.5" y="5" text="采石场" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="49.5" y="20" text="{vp}" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="87.5" y="20" text="{colonist}" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="126.5" y="20" text="{quarry}" textAlign="center" fontWeight="bold"/>
+		</mx:Canvas>
+		<mx:Canvas width="100%" height="40" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+			<mx:Label x="15" y="5" text="玉米" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="50" y="5" text="染料" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="85" y="5" text="蔗糖" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="120" y="5" text="烟草" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="155" y="5" text="咖啡" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="15" y="20" text="{corn}" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="50" y="20" text="{indigo}" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="85" y="20" text="{sugar}" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="120" y="20" text="{tobacco}" textAlign="center" fontWeight="bold"/>
+			<mx:Label x="155" y="20" text="{coffee}" textAlign="center" fontWeight="bold"/>
+		</mx:Canvas>
+	</mx:VBox>
+	
+</mx:Canvas>

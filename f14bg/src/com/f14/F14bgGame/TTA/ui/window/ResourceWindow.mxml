@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" minWidth="300" height="230">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			protected var _food:int;
+			[Bindable]
+			protected var _resource:int;
+			public var singleSelection:Boolean;
+			public var amount:int;
+			[Bindable]
+			public var availableFood:int;
+			[Bindable]
+			public var availableResource:int;
+			
+			public function set food(food:int):void{
+				this._food = food;
+				if(this.singleSelection){
+					//如果是单选,则将资源置0
+					this._resource = 0;
+				}else{
+					//否则资源数量为总数-食物数量
+					this._resource = Math.abs(this.amount) - food;
+				}
+			}
+			
+			public function get food():int{
+				return this._food;
+			}
+			
+			public function set resource(resource:int):void{
+				this._resource = resource;
+				if(this.singleSelection){
+					//如果是单选,则将食物置0
+					this._food = 0;
+				}else{
+					//否则食物数量为总数-资源数量
+					this._food = Math.abs(this.amount) - resource;
+				}
+			}
+			
+			public function get resource():int{
+				return this._resource;
+			}
+			
+			override public function clear():void{
+				super.clear();
+				this._food = 0;
+				this._resource = 0;
+				this.amount = 0;
+				this.availableFood = 0;
+				this.availableResource = 0;
+				this.singleSelection = false;
+			}
+			
+			/**
+			 * 从参数中装载卡牌信息
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				this.singleSelection =  param.singleSelection;
+				this.amount = param.amount;
+				this.availableFood = param.availableFood;
+				this.availableResource = param.availableResource;
+				//默认设置选择最大数量的资源
+				if(this.amount<0){
+					var limit:int = Math.min(this.availableResource, Math.abs(this.amount));
+					this.resource = limit;
+				}else{
+					this.resource = Math.abs(this.amount);
+				}
+			}
+			
+			/**
+			 * 点击食物时
+			 */
+			protected function clickFood(evt:MouseEvent):void{
+				if(this.singleSelection){
+					//单选时,直接取最大允许的值
+					this.food = Math.abs(this.amount);
+				}else{
+					//允许选择两种资源时,每点1下+1数量
+					if(this.food<Math.abs(this.amount)){
+						this.food = this.food + 1;
+					}
+				}
+			}
+			
+			/**
+			 * 点击资源时
+			 */
+			protected function clickResource(evt:MouseEvent):void{
+				if(this.singleSelection){
+					//单选时,直接取最大允许的值
+					this.resource = Math.abs(this.amount);
+				}else{
+					//允许选择两种资源时,每点1下+1数量
+					if(this.resource<Math.abs(this.amount)){
+						this.resource = this.resource + 1;
+					}
+				}
+			}
+			
+			/**
+			 * 创建确认时的参数
+			 */
+			override protected function createConfirmParam():Object{
+				var param:Object = new Object();
+				param.food = this.food;
+				param.resource = this.resource;
+				return param;
+			}
+		]]>
+	</mx:Script>
+	<mx:Button label="确定" click="this.doConfirm()" bottom="10" horizontalCenter="0"/>
+	<mx:Canvas width="200" height="110" horizontalCenter="0" top="40">
+		<mx:VBox left="30" horizontalAlign="center">
+			<mx:Label text="{availableFood}" width="50" textAlign="center" fontWeight="bold" fontSize="14"/>
+			<mx:Button label="食物" height="50" click="clickFood(event)"/>
+			<mx:Label text="{_food}" width="50" textAlign="center" fontWeight="bold" fontSize="14"/>
+		</mx:VBox>
+		<mx:VBox right="30" horizontalAlign="center">
+			<mx:Label text="{availableResource}" width="50" textAlign="center" fontWeight="bold" fontSize="14"/>
+			<mx:Button label="资源" height="50" click="clickResource(event)"/>
+			<mx:Label text="{_resource}" width="50" textAlign="center" fontWeight="bold" fontSize="14"/>
+		</mx:VBox>
+	</mx:Canvas>
+	<mx:Label y="10" text="{msg}" horizontalCenter="0"/>
+</ConfirmWindow>

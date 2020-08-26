@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.F14bgGame.TS.ui.simple.*" width="100%" height="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off" mouseWheel="onWheel(event)" resize="onResize(event)" borderStyle="outset">
+	<mx:Script>
+		<![CDATA[
+			import mx.effects.Move;
+			import mx.events.EffectEvent;
+			import mx.events.ResizeEvent;
+			import mx.effects.Zoom;
+			import mx.core.DragSource;
+			import mx.events.DragEvent;
+			import mx.managers.DragManager;
+			
+			protected var _selectable:Boolean;
+			protected var _countries:Array;
+			protected var _scale:Number = 1;
+			protected var _zoom:Zoom;
+			protected var _move:Move;
+			
+			protected var _orgMapWidth:int = 2048;
+			protected var _orgMapHeight:int = 1334;
+			protected var _mouseX:int;
+			protected var _mouseY:int;
+			protected var _minScale:Number = 0.3;
+			
+			public function init():void{
+				this.initCountriesParts();
+				this.onResize();
+				this._zoom = new Zoom(this.canvas_map);
+				this._move = new Move(this.canvas_map);
+				//zoom.originX = 0;
+				//zoom.originY = 0;
+				this.canvas_map.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+				this.canvas_map.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+				this.canvas_map.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			}
+			
+			public function clear():void{
+				for each(var o:CountryPart in this._countries){
+					o.clear();
+				}
+			}
+			
+			/**
+			 * 初始化国家部件
+			 */
+			protected function initCountriesParts():void{
+				_countries = new Array();
+				_countries["CAN"] = this.CAN;
+				_countries["ENG"] = this.ENG;
+				_countries["NOR"] = this.NOR;
+				_countries["FRA"] = this.FRA;
+				_countries["LBH"] = this.LBH;
+				_countries["SWE"] = this.SWE;
+				_countries["DEN"] = this.DEN;
+				_countries["WGER"] = this.WGER;
+				_countries["ITA"] = this.ITA;
+				_countries["ESP"] = this.ESP;
+				_countries["GRE"] = this.GRE;
+				_countries["TUR"] = this.TUR;
+				_countries["FIN"] = this.FIN;
+				_countries["AUT"] = this.AUT;
+				_countries["EGER"] = this.EGER;
+				_countries["POL"] = this.POL;
+				_countries["CZE"] = this.CZE;
+				_countries["HUN"] = this.HUN;
+				_countries["YUG"] = this.YUG;
+				_countries["ROM"] = this.ROM;
+				_countries["BUL"] = this.BUL;
+				_countries["SYR"] = this.SYR;
+				_countries["LIB"] = this.LIB;
+				_countries["ISR"] = this.ISR;
+				_countries["JOR"] = this.JOR;
+				_countries["EGY"] = this.EGY;
+				_countries["LBA"] = this.LBA;
+				_countries["IRQ"] = this.IRQ;
+				_countries["IRI"] = this.IRI;
+				_countries["SOG"] = this.SOG;
+				_countries["KSA"] = this.KSA;
+				_countries["AFG"] = this.AFG;
+				_countries["PAK"] = this.PAK;
+				_countries["IND"] = this.IND;
+				_countries["DPRK"] = this.DPRK;
+				_countries["KOR"] = this.KOR;
+				_countries["JPN"] = this.JPN;
+				_countries["TW"] = this.TW;
+				_countries["AUS"] = this.AUS;
+				_countries["BUR"] = this.BUR;
+				_countries["LAO"] = this.LAO;
+				_countries["THA"] = this.THA;
+				_countries["VIE"] = this.VIE;
+				_countries["MAS"] = this.MAS;
+				_countries["INA"] = this.INA;
+				_countries["PHI"] = this.PHI;
+				_countries["ALG"] = this.ALG;
+				_countries["TUN"] = this.TUN;
+				_countries["MAR"] = this.MAR;
+				_countries["SOWA"] = this.SOWA;
+				_countries["CIV"] = this.CIV;
+				_countries["SAR"] = this.SAR;
+				_countries["NGR"] = this.NGR;
+				_countries["CMR"] = this.CMR;
+				_countries["ZAR"] = this.ZAR;
+				_countries["AGL"] = this.AGL;
+				_countries["RSA"] = this.RSA;
+				_countries["BOT"] = this.BOT;
+				_countries["ZAPU"] = this.ZAPU;
+				_countries["SOSE"] = this.SOSE;
+				_countries["KEN"] = this.KEN;
+				_countries["SOM"] = this.SOM;
+				_countries["ETH"] = this.ETH;
+				_countries["SUD"] = this.SUD;
+				_countries["MEX"] = this.MEX;
+				_countries["GTM"] = this.GTM;
+				_countries["ESA"] = this.ESA;
+				_countries["HON"] = this.HON;
+				_countries["NCA"] = this.NCA;
+				_countries["CRC"] = this.CRC;
+				_countries["CUB"] = this.CUB;
+				_countries["PAN"] = this.PAN;
+				_countries["HAT"] = this.HAT;
+				_countries["DOM"] = this.DOM;
+				_countries["COL"] = this.COL;
+				_countries["VEN"] = this.VEN;
+				_countries["ECU"] = this.ECU;
+				_countries["BRA"] = this.BRA;
+				_countries["URU"] = this.URU;
+				_countries["AGR"] = this.AGR;
+				_countries["PAR"] = this.PAR;
+				_countries["CHI"] = this.CHI;
+				_countries["BOL"] = this.BOL;
+				_countries["PER"] = this.PER;
+				
+				for each(var p:CountryPart in _countries){
+					p.init();
+				}
+			}
+			
+			/**
+			 * 按照国家名称取得国家部件
+			 */
+			public function getCountry(country:String):CountryPart{
+				return this._countries[country] as CountryPart;
+			}
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				for each(var p:CountryPart in _countries){
+					p.selectable = selectable;
+				}
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function set scale(scale:Number):void{
+				var s:Number = scale;
+				if(s>1) s = 1;
+				if(s<_minScale) s = _minScale;
+				
+				if(s!=this._scale){
+					//设置缩放后的位置
+					var p:Point = this.getTargetPoint(this._orgMapWidth*s, this._orgMapHeight*s, this.canvas_map.width, this.canvas_map.height);
+					_move.xTo = p.x;
+					_move.yTo = p.y;
+					_move.play();
+					//计算缩放后的大小
+					_zoom.zoomHeightFrom = this._scale;
+					_zoom.zoomWidthFrom = this._scale;
+					_zoom.zoomHeightTo = s;
+					_zoom.zoomWidthTo = s;
+					_zoom.play();
+					
+					this._scale = s;
+				}
+			}
+			
+			public function get scale():Number{
+				return this._scale;
+			}
+			
+			protected function onWheel(evt:MouseEvent):void{
+				if(!this._zoom.isPlaying){
+					var factor:int = 10;
+					if(this.canvas_map.width<this._orgMapWidth*0.4){
+						factor = 20;
+					}
+					this.scale = (this.scale + evt.delta/factor);
+				}
+			}
+			
+			protected var movemap:Boolean = false;
+			protected var cx:int;
+			protected var cy:int;
+			
+			protected function onMouseDown(evt:MouseEvent):void{
+				movemap = true;
+				var p:Point = this.toMapPoint(evt.stageX, evt.stageY);
+				cx = p.x;
+				cy = p.y;
+			}
+			
+			protected function onMouseMove(evt:MouseEvent):void{
+				var p:Point = this.toMapPoint(evt.stageX, evt.stageY);
+				this._mouseX = p.x;
+				this._mouseY = p.y;
+				if(movemap){
+					var ox:int = p.x - cx;
+					var oy:int = p.y - cy;
+					
+					this.layoutMap(ox, oy);
+				}
+			}
+			
+			protected function onMouseUp(evt:MouseEvent):void{
+				movemap = false;
+				var p:Point = this.toMapPoint(evt.stageX, evt.stageY);
+				cx = p.x;
+				cy = p.y;
+			}
+			
+			protected function onResize(evt:ResizeEvent=null):void{
+				//调整大小时,需要计算允许的最小缩放尺寸
+				var s1:Number = this.width / this._orgMapWidth;
+				var s2:Number = this.height / this._orgMapHeight;
+				var s:Number = Math.min(s1, s2);
+				if(s!=this._minScale){
+					this._minScale = s;
+				}
+			}
+			
+			/**
+			 * 调整地图的显示未知,ox oy为横竖坐标的偏移量
+			 */
+			public function layoutMap(ox:int, oy:int):void{
+				var tx:int = 0;
+				if(this.canvas_map.width<this.width){
+					//如果地图的宽度比界面小,则居中地图
+					//tx = (this.width - this.canvas_map.width) / 2;
+					//如果地图的宽度比界面小,则靠左地图
+					tx = 0;
+				}else{
+					tx = this.canvas_map.x + ox;
+					if(tx>0) tx = 0;
+					if(tx<this.width-this.canvas_map.width) tx = this.width-this.canvas_map.width;
+				}
+				
+				var ty:int = 0;
+				if(this.canvas_map.height<this.height){
+					//如果地图的高度比界面小,则居中地图
+					ty = (this.height - this.canvas_map.height) / 2;
+				}else{
+					ty = this.canvas_map.y + oy;
+					if(ty>0) ty = 0;
+					if(ty<this.height-this.canvas_map.height) ty = this.height-this.canvas_map.height;
+				}
+				
+				this.canvas_map.move(tx, ty);
+				//this.canvas_map.x = tx;
+				//this.canvas_map.y = ty;
+			}
+			
+			/**
+			 * 调整地图的显示未知,ox oy为横竖坐标的偏移量
+			 */
+			protected function getTargetPoint(toWidth:int, toHeight:int, fromWidth:int, fromHeight:int):Point{
+				var toscale:Number = toWidth / _orgMapWidth;
+				var fromscale:Number = fromWidth / _orgMapWidth;
+				var factor:int = toscale>fromscale?1:-1;
+				var tx:int = 0;
+				if(toWidth<this.width){
+					//如果地图的宽度比界面小,则居中地图
+					//tx = (this.width - toWidth) / 2;
+					//如果地图的宽度比界面小,则靠左地图
+					tx = 0;
+				}else{
+					//设置缩放后的位置
+					tx = this.canvas_map.x - (this._mouseX-fromWidth/2)*fromscale/toscale;
+					if(tx>0) tx = 0;
+					if(tx<this.width-toWidth) tx = this.width-toWidth;
+				}
+				
+				var ty:int = 0;
+				if(toHeight<this.height){
+					//如果地图的高度比界面小,则居中地图
+					ty = (this.height - toHeight) / 2;
+				}else{
+					//设置缩放后的位置
+					ty = this.canvas_map.y - (this._mouseY-fromHeight/2)*fromscale/toscale;
+					if(ty>0) ty = 0;
+					if(ty<this.height-toHeight) ty = this.height-toHeight;
+				}
+				
+				var p:Point = new Point();
+				p.x = tx;
+				p.y = ty;
+				return p;
+			}
+			
+			/**
+			 * 将stage的坐标转换成canvas_map的坐标
+			 */
+			protected function toMapPoint(x:int, y:int):Point{
+				var p:Point = new Point(x, y);
+				return this.canvas_map.globalToLocal(p);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas id="canvas_map">
+		<mx:Canvas styleName="map" width="{this._orgMapWidth}" height="{this._orgMapHeight}" />
+		<ns1:CountryPart id="MEX" x="62" y="547">
+		</ns1:CountryPart>
+		<ns1:CountryPart id="GTM" x="138" y="610">
+		</ns1:CountryPart>
+		<ns1:CountryPart id="CUB" x="295" y="592">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="110" y="676" id="ESA">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="200" y="671" id="HON">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="290" y="672" id="NCA">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="383" y="648" id="HAT">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="470" y="647" id="DOM">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="331" y="297" id="CAN">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="192" y="733" id="CRC">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="291" y="732" id="PAN">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="397" y="741" id="VEN">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="348" y="806" id="COL">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="255" y="834" id="ECU">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="305" y="901" id="PER">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="398" y="958" id="BOL">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="349" y="1032" id="CHI">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="552" y="896" id="BRA">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="450" y="1025" id="PAR">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="379" y="1150" id="AGR">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="478" y="1101" id="URU">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="772" y="104" id="NOR">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="791" y="166" id="DEN">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="894" y="157" id="SWE">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="674" y="224" id="ENG">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="862" y="227" id="EGER">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="742" y="286" id="LBH">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="831" y="286" id="WGER">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="955" y="226" id="POL">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="939" y="286" id="CZE">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="726" y="359" id="FRA">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="869" y="348" id="AUT">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="958" y="348" id="HUN">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="661" y="444" id="ESP">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="845" y="412" id="ITA">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="938" y="412" id="YUG">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1047" y="349" id="ROM">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1011" y="108" id="FIN">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1030" y="412" id="BUL">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1119" y="419" id="TUR">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="958" y="477" id="GRE">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1066" y="480" id="LIB">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1154" y="479" id="SYR">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1051" y="541" id="ISR">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1153" y="541" id="IRQ">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="866" y="524" id="TUN">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="774" y="532" id="ALG">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="685" y="558" id="MAR">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="917" y="595" id="LBA">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1009" y="604" id="EGY">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="677" y="638" id="SOWA">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="810" y="659" id="SAR">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="734" y="755" id="CIV">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="845" y="746" id="NGR">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1024" y="676" id="SUD">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="886" y="816" id="CMR">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="991" y="846" id="ZAR">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="913" y="919" id="AGL">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1022" y="949" id="ZAPU">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1109" y="903" id="SOSE">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1097" y="820" id="KEN">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="993" y="1013" id="BOT">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="950" y="1081" id="RSA">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1186" y="767" id="SOM">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1087" y="739" id="ETH">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1240" y="541" id="IRI">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1209" y="601" id="SOG">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1109" y="603" id="JOR">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1185" y="662" id="KSA">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1344" y="501" id="AFG">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1346" y="580" id="PAK">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1443" y="621" id="IND">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1552" y="633" id="BUR">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1639" y="642" id="LAO">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1805" y="418" id="DPRK">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1823" y="480" id="KOR">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1894" y="538" id="JPN">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1785" y="610" id="TW">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1823" y="703" id="PHI">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1692" y="705" id="VIE">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1602" y="705" id="THA">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1643" y="799" id="MAS">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1790" y="873" id="INA">
+		</ns1:CountryPart>
+		<ns1:CountryPart x="1792" y="981" id="AUS">
+		</ns1:CountryPart>
+	</mx:Canvas>
+</mx:Canvas>

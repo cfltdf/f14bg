@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TSConfirmWindow xmlns="com.f14.F14bgGame.TS.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="300" height="285" xmlns:ns1="com.f14.F14bgGame.TS.ui.simple.*" title="#67-向苏联出售谷物">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.TSUtil;
+			import com.f14.F14bgGame.TS.ui.simple.TSCardLabel;
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				this.cardMessage = this.local_cm;
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				this.canvas_nocard.visible = false;
+				this.canvas_withcard.visible = false;
+				this.canvas_card.removeAllChildren();
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				if(param.drawnCardId){
+					var card:TSCardLabel = TSUtil.resourceManager.createTSLabel(param.drawnCardId);
+					this.canvas_card.addChild(card);
+					this.canvas_nocard.visible = false;
+					this.canvas_withcard.visible = true;
+				}else{
+					this.canvas_nocard.visible = true;
+					this.canvas_withcard.visible = false;
+				}
+				//设置太空竞赛的按键状态
+				this.button_spacerace.label = "太空竞赛("+param.spaceRaceChance+")";
+				this.button_spacerace.enabled = (param.spaceRaceChance>0);
+			}
+			
+			public function confirmParam(subact:String):void{
+				var param:Object = {};
+				param.subact = subact;
+				this.sendParam(param);
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox top="10" bottom="10" left="10" right="10" horizontalAlign="center">
+		<ns1:TSCardMessage id="local_cm" width="100%" />
+		<mx:Canvas width="100%" height="100%">
+			<mx:Canvas id="canvas_withcard" width="100%" height="100%" visible="true">
+				<mx:HBox width="100%" height="100%" verticalAlign="middle">
+					<mx:VBox width="50%" horizontalAlign="center">
+						<mx:Label text="你抽到了!" />
+						<mx:Canvas id="canvas_card" width="120" height="30" />
+					</mx:VBox>
+					<mx:VBox width="50%" height="100%" horizontalAlign="center">
+						<mx:Button label="使用OP" width="100" click="this.confirmParam('ACTION_USE_OP')" />
+						<mx:Button label="发生事件" width="100" click="this.confirmParam('ACTION_ACTIVE_EVENT')" />
+						<mx:Button id="button_spacerace" label="太空竞赛" width="100" click="this.confirmParam('ACTION_SPACE_RACE')" />
+						<mx:Button label="退 回" width="100" click="this.confirmParam('return')" />
+					</mx:VBox>
+				</mx:HBox>
+			</mx:Canvas>
+			<mx:Canvas id="canvas_nocard" width="100%" height="100%" visible="false">
+				<mx:VBox horizontalCenter="0" verticalCenter="0" horizontalAlign="center">
+					<mx:Label text="你没有抽到苏联的手牌!" />
+					<mx:Spacer height="5" />
+					<mx:Button label="确 定" click="this.confirmParam('return')" />
+				</mx:VBox>
+			</mx:Canvas>
+		</mx:Canvas>
+	</mx:VBox>
+</TSConfirmWindow>

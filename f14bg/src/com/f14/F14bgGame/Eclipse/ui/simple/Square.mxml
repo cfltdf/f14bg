@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="50" height="50" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.Eclipse.consts.ResourceType;
+			
+			protected var square:Object;
+			
+			public function setSquareObject(square:Object):void{
+				this.square = square;
+			}
+			
+			public function drawComponent():void{
+				var style:String = this.getSquareStyle();
+				this.styleName = style;
+				
+				//创建玩家小方块
+				if(square.owner>=0){
+					var c:PopulationCube = EclipseUtil.resourceManager.createPopulationCube(square.owner);
+					c.x = this.width / 2 - c.width / 2;
+					c.y = this.height / 2 - c.height / 2;
+					this.addChild(c);
+				}
+			}
+			
+			protected function getSquareStyle():String{
+				var res:String = "";
+				switch(square.resourceType){
+					case ResourceType.MONEY:
+						res = "squareMoney";
+						break;
+					case ResourceType.SCIENCE:
+						res = "squareScience";
+						break;
+					case ResourceType.MATERIALS:
+						res = "squareMaterials";
+						break;
+					case ResourceType.GRAY:
+						res = "squareGray";
+						break;
+					case ResourceType.ORBITAL:
+						res = "squareOrbital";
+						break;
+					default:
+						return "";
+				}
+				if(this.square.advenced){
+					res += "Adv";
+				}
+				return res;
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

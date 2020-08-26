@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="195" height="346">
+	<mx:Script>
+		<![CDATA[
+			
+			protected var _race:String;
+			
+			/**
+			 * 设置种族
+			 */
+			public function set race(race:String):void{
+				this._race = race;
+				this.styleName = this.getRaceStyle(race);
+			}
+			
+			/**
+			 * 取得种族对应的头像
+			 */
+			protected function getRaceStyle(race:String):String{
+				return "race" + race;
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

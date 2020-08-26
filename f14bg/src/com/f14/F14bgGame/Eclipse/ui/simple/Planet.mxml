@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="200" height="200" horizontalScrollPolicy="off" verticalScrollPolicy="off" click="this.onClick()">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.Eclipse.consts.ResourceType;
+			
+			public var selectable:Boolean;
+			protected var planet:Object;
+			protected var hex:Object;
+			
+			public function setHexObject(hex:Object):void{
+				this.hex = hex;
+			}
+			
+			public function setPlanetObject(planet:Object):void{
+				this.planet = planet;
+			}
+			
+			public function drawComponent():void{
+				var style:String = this.getPlanetStyle();
+				this.styleName = style;
+				
+				for each(var obj:Object in this.planet.squares){
+					var s:Square = new Square();
+					s.setSquareObject(obj);
+					this.addSquare(s);
+				}
+				
+				EclipseUtil.effectManager.addHighlight(this);
+			}
+			
+			protected function addSquare(s:Square):void{
+				this.hbox_squares.addChild(s);
+				s.drawComponent();
+			}
+			
+			protected function getPlanetStyle():String{
+				switch(planet.resourceType){
+					case ResourceType.MONEY:
+						return "planetMoney";
+					case ResourceType.SCIENCE:
+						return "planetScience";
+					case ResourceType.MATERIALS:
+						return "planetMaterials";
+					case ResourceType.GRAY:
+						return "planetGray";
+					case ResourceType.ORBITAL:
+						return "planetOrbital";
+					case ResourceType.MONOLITH:
+						return "planetMonolith";
+				}
+				return "";
+			}
+			
+			protected function onClick():void{
+				if(this.selectable){
+					var param:Object = {"planet":this.planet.index};
+					param.x = this.hex.position.x;
+					param.y = this.hex.position.y;
+					EclipseUtil.actionManager.sendCurrentCommand("SELECT_PLANET", param);
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox id="hbox_squares" horizontalCenter="0" verticalCenter="0" horizontalGap="0">
+	</mx:HBox>
+</mx:Canvas>

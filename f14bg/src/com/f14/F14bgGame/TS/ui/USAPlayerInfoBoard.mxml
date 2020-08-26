@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TSPlayerInfoBoard xmlns="com.f14.F14bgGame.TS.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="200" height="60">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.consts.TSColor;
+			
+			override public function init():void{
+				super.init();
+				this.setStyle("backgroundColor", TSColor.USA);
+				this.setStyle("backgroundAlpha", 0.4);
+			}
+			
+			/**
+			 * 得到效果的目标对象
+			 */
+			override protected function get effectTarget():Object{
+				return this.label_name;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" height="100%" horizontalGap="2">
+		<mx:VBox width="100%" height="100%" verticalGap="1" horizontalAlign="right">
+			<mx:Label />
+			<mx:HBox width="100%" horizontalGap="1">
+				<mx:Label text="{_tsPlayer.militaryAction}" width="30%" textAlign="center" fontWeight="bold"/>
+				<mx:Label text="{_tsPlayer.spaceRace}" width="30%" textAlign="center" fontWeight="bold"/>
+				<mx:Label text="{_tsPlayer.handNum}" width="40%" textAlign="center" fontWeight="bold"/>
+			</mx:HBox>
+			<mx:Label id="label_name" text="{_tsPlayer.name}" width="100%" fontWeight="bold" textAlign="center"/>
+		</mx:VBox>
+		<mx:Canvas width="85" height="100%">
+		</mx:Canvas>
+	</mx:HBox>	
+</TSPlayerInfoBoard>

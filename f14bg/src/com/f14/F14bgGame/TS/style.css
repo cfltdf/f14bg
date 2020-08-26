@@ -1,0 +1,66 @@
+/* CSS file */
+global
+{
+	backgroundSize: "100%";
+	backgroundGradientAlphas: 1, 1;
+	backgroundGradientColors: #3C3C3C, #3C3C3C;
+	fontSize: 12;
+	color: #000000;
+	theme-color: #DD8C00;
+}
+TSMainBoard{
+	backgroundColor: #FFFFFF;
+	borderStyle:none;
+	background-size: "100%";
+	background-alpha: 0.2;
+}
+.gameBoard{
+	backgroundAlpha: 0.2;
+}
+.playerInfoText{
+	color: #FFFFFF;
+	font-size: 14;
+	font-weight: bold;
+}
+.map{
+	background-image: Embed("./images/map.png");
+	background-size: "100%";
+}
+.rowbg{
+	background-image: Embed("./images/rowbg.jpg");
+	backgroundSize: auto;
+}
+.listbg{
+}
+TSConfirmWindow{
+}
+.fontStyle{
+	font-weight:bold;
+}
+.fontWhite{
+	font-weight:bold;
+	color:#eeeeee;
+	font-size:14px;
+}
+DataGrid{
+}
+.barUsa{
+	background-image: Embed("./images/bar-usa.png");
+	backgroundSize: auto;
+}
+.barUssr{
+	background-image: Embed("./images/bar-ussr.png");
+	backgroundSize: auto;
+}
+.vpMiddle{
+	background-image: Embed("./images/vp-middle.png");
+	backgroundSize: auto;
+}
+.vpUssr{
+	background-image: Embed("./images/vp-ussr.png");
+	backgroundSize: auto;
+}
+.vpUsa{
+	background-image: Embed("./images/vp-usa.png");
+	backgroundSize: auto;
+}

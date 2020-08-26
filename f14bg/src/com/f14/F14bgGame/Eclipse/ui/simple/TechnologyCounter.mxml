@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="62" height="62" click="this.onClick()">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.components.EclipseTechnology;
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			[Bindable]
+			protected var displayValue:String;
+			protected var _technology:EclipseTechnology;
+			
+			public var selectable:Boolean;
+			
+			public function get technology():EclipseTechnology{
+				return this._technology;
+			}
+			
+			public function set technology(o:EclipseTechnology):void{
+				this._technology = o;
+				this.addChild(o);
+			}
+			
+			public function init():void{
+				EclipseUtil.effectManager.addHighlight(this);
+			}
+			
+			public function setNum(num:int):void{
+				this.displayValue = "x " + num;
+				if(num<=0){
+					//如果数量为0, 则变灰
+					EclipseUtil.effectManager.setGrayFilter(this);
+				}else{
+					this.filters = null;
+				}
+			}
+			
+			protected function onClick():void{
+				if(this.selectable){
+					var param:Object = {"technologyType":this.technology.object.type};
+					EclipseUtil.actionManager.sendCurrentCommand("SELECT_TECH", param);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas right="5" bottom="0" backgroundAlpha="0.3" backgroundColor="#000000">
+		<mx:Label id="label_num" text="{this.displayValue}" styleName="textSmallCounter"/>		
+	</mx:Canvas>
+</mx:Canvas>

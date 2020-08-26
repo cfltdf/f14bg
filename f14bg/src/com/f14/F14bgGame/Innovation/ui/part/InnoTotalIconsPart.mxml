@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="133" height="98" styleName="totalIcons">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Innovation.consts.InnoIcon;
+			import mx.controls.Label;
+			protected var _labels:Array = new Array();
+			
+			public function init():void{
+				this._labels = new Array();
+				var i:int = 1;
+				for each(var icon:String in InnoIcon.ICONS){
+					var label:Label = new Label();
+					label.width = 30;
+					label.height = 18;
+					label.x = 33 + 66*int((i-1)%2);
+					label.y = 5 + 33*int((i-1)/2);
+					label.styleName = "bigNumberTextCenter";
+					this._labels[icon] = label;
+					this.addChild(label);
+					i++;
+				}
+			}
+			
+			public function clear():void{
+				for each(var label:Label in _labels){
+					label.text = "";
+				}
+			}
+			
+			protected function getIconLabel(icon:String):Label{
+				return this._labels[icon] as Label;
+			}
+			
+			protected function setIconValue(icon:String, value:int):void{
+				var label:Label = this.getIconLabel(icon);
+				if(label!=null){
+					if(value==0){
+						label.text = "";
+					}else{
+						label.text = value+"";
+					}
+				}
+			}
+			
+			public function loadParam(param:Object):void{
+				this.clear();
+				if(param!=null){
+					for(var icon:String in param.iconsInfo){
+						this.setIconValue(icon, param.iconsInfo[icon]);
+					}
+				}
+			}
+			
+		]]>
+	</mx:Script>
+</mx:Canvas>

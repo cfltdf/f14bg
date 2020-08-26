@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:flexmdi="http://flexmdi.googlecode.com/" styleName="mainBoard" minWidth="640" minHeight="480">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.player.Player;
+			
+			/**
+			 * 初始化
+			 */
+			public function init():void{
+				//this.createPlayerBoards();
+				//初始化按钮区
+				//this.buttonBoard.init();
+			}
+			
+			public function clear():void{
+				
+			}
+			
+			/**
+			 * 创建指定玩家的面板
+			 */
+			public function createPlayerBoard(player:Player):void{
+				
+			}
+			
+			/**
+			 * 设置界面输入的状态
+			 */
+			public function setInputState(code:int):void{
+				
+			}
+			
+			/**
+			 * 禁止所有的输入
+			 */
+			public function disableAllInput():void{
+				
+			}
+			
+			/**
+			 * 刷新主游戏界面的大小
+			 */
+			public function refreshMainBoardSize():void{
+				
+			}
+			
+		]]>
+	</mx:Script>
+</mx:Canvas>

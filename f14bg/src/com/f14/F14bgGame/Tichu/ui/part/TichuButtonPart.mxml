@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="270" height="55">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Tichu.consts.TichuGameCmd;
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import com.f14.F14bgGame.Tichu.components.TichuCard;
+			import com.f14.F14bgGame.Tichu.manager.TichuActionManager;
+			import com.f14.F14bgGame.Tichu.TichuUtil;
+			protected var hboxs:Array = new Array();
+			
+			protected var buttonsTichu:Array = new Array();
+			protected var buttonsBomb:Array = new Array();
+		
+			public function init():void{
+				hboxs["BIG_TICHU"] = buttons_big;
+				hboxs["EXCHANGE"] = buttons_exchange;
+				
+				buttonsTichu.push(button_big);
+				buttonsTichu.push(button_small1);
+				buttonsTichu.push(button_small2);
+				buttonsTichu.push(button_small3);
+				
+				buttonsBomb.push(button_bomb);
+			}
+		
+			public function clear():void{
+				var button:Button;
+				for each(button in this.buttonsTichu){
+					button.visible = true;
+				}
+				for each(button in this.buttonsBomb){
+					button.visible = true;
+				}
+			}
+			
+			/**
+			 * 设置显示状态
+			 */
+			public function setShowState(state){
+				for(var key:String in hboxs){
+					var hbox:HBox = hboxs[key] as HBox;
+					hbox.visible = (state==key);
+				}
+			}
+			
+			/**
+			 * 出牌
+			 */
+			public function playCard():void{
+				var cards:Array = TichuUtil.getLocalPlayer().tichuPlayerBoard.playerHand.getSelectedCards();
+				var cardIds:String = BgUtils.card2String(cards);
+				if(this.hasAbility(cards, "PHOENIX") && cards.length>1){
+					//如果选择牌里有凤,并且是多张牌,则显示选择数字的窗口
+					TichuUtil.stateManager.showSelectNumberWindow(cardIds);
+				}else{
+					TichuUtil.actionManager.playCard(cardIds);
+				}
+			}
+			
+			/**
+			 * 判断这些牌里是否有指定的能力的牌
+			 */
+			protected function hasAbility(cards:Array, abilityType:String):Boolean{
+				for each(var card:TichuCard in cards){
+					if(card.object.abilityType==abilityType){
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			/**
+			 * 出炸弹
+			 */
+			public function playBomb():void{
+				var cards:Array = TichuUtil.getLocalPlayer().tichuPlayerBoard.playerHand.getSelectedCards();
+				var cardIds:String = BgUtils.card2String(cards);
+				TichuUtil.actionManager.playBombCard(cardIds);
+			}
+			
+			/**
+			 * 装载按键信息
+			 */
+			public function loadButtonParam(param:Object):void{
+				var button:Button;
+				for each(button in this.buttonsTichu){
+					button.visible = param.tichuButton;
+				}
+				for each(button in this.buttonsBomb){
+					button.visible = param.bombButton;
+				}
+			}
+			
+			/**
+			 * 公开手牌
+			 */
+			 public function showHand():void{
+			 	button_showhand.visible = false;
+			 	TichuUtil.actionManager.sendCurrentCommand('showhand');
+			 }
+			
+		]]>
+	</mx:Script>
+	<mx:HBox id="buttons_big" x="20" verticalCenter="0" visible="false">
+		<mx:Button label="大地主" id="button_big" click="TichuUtil.actionManager.sendCurrentCommand('confirm')" />
+		<mx:Button label="不 叫" click="TichuUtil.actionManager.doPass()" />
+		<mx:Button label="公开手牌" id="button_showhand" click="this.showHand()" />
+	</mx:HBox>
+	<mx:HBox id="buttons_exchange" x="20" verticalCenter="0" visible="false">
+		<mx:Button label="小地主" id="button_small1" click="TichuUtil.actionManager.callSmallTichu()" />
+	</mx:HBox>
+	<mx:HBox id="buttons_normal" x="20" verticalCenter="0" visible="false">
+		<mx:Button label="出 牌" click="this.playCard()" />
+		<mx:Button label="不 要" click="TichuUtil.actionManager.doPass()" />
+		<mx:Button label="小地主" id="button_small2" click="TichuUtil.actionManager.callSmallTichu()" />
+	</mx:HBox>
+	<mx:HBox id="buttons_bomb" x="20" verticalCenter="0" visible="false">
+		<mx:Button label="炸 弹" id="button_bomb" click="TichuUtil.actionManager.playBomb()" />
+	</mx:HBox>
+	<mx:HBox id="buttons_normal_bomb" x="20" verticalCenter="0" visible="false">
+		<mx:Button label="出炸弹" click="this.playBomb()" />
+		<mx:Button label="取 消" click="TichuUtil.actionManager.doPass(TichuGameCmd.GAME_CODE_BOMB_PHASE)" />
+		<mx:Button label="小地主" id="button_small3" click="TichuUtil.actionManager.callSmallTichu()" />
+	</mx:HBox>
+</mx:Canvas>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="80" height="450" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			protected var squares:Array = new Array();
+			
+			public function clear():void{
+				this.removeAllChildren();
+				this.squares = new Array();
+			}
+			
+			public function addSquare(o:Object):void{
+				var c:ReputationSquare = new ReputationSquare();
+				c.y = (86 + 0) * this.squares.length;
+				this.squares.push(c);
+				this.addChild(c);
+				
+				c.object = o;
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

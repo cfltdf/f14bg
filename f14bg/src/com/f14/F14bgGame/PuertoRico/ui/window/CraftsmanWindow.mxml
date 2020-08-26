@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="350" title="选择额外生产的货物" xmlns:simple="com.f14.F14bgGame.PuertoRico.ui.simple.*" backgroundColor="#EEEEEE" xmlns:ui="com.f14.F14bgGame.PuertoRico.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.PRUtil;
+			import com.adobe.serialization.json.JSON;
+			import com.f14.F14bgGame.PuertoRico.ui.simple.ResourceMultiChoose;
+			import com.f14.F14bgGame.PuertoRico.components.ResourcePart;
+			import com.f14.F14bgGame.PuertoRico.event.PrEvent;
+			
+			[Bindable]
+			public var showMessage:String;
+			
+			/**
+			 * 重置面板输入信息
+			 */
+			public function reset():void{
+				this.resource_choose.reset();
+			}
+			
+			/**
+			 * 初始化所有输入组件
+			 */
+			public function initInputs():void{
+				this.resource_choose.initResourceImage();
+			}
+			
+			/**
+			 * 点击资源时触发的方法
+			 */
+			public function onResourceClick(evt:PrEvent):void{
+				var part:ResourcePart = evt.part as ResourcePart;
+				PRUtil.actionManager.craftsman(part.type);
+			}
+			
+			/**
+			 * 点击确定时触发的方法
+			 */
+			public function confirm():void{
+				var resource:Object = this.resource_choose.getResource();
+				PRUtil.actionManager.craftsman(resource);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%" height="100%" horizontalAlign="center">
+		<mx:Label text="{showMessage}"/>
+		<simple:ResourceMultiChoose id="resource_choose">
+		</simple:ResourceMultiChoose>
+		<mx:HBox>
+			<mx:Button label="确定" x="112" y="63" click="confirm()"/>
+			<mx:Button label="结束" click="PRUtil.actionManager.doPass()"/>
+		</mx:HBox>
+		<mx:Canvas height="5">
+		</mx:Canvas>
+	</mx:VBox>
+</FloatWindow>

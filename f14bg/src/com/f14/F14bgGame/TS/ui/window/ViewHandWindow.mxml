@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TSConfirmWindow xmlns="com.f14.F14bgGame.TS.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="700" height="150" title="查看手牌" xmlns:ns1="com.f14.F14bgGame.TS.ui.simple.*" xmlns:ns2="com.f14.F14bgGame.TTA.ui.part.*" xmlns:ns3="com.f14.F14bgGame.TS.ui.part.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import mx.collections.ArrayCollection;
+
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				this.playerHands.clear();
+			}
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				this.playerHands.init();
+			}
+			
+			/**
+			 * 装载查看手牌参数
+			 */
+			public function loadHandParam(param:Object):void{
+				this.playerHands.addCards(param.cardIds);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox horizontalCenter="0" bottom="10">
+		<mx:Button label="确 定" click="this.doConfirm()"/>
+	</mx:HBox>
+	<ns3:TSPlayerHand id="playerHands" right="5" left="5" horizontalCenter="0" top="20">
+	</ns3:TSPlayerHand>
+</TSConfirmWindow>

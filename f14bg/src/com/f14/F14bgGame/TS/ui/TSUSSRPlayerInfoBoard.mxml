@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TSPlayerInfoBoard xmlns="com.f14.F14bgGame.TS.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="380" height="38" styleName="barUssr" xmlns:simple="com.f14.F14bgGame.TS.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.ui.simple.TSCardLabel;
+			import com.f14.F14bgGame.bg.ui.simple.SimpleCard;
+			import com.f14.F14bgGame.TS.ui.simple.ChinaCardFlag;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.TS.TSUtil;
+			import com.f14.F14bgGame.TS.components.TSCard;
+			
+			override public function init():void{
+				super.init();
+				var card:TSCard = TSUtil.resourceManager.createChinaCard();
+				this.image_china.object = card;
+			}
+			
+			/**
+			 * 得到效果的目标对象
+			 */
+			override protected function get effectTarget():Object{
+				return this.label_name;
+			}
+			
+			override public function set chinaCard(chinaCard:Boolean):void{
+				super.chinaCard = chinaCard;
+				this.image_china.visible = chinaCard;
+			}
+		]]>
+	</mx:Script>
+	<mx:Label x="8" y="8" text="{_tsPlayer.spaceRace}" width="25" textAlign="center" styleName="fontWhite"/>
+	<mx:Label x="73" y="8" text="{_tsPlayer.militaryAction}" width="25" textAlign="center" styleName="fontWhite"/>
+	<mx:Label x="146" y="8" text="{_tsPlayer.handNum}" width="25" textAlign="center" styleName="fontWhite"/>
+	<simple:ChinaCardFlag x="210" y="4" id="image_china" visible="false" />
+	<mx:Label x="260" y="8" id="label_name" text="{_tsPlayer.name}" width="110" styleName="fontWhite" textAlign="right"/>
+</TSPlayerInfoBoard>

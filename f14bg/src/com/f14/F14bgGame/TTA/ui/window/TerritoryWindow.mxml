@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.F14bgGame.TTA.ui.part.military.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.components.TTACard;
+			import com.f14.F14bgGame.TTA.ui.part.military.UnitSelecter;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.TTA.ui.part.military.AuctionPart;
+			
+			public function set inputable(inputable:Boolean):void{
+				//该窗口的输入状态只会影响本地玩家的输入选项
+				var part:AuctionPart = this.getLocalAuctionPart();
+				if(part!=null){
+					part.inputable = inputable;
+				}
+			}
+			
+			override public function clear():void{
+				super.clear();
+				this.canvas_territory.removeAllChildren();
+				this.hbox_main.removeAllChildren();
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				//装载拍卖殖民地的牌
+				var card:TTACard = TTAUtil.resourceManager.createTTACard(param.showCardId);
+				if(card!=null){
+					this.canvas_territory.addChild(card);
+				}
+				//装载所有玩家的信息
+				for each(var object:Object in param.playersInfo){
+					var part:AuctionPart = new AuctionPart();
+					this.hbox_main.addChild(part);
+					part.player = TTAUtil.getPlayer(object.position);
+					
+					//装载玩家的部队信息
+					part.addUnits(object.unitsInfo);
+					
+					//如果该信息属于本地玩家,则装载加值牌信息
+					if(TTAUtil.gameManager.isLocalPosition(object.position)){
+						part.addBonusCards(object.bonusCardIds);
+					}
+					//默认设置不允许输入
+					part.inputable = false;
+					//如果存在则加载玩家的出价信息
+					if(object.auctionParam!=null){
+						part.loadAuctionParam(object.auctionParam);
+					}
+				}
+			}
+			
+			/**
+			 * 装载玩家拍卖出价的总数
+			 */
+			public function loadTotalValue(param:Object):void{
+				var part:AuctionPart = this.getAuctionPart(param.position);
+				if(part!=null){
+					part.total = param.auctionValue;
+				}
+			}
+			
+			/**
+			 * 装载玩家的拍卖出价信息 
+			 */
+			public function loadAuctionParam(param:Object):void{
+				var part:AuctionPart = this.getAuctionPart(param.position);
+				if(part!=null){
+					part.loadAuctionParam(param.auctionParam);
+				}
+			}
+			
+			/**
+			 * 取得玩家位置对应的拍卖信息组件
+			 */
+			protected function getAuctionPart(position:int):AuctionPart{
+				for each(var part:AuctionPart in this.hbox_main.getChildren()){
+					if(part.player.position==position){
+						return part;
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * 取得玩家位置对应的拍卖信息组件
+			 */
+			protected function getLocalAuctionPart():AuctionPart{
+				return this.getAuctionPart(TTAUtil.getLocalPlayer().position);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox y="5" verticalGap="5" horizontalAlign="center">
+		<mx:Canvas width="100%" styleName="gameBoard" backgroundColor="#A9A9A9">
+			<mx:Canvas id="canvas_territory" horizontalCenter="0">
+			</mx:Canvas>
+		</mx:Canvas>
+		<mx:HBox id="hbox_main" />
+	</mx:VBox>
+</ConfirmWindow>

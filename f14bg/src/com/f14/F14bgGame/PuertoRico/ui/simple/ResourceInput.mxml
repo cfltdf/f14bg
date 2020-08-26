@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="200" height="55" borderStyle="solid" verticalScrollPolicy="off" horizontalScrollPolicy="off" styleName="prBoard">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.manager.EffectManager;
+			import mx.effects.IEffectInstance;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.PuertoRico.components.ResourcePart;
+			
+			public var selectable:Boolean;
+			protected var _selected:Boolean;
+			protected var _selectedEffect:IEffectInstance;
+			
+			[Bindable]
+			public var msg:String;
+			public var maxSize:int = 1;
+			
+			public function init():void{
+				//给板块添加是否可选的事件判断
+				this.initEvent();
+				_selectedEffect = EffectManager.selectEffect.createInstance(this);
+			}
+			
+			/**
+			 * 取得选择的资源数量
+			 */
+			public function get size():int{
+				return this.hbox_good.getChildren().length;
+			}
+			
+			/**
+			 * 添加资源
+			 */
+			public function addResource(goodType:String):void{
+				if(maxSize==1){
+					//如果是单选,并且已有选择的资源,则先移除原有的资源
+					if(this.size>0){
+						this.clearSelection();
+					}
+				}else{
+					//如果是多选,则判断是否已经选满资源,如果满了则不允许添加
+					if(this.size>=this.maxSize){
+						ApplicationUtil.alert("不能再添加资源了!");
+						return;
+					}
+				}
+				//添加新的资源
+				var part:ResourcePart = new ResourcePart();
+				part.type = goodType;
+				part.color = true;
+				this.hbox_good.addChild(part);
+			}
+			
+			/**
+			 * 取得所有选择的货物的字符串
+			 */
+			public function get selectedGoodType():String{
+				var res:String = "";
+				for each(var part:ResourcePart in this.hbox_good.getChildren()){
+					res += part.type + ",";
+				}
+				if(res.length>0){
+					res = res.substring(0, res.length-1);
+				}
+				return res;
+			}
+			
+			/**
+			 * 清除所有选择的资源
+			 */
+			public function clearSelection():void{
+				this.hbox_good.removeAllChildren();
+			}
+			
+			public function set selected(selected:Boolean):void{
+				this._selected = selected;
+				this._selectedEffect.end();
+				if(selected){
+					this._selectedEffect.play();
+				}
+			}
+			
+			public function get selected():Boolean{
+				return this._selected;
+			}
+			
+			/**
+			 * 初始化事件监听
+			 */
+			protected function initEvent():void{
+				this.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+				this.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			}
+			
+			protected function onMouseOver(evt:MouseEvent):void{
+				if(selectable){
+					EffectManager.glowEffect.end();
+					EffectManager.glowEffect.target = this;
+					EffectManager.glowEffect.play();
+				}
+			}
+			
+			protected function onMouseOut(evt:MouseEvent):void{
+				EffectManager.glowEffect.end();
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Label text="{msg}"  x="9" y="6" fontWeight="bold"/>
+	<mx:HBox id="hbox_good" height="20" x="10" y="25">
+	</mx:HBox>
+</mx:Canvas>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" height="280" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.manager.TTAImageManager;
+			import com.f14.F14bgGame.TTA.components.TTACard;
+			
+			/**
+			 * 设置所有卡牌是否可选
+			 */
+			public function set selectable(selectable:Boolean):void{
+				for each(var card:TTACard in this.getChildren()){
+					card.selectable = selectable;
+				}
+			}
+			
+			/**
+			 * 取得该卡牌列所属的卡牌子类型
+			 */
+			public function get cardSubType():String{
+				if(this.getChildren().length>0){
+					return (this.getChildAt(0) as TTACard).object.cardSubType;
+				}else{
+					return null;
+				}
+			}
+			
+			/**
+			 * 添加卡牌到卡牌列
+			 */
+			public function addCard(card:TTACard):void{
+				//添加卡牌时,需要按照其等级排序
+				var cards:Array = this.getChildren();
+				var index:int = 0;
+				for(var i:int = cards.length-1;i>=0;i--){
+					var c:TTACard = cards[i] as TTACard;
+					if(card.object.level>=c.object.level){
+						index = i+1;
+						break;
+					}
+				}
+				this.addChildAt(card, index);
+				this.layout();
+			}
+			
+			/**
+			 * 排列卡牌
+			 */
+			protected function layout():void{
+				var max:int = 3;
+				for(var i:int=0;i<this.getChildren().length;i++){
+					this.getChildAt(i).y = (54*(max-i));
+				}
+			}
+			
+		]]>
+	</mx:Script>
+</mx:Canvas>

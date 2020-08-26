@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100" height="40" click="this.onClick()">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			
+			public var selectable:Boolean;
+			public var resourceType:String;
+			
+			public function init():void{
+				EclipseUtil.effectManager.addHighlight(this);
+				this.loadStyle();
+			}
+			
+			protected function loadStyle():void{
+				this.styleName = "resourceOption" + this.resourceType;
+			}
+			
+			public function onClick():void{
+				if(this.selectable){
+					var param:Object = {"resourceType":this.resourceType};
+					EclipseUtil.actionManager.sendCurrentCommand("SELECT_RESOURCE", param);
+				}
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

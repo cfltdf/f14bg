@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="250" height="75" styleName="roundPanel" horizontalScrollPolicy="off" verticalScrollPolicy="off" xmlns:simple="com.f14.F14bgGame.Eclipse.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			[Bindable]
+			protected var _roundText:String;
+			
+			public function init():void{
+				EclipseUtil.effectManager.addHighlight(this.supplyButton);
+			}
+			
+			public function clear():void{
+				this._roundText = null;
+			}
+			
+			public function loadRoundParam(param:Object):void{
+				this._roundText = param.round + " / " + param.maxRound;
+			}
+		]]>
+	</mx:Script>
+	<mx:Label id="label_round" styleName="textRound" verticalCenter="0" left="50" text="{this._roundText}" />
+	<simple:SupplyButton id="supplyButton" verticalCenter="0" right="25" />
+</mx:Canvas>

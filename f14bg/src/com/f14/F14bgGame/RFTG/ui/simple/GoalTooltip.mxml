@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:UIComponent xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.bg.component.Card;
+			import mx.core.UIComponent;
+			import mx.core.FlexBitmap;
+			import com.f14.F14bgGame.RFTG.manager.ImageManager;
+			
+			protected var bit:FlexBitmap;
+			protected var _goal:GoalCard;
+			
+			public function init():void{
+				this.width = GoalCard.IMAGE_WIDTH;
+				this.height = GoalCard.IMAGE_HEIGHT;
+				bit = new FlexBitmap();
+				addChild(bit);
+			}
+			
+			public function set goal(goal:GoalCard):void{
+				this._goal = goal;
+				if(goal!=null){
+					bit.bitmapData = goal.bitmapData;
+				}else{
+					bit.bitmapData = null;					
+				}
+			}
+			
+		]]>
+	</mx:Script>
+</mx:UIComponent>

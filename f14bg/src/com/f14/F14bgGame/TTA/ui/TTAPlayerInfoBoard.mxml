@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerInfoBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100" height="145" styleName="gameBoard" horizontalScrollPolicy="off" verticalScrollPolicy="off" xmlns:part="com.f14.F14bgGame.TTA.ui.part.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.event.TTAEvent;
+			import com.f14.F14bgGame.TTA.event.TTAEvent;
+			import com.f14.f14bg.event.BgEvent;
+			import mx.binding.utils.BindingUtils;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.bg.consts.PlayerColor;
+			import com.f14.F14bgGame.TTA.player.TTAPlayer;
+			
+			override public function set player(player:Player):void{
+				super.player = player;
+				this.ttaPlayerInfo.player = player as TTAPlayer;
+			}
+			
+			override public function init():void{
+				super.init();
+				this.ttaPlayerInfo.init();
+				this.ttaPlayerInfo.addEventListener(TTAEvent.CLICK_PLAYER_INFO, onClick);
+				//设置对象为可选高光
+				//TTAUtil.effectManager.addHighlight(this);
+				//this.selectable = true;
+			}
+			
+			/**
+			 * 清除内容
+			 */
+			override public function clear():void{
+				super.clear();
+				//this._player = null;
+				this.ttaPlayerInfo.clear();
+			}
+			
+			/**
+			 * 判断该玩家信息是否可以选择
+			 */
+			public function get selectable():Boolean{
+				//if(this._player!=null && !TTAUtil.isLocalPlayer(this._player)){
+				//	return true;
+				//}else{
+				//	return false;
+				//}
+				return this.ttaPlayerInfo.selectable;
+			}
+			
+			/**
+			 * 点击玩家信息时触发的方法
+			 */
+			protected function onClick(evt:TTAEvent):void{
+				if(TTAUtil.gameManager.isLocalPlayer(this._player)){
+					//如果是本地玩家,则切换视图
+					TTAUtil.mainBoard.changeShowState();
+				}else{
+					//如果不是本地玩家,则显示玩家的游戏面板
+					TTAUtil.stateManager.trigPlayerWindow(this._player.position);
+				}
+			}
+			
+			/**
+			 * 得到效果的目标对象
+			 */
+			override protected function get effectTarget():Object{
+				return this.ttaPlayerInfo.label_name;
+			}
+			
+		]]>
+	</mx:Script>
+	<part:TTAPlayerInfo id="ttaPlayerInfo" />
+</PlayerInfoBoard>

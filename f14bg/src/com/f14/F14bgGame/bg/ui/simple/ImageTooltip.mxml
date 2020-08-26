@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:UIComponent xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.component.ImageObject;
+			import mx.core.UIComponent;
+			import mx.core.FlexBitmap;
+			
+			protected var bit:FlexBitmap;
+			
+			public function init():void{
+				bit = new FlexBitmap();
+				addChild(bit);
+			}
+			
+			/**
+			 * 设置tooltip显示的图像
+			 */
+			public function setImage(image:ImageObject):void{
+				if(image!=null){
+					this.width = image.orgImageWidth;
+					this.height = image.orgImageHeight;
+					
+					if(this.bit!=null){
+						this.bit.bitmapData = image.bitmapData;
+					}
+				}else{
+					this.width = 0;
+					this.height = 0;
+					
+					if(this.bit!=null){
+						this.bit.bitmapData = null;
+					}
+				}
+			}
+			
+		]]>
+	</mx:Script>
+</mx:UIComponent>

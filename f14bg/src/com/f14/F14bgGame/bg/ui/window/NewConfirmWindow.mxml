@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.bg.consts.ConfirmString;
+			/**
+			 * 确认窗口内容
+			 */
+			override public function doConfirm(inputParam:Object=null):void{
+				var cmd:Object = this.createCommand();
+				cmd.confirmString = ConfirmString.CONFIRM;
+				//设置确认参数
+				var key:String = null;
+				var param:Object = this.createConfirmParam();
+				if(param!=null){
+					for(key in param){
+						cmd[key] = param[key];
+					}
+				}
+				if(inputParam!=null){
+					for(key in inputParam){
+						cmd[key] = inputParam[key];
+					}
+				}
+				ApplicationUtil.sendCommandParam(cmd);
+			}
+			
+			/**
+			 * 取消窗口内容
+			 */
+			override public function doCancel():void{
+				this.sendConfirmString(ConfirmString.CANCEL);
+			}
+			
+			/**
+			 * 跳过窗口内容
+			 */
+			public function doPass():void{
+				this.sendConfirmString(ConfirmString.PASS);
+			}
+			
+			/**
+			 * 重置窗口内容
+			 */
+			public function doReset():void{
+				this.sendConfirmString(ConfirmString.RESET);
+			}
+			
+			/**
+			 * 发送操作字符串
+			 */
+			public function sendConfirmString(confirmString:String):void{
+				var cmd:Object = this.createCommand();
+				cmd.confirmString = confirmString;
+				ApplicationUtil.sendCommandParam(cmd);
+			}
+		]]>
+	</mx:Script>
+</ConfirmWindow>

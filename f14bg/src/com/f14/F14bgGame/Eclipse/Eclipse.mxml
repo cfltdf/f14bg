@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module:F14GameModule xmlns:module="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%" creationComplete="init()" xmlns:ui="com.f14.F14bgGame.Eclipse.ui.*" resize="onResize(event)" >
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.player.EclipsePlayerHandler;
+			import com.f14.F14bgGame.Eclipse.ui.part.EclipseSetupBoard;
+			import com.f14.F14bgGame.Eclipse.player.EclipsePlayer;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.core.util.Version;
+			import com.f14.F14bgGame.bg.handler.InGameHandler;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgClient.room.ui.part.SetupBoard;
+			import com.f14.F14bgClient.room.RoomUtil;
+			
+			/**
+			 * 创建version对象
+			 */
+			override protected function createVersion():Version{
+				var v:Version = super.createVersion();
+				v.descr = "素材来源Vassal,感谢 兔子猪 整理修改制作!!\n"
+					+ "感谢所有朋友的测试和支持.";
+				return v;
+			}
+
+			override public function init():void{
+				this.loadVersionInfo();
+				super.init();
+				this.mainBoard = this.eclipseMainBoard;
+				
+				RoomUtil.gameModule = this;
+				EclipseUtil.initGameModule(this);
+				
+				//初始化图片资源管理器
+				this.createLoadingMask();
+				EclipseUtil.loadResources();
+				//检查图片管理器是否执行完成
+				EclipseUtil.imageManager.checkImageLoadComplete();
+			}
+			
+			/**
+			 * 图片资源装载完成时的回调函数
+			 */
+			override public function onImageLoadComplete():void{
+				super.onImageLoadComplete();
+				EclipseUtil.init();
+				EclipseUtil.animManager.animCanvas = this.animBoard;
+				this.mainBoard.init();
+				
+				//装载房间信息
+				RoomUtil.actionManager.loadRoomInfo();
+			}
+			
+			override protected function createGameCommandHandler():InGameHandler{
+				return new EclipsePlayerHandler();
+			}
+			
+			override protected function createSetupBoard():SetupBoard{
+				return new EclipseSetupBoard();
+			}
+			
+			override public function createPlayer():Player{
+				return new EclipsePlayer();
+			}
+			
+			public function onResize(evt:Event):void{
+				//动画效果面版需要和游戏面板相同大小
+				this.animBoard.width = eclipseMainBoard.width;
+				this.animBoard.height = eclipseMainBoard.height;
+				var xs:Number = this.width/eclipseMainBoard.origWidth;
+				var ys:Number = this.height/eclipseMainBoard.origHeight;
+				var scale:Number = Math.min(xs, ys, 1);
+				eclipseMainBoard.scaleX = scale;
+				eclipseMainBoard.scaleY = scale;
+				animBoard.scaleX = scale;
+				animBoard.scaleY = scale;
+			}
+			
+		]]>
+	</mx:Script>
+	<ui:EclipseMainBoard id="eclipseMainBoard" width="100%" height="100%" />
+	<mx:Canvas id="animBoard" width="100%" height="100%" />
+</module:F14GameModule>

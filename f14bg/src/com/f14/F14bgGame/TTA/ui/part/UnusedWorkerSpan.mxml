@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageString xmlns="com.f14.F14bgGame.TTA.ui.simple.*" xmlns:mx="http://www.adobe.com/2006/mxml" mouseOver="onMouseOver(event)" mouseOut="onMouseOut(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.TTA.manager.TTAImageManager;
+			
+			protected var _num:int;
+			public var selectable:Boolean;
+			
+			public function get num():int{
+				return this._num;
+			}
+			
+			public function set num(num:int):void{
+				this._num = num;
+				this.value = String(num);
+				this.visible = (num!=0);
+			}
+			
+			public function init():void{
+				this.image.source = TTAImageManager.YELLOW_IMAGE;
+			}
+			
+			public function clear():void{
+				this.num = 0;
+			}
+			
+			/**
+			 * 鼠标移到图像上时触发的事件
+			 */
+			protected function onMouseOver(evt:MouseEvent):void{
+				if(selectable){
+					//如果可选,则高亮显示该对象
+					TTAUtil.effectManager.glowEffect.end();
+					TTAUtil.effectManager.glowEffect.target = this;
+					TTAUtil.effectManager.glowEffect.play();
+				}
+			}
+			
+			/**
+			 * 鼠标移出图像时触发的事件
+			 */
+			protected function onMouseOut(evt:MouseEvent):void{
+				//取消图像的高亮效果
+				TTAUtil.effectManager.glowEffect.end();
+			}
+		]]>
+	</mx:Script>
+</ImageString>

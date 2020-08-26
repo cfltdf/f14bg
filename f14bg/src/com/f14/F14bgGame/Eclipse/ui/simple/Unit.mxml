@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="75" height="75" click="this.onClick()">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			import com.f14.F14bgGame.Eclipse.consts.UnitType;
+			
+			protected var object:Object;
+			protected var _selectable:Boolean;
+
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function set selectable(s:Boolean):void{
+				this._selectable = s;
+			}
+			
+			public function loadObject(object:Object):void{
+				this.object = object;
+				this.styleName = this.loadStyle();
+			}
+			
+			protected function loadStyle():String{
+				switch(this.object.unitType){
+					case UnitType.INTERCEPTOR:
+						return "unitInterceptor";
+					case UnitType.CRUISER:
+						return "unitCruiser";
+					case UnitType.DREADNOUGHT:
+						return "unitDreadnought";
+					case UnitType.STARBASE:
+						return "unitStarbase";
+				}
+				return "";
+			}
+			
+			protected function onClick():void{
+				if(this.selectable){
+					var param:Object = {"unitId":this.object.id};
+					//if(EclipseUtil.stateManager.currentConfirmWindow!=null){
+					//	EclipseUtil.stateManager.currentConfirmWindow.doConfirm(param);
+					//}
+					EclipseUtil.actionManager.sendCurrentCommand("SELECT_UNIT", param);
+				}
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

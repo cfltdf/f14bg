@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SimpleCard xmlns="com.f14.F14bgGame.bg.ui.simple.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="80" height="60" backgroundColor="#d6f2f6">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.TS.consts.TSPhase;
+			import mx.formatters.SwitchSymbolFormatter;
+			import com.f14.F14bgGame.TS.consts.TSColor;
+			import com.f14.F14bgGame.TS.consts.SuperPower;
+			[Bindable]
+			protected var _op:String;
+			[Bindable]
+			protected var _no:String;
+			
+			/**
+			 * 设置显示样式
+			 */
+			override protected function refreshStyle():void{
+				if(this.object!=null && this.object.object!=null){
+					var card:Object = this.object.object;
+					if(card.op>0){
+						this._op = card.op + "op";
+					}
+					this._no = "#"+card.tsCardNo;
+					if(card.removeAfterEvent){
+						this._name = "*" + this._name;
+					}
+					this.setPowerStyle(card.superPower);
+					this.setPhaseStyle(card.phase);
+				}else{
+					
+				}
+			}
+			
+			/**
+			 * 设置卡牌所属大国的信息
+			 */
+			protected function setPowerStyle(power:String){
+				switch(power){
+					case SuperPower.USA:
+						this.main.graphics.beginFill(TSColor.USA_i, 0.4);
+						this.main.graphics.drawRect(0, 0, 80, 17);
+						this.main.graphics.endFill();
+						break;
+					case SuperPower.USSR:
+						this.main.graphics.beginFill(TSColor.USSR_i, 0.4);
+						this.main.graphics.drawRect(0, 0, 80, 17);
+						this.main.graphics.endFill();
+						break;
+					default:
+						this.main.graphics.beginFill(TSColor.USA_i, 0.4);
+						this.main.graphics.drawRect(0, 0, 40, 17);
+						this.main.graphics.endFill();
+						this.main.graphics.beginFill(TSColor.USSR_i, 0.4);
+						this.main.graphics.drawRect(40, 0, 40, 17);
+						this.main.graphics.endFill();
+						break;
+				}
+			}
+			
+			/**
+			 * 设置卡牌阶段的样式
+			 */
+			protected function setPhaseStyle(phase:String):void{
+				switch(phase){
+					case TSPhase.EARLY:
+						this.main.graphics.beginFill(TSColor.EARLY_i);
+						this.main.graphics.drawRect(0, 55, 26, 5);
+						this.main.graphics.endFill();
+						break;
+					case TSPhase.MID:
+						this.main.graphics.beginFill(TSColor.MID_i);
+						this.main.graphics.drawRect(26, 55, 28, 5);
+						this.main.graphics.endFill();
+						break;
+					case TSPhase.LATE:
+						this.main.graphics.beginFill(TSColor.LATE_i);
+						this.main.graphics.drawRect(54, 55, 26, 5);
+						this.main.graphics.endFill();
+						break;
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox id="main" width="100%" height="100%" verticalGap="1" borderStyle="none">
+		<mx:HBox width="100%" height="17" horizontalGap="0">
+			<mx:Label text="{this._op}" width="50%" height="100%" textAlign="center" fontWeight="bold"/>
+			<mx:Label text="{this._no}" width="50%" height="100%" textAlign="center" fontWeight="bold"/>
+		</mx:HBox>
+		<mx:HBox width="100%" height="100%">
+			<mx:Text text="{this._name}" height="100%" width="100%" textAlign="center" fontWeight="bold" selectable="false"/>
+		</mx:HBox>
+	</mx:VBox>
+</SimpleCard>

@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlayerInfoBoard xmlns="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.F14bgGame.TTA.ui.part.*" height="145" styleName="gameBoard">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import mx.collections.ArrayCollection;
+			import com.f14.F14bgGame.TTA.ui.part.TTALabel;
+			import com.f14.F14bgGame.TTA.consts.CardType;
+			import com.f14.F14bgGame.TTA.components.TTACard;
+			import com.f14.F14bgGame.TTA.ui.part.TTALabelColumn;
+			import com.f14.F14bgGame.bg.consts.PlayerColor;
+			import com.f14.F14bgGame.TTA.player.TTAPlayer;
+			import com.f14.f14bg.event.BgEvent;
+			import com.f14.F14bgGame.bg.player.Player;
+			
+			[Bindable]
+			public var unusedWorker:int;
+			[Bindable]
+			public var availableWorker:int;
+			[Bindable]
+			public var availableBlue:int;
+			
+			[Bindable]
+			protected var _ttaPlayer:TTAPlayer;
+			
+			protected var cards:Array = new Array();
+			protected var _uncompleteWonder:TTALabel;
+			protected var _selectable:Boolean = false;
+			
+			override public function set player(player:Player):void{
+				super.player = player;
+				this._ttaPlayer = player as TTAPlayer;
+				if(player!=null){
+					this.setStyle("backgroundColor", PlayerColor.COLORS[player.position]);
+				}else{
+					this.setStyle("backgroundColor", null);
+				}
+			}
+			
+			override public function init():void{
+				//super.init();
+				//this.playerInfo.init();
+			}
+			
+			override public function clear():void{
+				this.cards = new Array();
+				this.player = null;
+			}
+			
+			/**
+			 * 玩家状态变化时触发的方法
+			 */
+			override public function onStateChange(evt:BgEvent):void{
+				//玩家状态改变时该控件不做变化
+			}
+			
+			/**
+			 * 按照id取得玩家面板中的卡牌
+			 */
+			public function getLabel(id:String):TTALabel{
+				return cards[id];
+			}
+		
+			/**
+			 * 玩家板块添加卡牌
+			 */
+			public function addCard(card:TTACard):void{
+				if(card!=null){
+					var label:TTALabel = new TTALabel();
+					switch(card.object.cardType){
+						case CardType.PRODUCTION: //生产
+						case CardType.BUILDING: //建筑
+						case CardType.UNIT: //部队
+							var cc:TTALabelColumn = this.getCardColumn(card);
+							cc.addLabel(label, card);
+							break;
+						case CardType.GOVERMENT: //政府
+							this.canvas_goverment.removeAllChildren();
+							this.canvas_goverment.addChild(label);
+							break;
+						case CardType.LEADER: //领袖
+							this.canvas_leader.removeAllChildren();
+							this.canvas_leader.addChild(label);
+							break;
+						case CardType.TACTICS: //战术牌
+							this.canvas_tactics.removeAllChildren();
+							this.canvas_tactics.addChild(label);
+							break;
+						case CardType.SPECIAL: //特殊科技
+							//先移除同类型的特殊科技
+							this.removeSpecialBySubType(card.object.cardSubType);
+						case CardType.WONDER: //奇迹
+						case CardType.EVENT: //领土
+							this.canvas_common.addChild(label);
+							label.card = card;
+							this.layoutCommonCanvas();
+							break;
+						case CardType.WAR: //战争
+							//只有当该战争牌的所有者等于玩家时,才会添加
+							if(card.ab!=null && card.ab.owner==this.player.position){
+								this.canvas_war.removeAllChildren();
+								this.canvas_war.addChild(label);
+							}else{
+								return;
+							}
+							break;
+						case CardType.PACT: //条约
+							//只有当该条约牌的所有者等于玩家时,才会添加
+							if(card.ab!=null && card.ab.owner==this.player.position){
+								this.canvas_pact.removeAllChildren();
+								this.canvas_pact.addChild(label);
+							}else{
+								return;
+							}
+							break;
+					}
+					if(label.card==null){
+						label.card = card;
+					}
+					this.cards[card.id] = label;
+					TTAUtil.effectManager.addHighlight(label);
+					label.addEventListener(MouseEvent.CLICK, onLabelClick);
+				}
+			}
+			
+			/**
+			 * 玩家板块添加卡牌
+			 */
+			public function addCards(cards:Array):void{
+				for each(var card:TTACard in cards){
+					this.addCard(card);
+				}
+			}
+			
+			/**
+			 * 玩家板块移除卡牌
+			 */
+			public function removeCard(id:String):void{
+				var label:TTALabel = this.cards[id];
+				if(label!=null){
+					if(canvas_common.contains(label)){
+						//移除卡牌在通用卡牌区中则在移除后重新排列
+						label.parent.removeChild(label);
+						this.layoutCommonCanvas();
+					}else{
+						label.parent.removeChild(label);
+					}
+					label.removeEventListener(MouseEvent.CLICK, onLabelClick);
+					this.cards[id] = null;
+				}
+			}
+			
+			/**
+			 * 玩家板块移除卡牌
+			 */
+			public function removeCards(cardIds:String):void{
+				var idarray:Array = cardIds.split(",");
+				for each(var id:String in idarray){
+					this.removeCard(id);
+				}
+			}
+			
+			/**
+			 * 取得卡牌对应的卡牌列
+			 */
+			protected function getCardColumn(card:TTACard):TTALabelColumn{
+				var hbox:HBox = this.getHbox(card.object.cardType);
+				for each(var cc:TTALabelColumn in hbox.getChildren()){
+					if(cc.cardSubType==card.object.cardSubType){
+						return cc;
+					}
+				}
+				//如果不存在,则创建一个卡牌列
+				var cardColumn:TTALabelColumn = new TTALabelColumn();
+				hbox.addChild(cardColumn);
+				return cardColumn;
+			}
+			
+			/**
+			 * 按照卡牌类型取得对应的hbox容器
+			 */
+			protected function getHbox(cardType:String):HBox{
+				switch(cardType){
+					case CardType.PRODUCTION:
+						return this.hbox_production;
+					case CardType.BUILDING:
+						return this.hbox_building;
+					case CardType.UNIT:
+						return this.hbox_unit;
+				}
+				return null;
+			}
+			
+			/**
+			 * 设置玩家在建的奇迹
+			 */
+			public function set uncompleteWonder(card:TTACard):void{
+				if(this._uncompleteWonder!=null){
+					this.removeCard(this._uncompleteWonder.card.id);
+				}
+				if(card!=null){
+					this._uncompleteWonder = new TTALabel();
+					this.canvas_uncompleteWonder.addChild(this._uncompleteWonder);
+					this.cards[card.id] = this._uncompleteWonder;
+					this._uncompleteWonder.card = card;
+				}else{
+					this._uncompleteWonder = null;
+				}
+			}
+			
+			/**
+			 * 完成奇迹的建造
+			 */
+			public function completeWonder(card:TTACard):void{
+				var label:TTALabel = this._uncompleteWonder;
+				this.uncompleteWonder = null;
+				this.addCard(card);
+			}
+			
+			/**
+			 * 排列通用卡牌区的牌
+			 */
+			protected function layoutCommonCanvas():void{
+				//通用卡牌区包括 奇迹/特殊科技/殖民地
+				//在排列时将按照3种类型的顺序排列,先竖向排列,每列两行
+				var cards:Array = new Array();
+				var arr:Array, label:TTALabel;
+				for each(label in this.canvas_common.getChildren()){
+					arr = cards[label.card.object.cardType];
+					if(arr==null){
+						arr = new Array();
+						cards[label.card.object.cardType] = arr;
+					}
+					arr.push(label);
+				}
+				
+				var i:int = 0, row:int = 2, padding:int = 4;
+				var width:int = 105, height:int = 20;
+				var types:Array = [CardType.WONDER, CardType.SPECIAL, CardType.EVENT];
+				for each(var type:String in types){
+					arr = cards[type];
+					if(arr!=null){
+						for each(label in cards[type]){
+							label.x = int(i/row) * (width + padding);
+							label.y = int(i%row) * (height + padding);
+							i++;
+						}
+					}
+				}
+			}
+			
+			/**
+			 * 移除指定cardSubType的特殊科技
+			 */
+			protected function removeSpecialBySubType(cardSubType:String):void{
+				for each(var label:TTALabel in this.canvas_common.getChildren()){
+					if(label.card.object.cardSubType==cardSubType){
+						//移除卡牌
+						this.removeCard(label.card.id);
+					}
+				}
+			}
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				//设置所有label的可选状态
+				for each(var label:TTALabel in this.cards){
+					if(label!=null){
+						label.selectable = selectable;
+					}
+				}
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			/**
+			 * 点击label时触发的事件
+			 */
+			protected function onLabelClick(evt:MouseEvent):void{
+				var label:TTALabel = evt.currentTarget as TTALabel;
+				if(label.selectable){
+					var param:Object;
+					if(TTAUtil.stateManager.currentConfirmWindow!=null){
+						//如果存在询问窗口,则由该窗口返回指令参数
+						param = {};
+						param.targetPosition = this.player.position;
+						param.cardId = label.card.id;
+						TTAUtil.stateManager.currentConfirmWindow.doConfirm(param);
+					}else{
+						//由请求窗口创建参数
+						//param = TTAUtil.mainBoard.requestWindow.createParam();
+						//param.cardId = label.card.id;
+						//TTAUtil.actionManager.sendCurrentCommand(this.inputState, param);
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox verticalAlign="middle">
+		<mx:VBox verticalGap="4">
+			<mx:Canvas id="canvas_goverment" width="105" height="20" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+			<mx:Canvas id="canvas_leader" width="105" height="20" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+			<mx:Canvas id="canvas_uncompleteWonder" width="105" height="20" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+			<mx:Canvas id="canvas_tactics" width="105" height="20" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+			<mx:Canvas id="canvas_pact" width="105" height="20" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+			<mx:Canvas id="canvas_war" width="105" height="20" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+		</mx:VBox>
+		<mx:VBox verticalGap="4">
+			<mx:Canvas width="50" height="40" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				<mx:VBox horizontalCenter="0" verticalCenter="0" verticalGap="2" horizontalAlign="center">
+					<mx:Label text="空闲工人"/>
+					<mx:Label text="{unusedWorker}"/>
+				</mx:VBox>
+			</mx:Canvas>
+			<mx:Canvas width="50" height="40" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				<mx:VBox horizontalCenter="0" verticalCenter="0" verticalGap="2" horizontalAlign="center">
+					<mx:Label text="工人储备"/>
+					<mx:Label text="{availableWorker}"/>
+				</mx:VBox>
+			</mx:Canvas>
+			<mx:Canvas width="50" height="40" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				<mx:VBox horizontalCenter="0" verticalCenter="0" verticalGap="2" horizontalAlign="center">
+					<mx:Label text="资源储备"/>
+					<mx:Label text="{availableBlue}"/>
+				</mx:VBox>
+			</mx:Canvas>
+		</mx:VBox>
+		<mx:VBox verticalGap="4">
+			<mx:HBox horizontalGap="4">
+				<mx:HBox horizontalGap="4" id="hbox_production">
+				</mx:HBox>
+				<mx:HBox horizontalGap="4" id="hbox_building">
+				</mx:HBox>
+				<mx:HBox horizontalGap="4" id="hbox_unit">
+				</mx:HBox>
+			</mx:HBox>
+			<mx:Canvas id="canvas_common" height="44">
+			</mx:Canvas>
+		</mx:VBox>
+	</mx:HBox>
+</PlayerInfoBoard>

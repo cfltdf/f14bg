@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="120" height="98">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Innovation.player.InnoPlayer;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoCardList;
+			import com.f14.f14bg.components.ComponentOption;
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import com.f14.F14bgGame.Innovation.components.InnoCard;
+			import com.f14.F14bgGame.Innovation.manager.InnoResourceManager;
+			import com.f14.F14bgGame.Innovation.consts.InnoIcon;
+			import mx.controls.Label;
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoCardLabel;
+			
+			/**
+			 * 所属的选择控制组
+			 */
+			public var option:ComponentOption;
+			
+			protected var _player:InnoPlayer;
+			protected var _card:InnoCardLabel;
+			protected var _labels:Array = new Array();
+			protected var _selectable:Boolean = false;
+			protected var _cardIdsString:String;
+			[Bindable]
+			protected var _stackCardNum:String;
+			protected var _cardNum:int;
+			protected var _splayDirection:String;
+			
+			public function set player(player:InnoPlayer):void{
+				this._player = player;
+			}
+			
+			public function get player():InnoPlayer{
+				return this._player;
+			}
+			
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				if(this._card!=null){
+					this._card.selectable = selectable;
+				}
+			}
+			
+			public function get selectable():Boolean{
+				return this._selectable;
+			}
+			
+			public function setStackCardNum(num:int):void{
+				if(num==0){
+					this._stackCardNum = "";
+					this.button_stack.enabled = false;
+				}else{
+					this._stackCardNum = "x "+num;
+					this.button_stack.enabled = true;
+				}
+				this._cardNum = num;
+			}
+			
+			public function setSplayDirection(splayDirection:String):void{
+				this._splayDirection = splayDirection;
+				this.showAllArrows(false);
+				switch(splayDirection){
+					case "LEFT":
+						this.arrow_left.visible = true;
+						break;
+					case "RIGHT":
+						this.arrow_right.visible = true;
+						break;
+					case "UP":
+						this.arrow_up.visible = true;
+						break;
+				}
+			}
+			
+			private function showAllArrows(visible:Boolean):void{
+				this.arrow_left.visible = visible;
+				this.arrow_right.visible = visible;
+				this.arrow_up.visible = visible;
+			}
+			
+			public function clear():void{
+				this.canvas_card.removeAllChildren();
+				for each(var label:Label in _labels){
+					label.text = "";
+				}
+				this.setStackCardNum(0);
+				this.setSplayDirection(null);
+			}
+			
+			public function init():void{
+				this._labels = new Array();
+				var i:int = 1;
+				for each(var icon:String in InnoIcon.ICONS){
+					var label:Label = new Label();
+					label.width = 20;
+					label.height = 18;
+					label.x = 0 + 20*int((i-1)%6);
+					label.y = 2 + 20*int((i-1)/6);
+					label.styleName = "smallNumberTextCenter";
+					this._labels[icon] = label;
+					this.canvas_num.addChild(label);
+					i++;
+				}
+			}
+			
+			/**
+			 * 设置显示的卡牌
+			 */
+			protected function setCard(cardId:String):void{
+				this.removeCard();
+				var card:InnoCard = InnoUtil.resourceManager.createInnoCard(cardId);
+				if(card!=null){
+					var sc:InnoCardLabel = new InnoCardLabel();
+					this.canvas_card.addChild(sc);
+					sc.init();
+					sc.object = card;
+					sc.selectable = this.selectable;
+					this._card = sc;
+					sc.addEventListener(MouseEvent.CLICK, onClick);
+					//将卡牌添加到选择控制组中
+					this.option.addComponent(sc);
+				}
+			}
+			
+			/**
+			 * 移除卡牌
+			 */
+			protected function removeCard():void{
+				if(this._card!=null){
+					this._card.removeEventListener(MouseEvent.CLICK, onClick);
+					this.option.removeComponent(this._card);
+					this.canvas_card.removeAllChildren();
+					this._card = null;
+				}
+			}
+			
+			protected function getIconLabel(icon:String):Label{
+				return this._labels[icon] as Label;
+			}
+			
+			protected function setIconValue(icon:String, value:int):void{
+				var label:Label = this.getIconLabel(icon);
+				if(label!=null){
+					if(value==0){
+						label.text = "";
+					}else{
+						label.text = value+"";
+					}
+				}
+			}
+			
+			public function loadParam(param:Object):void{
+				this.clear();
+				if(param!=null){
+					var cardId:String = param.topCardId;
+					this.setCard(cardId);
+					
+					this._cardIdsString = param.cardIds;
+					
+					for(var icon:String in param.icons){
+						this.setIconValue(icon, param.icons[icon]);
+					}
+					
+					this.setStackCardNum(param.stackCardNum);
+					this.setSplayDirection(param.splayDirection);
+				}
+			}
+			
+			/**
+			 * 点击卡牌时触发的方法
+			 */
+			protected function onClick(evt:MouseEvent):void{
+				var card:InnoCardLabel = evt.currentTarget as InnoCardLabel;
+				if(card.selectable){
+					if(InnoUtil.stateManager.currentConfirmWindow!=null){
+						var param:Object = {};
+						param.colors = card.object.object.color;
+						param.choosePosition = this.player.position;
+						InnoUtil.stateManager.currentConfirmWindow.doConfirm(param);
+					}else{
+						InnoUtil.actionManager.dogmaCard(card.object.object.color);
+					}
+				}
+			}
+			
+			/**
+			 * 显示卡牌列表
+			 */
+			private function showCardList(event:MouseEvent):void{
+				//只有在数量牌堆数量大于1时才会显示
+				if(this._cardNum>1 && InnoUtil.gameManager.isLocalPlayer(this.player)){
+					var p:Point = new Point(0, 0);
+					var gp:Point = this.localToGlobal(p);
+					InnoUtil.tooltipManager.showCardList(gp, _cardIdsString);
+				}
+			}
+			
+			
+		]]>
+	</mx:Script>
+	<mx:VBox verticalGap="1">
+		<mx:Canvas id="canvas_card" width="120" height="55" />
+		<mx:Canvas id="canvas_cards" width="120" height="20" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+			<mx:Button id="button_stack" label="{this._stackCardNum}" styleName="smallNumberText" textAlign="right" width="100%" height="20" click="this.showCardList(event)" />
+			<mx:Canvas id="arrow_left" width="65" height="16" x="7" y="2" styleName="arrowLeft" visible="false" />
+			<mx:Canvas id="arrow_right" width="65" height="16" x="7" y="2" styleName="arrowRight" visible="false" />
+			<mx:Canvas id="arrow_up" width="65" height="16" x="7" y="2" styleName="arrowUp" visible="false" />
+		</mx:Canvas>
+		<mx:Canvas id="canvas_num" width="120" height="20" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+			<mx:Canvas width="120" height="20" alpha="0.3" styleName="allIcons" />
+		</mx:Canvas>
+	</mx:VBox>
+</mx:Canvas>

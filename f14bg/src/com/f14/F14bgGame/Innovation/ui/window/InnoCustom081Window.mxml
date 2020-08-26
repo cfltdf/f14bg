@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<InnoConfirmWindow xmlns="com.f14.F14bgGame.Innovation.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="600" height="340">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoPlayerPart;
+			import mx.containers.VBox;
+			import com.f14.F14bgGame.Innovation.components.InnoCard;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.bg.ui.simple.SimpleCard;
+			import com.f14.F14bgGame.Innovation.ui.part.InnoScorePart;
+			import com.f14.F14bgGame.Innovation.player.InnoPlayer;
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import com.f14.F14bgGame.Innovation.ui.part.InnoChoosePlayerPart;
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoCardLabel;
+			import com.f14.F14bgGame.Innovation.ui.part.InnoPlayerHand;
+			import mx.controls.HRule;
+			
+			private var vbox:VBox;
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				//创建分割线...
+				var rule:HRule = new HRule;
+				rule.width = this.width*0.8;
+				rule.x = (this.width-rule.width)/2;
+				rule.y = 80;
+				this.addChild(rule);
+				
+				vbox = new VBox();
+				vbox.width = this.width*0.9;
+				vbox.x = (this.width-vbox.width)/2;
+				vbox.y = 90;
+				this.addChild(vbox);
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				var i:int = 0;
+				for(var position:String in param.playerScoreCards){
+					this.addPlayerScores(int(position), param.playerScoreCards[position]);
+					i++;
+				}
+				this.height = 200 + 140*i;
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				for each(var o:Object in this.vbox.getChildren()){
+					if(o instanceof InnoScorePart){
+						var part:InnoScorePart = o as InnoScorePart;
+						part.clear();
+					}
+				}
+				this.vbox.removeAllChildren();
+			}
+			
+			/**
+			 * 添加玩家的分数组件
+			 */
+			private function addPlayerScores(position:int, cardIds:String):void{
+				var player:InnoPlayer = InnoUtil.getPlayer(position);
+				if(player!=null){
+					var name:InnoPlayerPart = new InnoPlayerPart();
+					this.vbox.addChild(name);
+					name.init();
+					name.selectable = false;
+					name.player = player;
+					
+					var cardsPart:InnoScorePart = new InnoScorePart();
+					this.vbox.addChild(cardsPart);
+					cardsPart.width = this.vbox.width;
+					cardsPart.init();
+					cardsPart.player = player;
+					cardsPart.selectable = true;
+					cardsPart.setEventTrigOnSelected(true);
+					cardsPart.addCards(cardIds);
+				}
+			}
+			
+			public function removeCards(cardIds:String):void{
+				for each(var o:Object in this.vbox.getChildren()){
+					if(o instanceof InnoScorePart){
+						var part:InnoScorePart = o as InnoScorePart;
+						part.removeCards(cardIds);
+					}
+				}
+			}
+			
+			/**
+			 * 创建确认时的参数
+			 */
+			/* override protected function createConfirmParam():Object{
+				//取得cardsPart中的所有选中的牌,作为参数传入
+				var card:SimpleCard = this.cardsPart.getSelectedCard();
+				var param:Object = {};
+				if(card){
+					param.cardIds = card.object.object.id;
+				}
+				return param;
+			} */ 
+			
+		]]>
+	</mx:Script>
+</InnoConfirmWindow>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<InnoConfirmWindow xmlns="com.f14.F14bgGame.Innovation.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="600" height="250">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Innovation.player.InnoPlayer;
+			import com.f14.F14bgGame.Innovation.InnoUtil;
+			import com.f14.F14bgGame.Innovation.ui.part.InnoChoosePlayerPart;
+			import com.f14.F14bgGame.bg.utils.BgUtils;
+			import com.f14.F14bgGame.Innovation.ui.simple.InnoCardLabel;
+			import com.f14.F14bgGame.Innovation.ui.part.InnoPlayerHand;
+			import mx.controls.HRule;
+			
+			private var playersPart:InnoChoosePlayerPart;
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				//创建分割线...
+				var rule:HRule = new HRule;
+				rule.width = this.width*0.8;
+				rule.x = (this.width-rule.width)/2;
+				rule.y = 80;
+				this.addChild(rule);
+				
+				playersPart = new InnoChoosePlayerPart();
+				playersPart.width = this.width*0.8;
+				playersPart.x = (this.width-playersPart.width)/2;
+				playersPart.y = 90;
+				this.addChild(playersPart);
+				playersPart.init();
+				//设置为单选
+				playersPart.selectable = true;
+				playersPart.setEventTrigOnSelected(true);
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				this.playersPart.loadPlayers();
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				if(this.playersPart!=null){
+					this.playersPart.clear();
+				}
+			}
+			
+			/**
+			 * 创建确认时的参数
+			 */
+			/* override protected function createConfirmParam():Object{
+				//取得cardsPart中的所有牌,作为参数传入
+				var cards:Array = this.cardsPart.getAllCards();
+				var param:Object = {};
+				param.cardIds = BgUtils.label2StringEach(cards);
+				return param;
+			} */
+			
+		]]>
+	</mx:Script>
+</InnoConfirmWindow>

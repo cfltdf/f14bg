@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ApplicationControlBar xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.F14bgClient.room.ui.part.*" rollOver="showControlBar(event)" rollOut="hideControlBar(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgClient.room.RoomUtil;
+			
+			/**
+			 * 显示控制条
+			 */
+			protected function showControlBar(evt:MouseEvent):void{
+				this.alpha = 1;
+			}
+			
+			/**
+			 * 隐藏控制条
+			 */
+			protected function hideControlBar(evt:MouseEvent):void{
+				this.alpha = 0.2;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Button label="功能设置" click="RoomUtil.stateManager.trigConfigWindow()" />
+	<mx:VRule height="25" />
+	<ns1:TimeBoard id="timeBoard" />
+	<mx:VRule height="25" />
+</mx:ApplicationControlBar>

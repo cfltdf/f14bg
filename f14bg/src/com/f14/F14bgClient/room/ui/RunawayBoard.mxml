@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="200" height="120" showCloseButton="true" title="确认退出">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.f14bg.manager.ActionManager;
+			
+			/**
+			 * 确定强制退出
+			 */
+			public function confirm():void{
+				//ActionManager.leaveRoom(true);
+				//this.cancel();
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Label x="24" y="10" text="真的要强制退出游戏吗?"/>
+	<mx:Button x="23.5" y="44" label="确 定" click="confirm()"/>
+	<mx:Button x="100.5" y="44" label="取 消" click="cancel()"/>
+</FloatWindow>

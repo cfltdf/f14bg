@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SetupBoard xmlns="com.f14.F14bgClient.room.ui.part.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			protected var _descr:String;
+		
+			override public function set inputable(inputable:Boolean):void{
+				this._inputable = inputable;
+				this.radio_mode_full.enabled = inputable;
+				this.radio_mode_peace.enabled = inputable;
+				this.radio_mode_simple.enabled = inputable;
+				this.teamMatch.enabled = inputable;
+				this.radio_mode_random.enabled = inputable;
+				this.radio_mode_fixed.enabled = inputable;
+				this.revoltDraw.enabled = inputable;
+				this.randomSeat.enabled = inputable;
+				this.checkRadioEnabled();
+			}
+			
+			/**
+			 * 装载参数
+			 */
+			override public function loadParam(param:Object):void{
+				var config:Object = param.config;
+				this.radiogroup1.selectedValue = config.mode;
+				this.radiogroup2.selectedValue = config.teamMode;
+				this.teamMatch.selected = config.teamMatch;
+				this.revoltDraw.selected = config.revoltDraw;
+				this.randomSeat.selected = config.randomSeat;
+				this.showDescr();
+				this.checkRadioEnabled();
+			}
+			
+			/**
+			 * 按照设置创建参数
+			 */
+			override public function createParam():Object{
+				var param:Object = super.createParam();
+				param.mode = this.radiogroup1.selectedValue;
+				param.teamMatch = this.teamMatch.selected;
+				param.teamMode = this.radiogroup2.selectedValue;
+				param.revoltDraw = this.revoltDraw.selected;
+				param.randomSeat = this.randomSeat.selected;
+				return param;
+			}
+			
+			/**
+			 * 显示游戏模式提示信息
+			 */
+			protected function showDescr():void{
+				var gameMode:String = this.radiogroup1.selectedValue as String;
+				switch(gameMode){
+					case "FULL":
+						this._descr = "在完整模式中,游戏将使用所有的牌和完整版的规则.";
+						break;
+					case "PEACE":
+						this._descr = "在和平模式中,游戏将移除所有的侵略和战争牌,其他内容同完整模式.";
+						break;
+					case "SIMPLE":
+						this._descr = "在简单模式中,游戏将不使用任何军事牌,其他内容同完整模式.";
+						break;
+					default:
+						this._descr = "";
+						break;
+				}
+			}
+			
+			/**
+			 * 游戏模式变换时触发的方法
+			 */
+			override protected function onGameModeChange():void{
+				this.showDescr();
+				super.onGameModeChange();
+			}
+			
+			/**
+			 * 检查单选框的状态
+			 */
+			protected function checkRadioEnabled():void{
+				if(this.inputable){
+					if(this.teamMatch.selected && !this.randomSeat.selectedField){
+						this.radio_mode_random.enabled = true;
+						this.radio_mode_fixed.enabled = true;
+					}else{
+						this.radio_mode_random.enabled = false;
+						this.radio_mode_fixed.enabled = false;
+					}
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox left="10" right="10" top="10" bottom="10">
+		<mx:VBox>
+			<mx:HBox>
+				<mx:VRule height="100%"/>
+				<mx:VBox>
+					<mx:Label text="选择游戏模式"/>
+					<mx:RadioButtonGroup id="radiogroup1" change="this.onGameModeChange()"/>
+					<mx:RadioButton id="radio_mode_full" label="完整模式" groupName="radiogroup1" value="FULL"/>
+					<mx:RadioButton id="radio_mode_peace" label="和平模式" groupName="radiogroup1" value="PEACE"/>
+					<mx:RadioButton id="radio_mode_simple" label="简单模式" groupName="radiogroup1" value="SIMPLE"/>
+				</mx:VBox>
+				<mx:VRule height="100%"/>
+				<mx:VBox width="100%">
+					<mx:Label text="游戏模式说明"/>
+					<mx:Text text="{_descr}" width="100" height="100" />
+				</mx:VBox>
+				<mx:VRule height="100%"/>
+			</mx:HBox>
+			<mx:HRule width="100%"/>
+			<mx:VBox horizontalCenter="0">
+				<mx:HBox>
+					<mx:CheckBox id="teamMatch" label="2V2组队模式" change="this.onGameModeChange()"/>
+					<mx:CheckBox id="revoltDraw" label="暴动摸牌" change="this.onGameModeChange()"/>
+					<mx:CheckBox id="randomSeat" label="随机座位" change="this.onGameModeChange()"/>
+				</mx:HBox>
+				<mx:RadioButtonGroup id="radiogroup2" change="this.onGameModeChange()"/>
+				<mx:HBox>
+					<mx:RadioButton id="radio_mode_random" label="随机分配队伍" groupName="radiogroup2" value="RANDOM"/>
+					<mx:RadioButton id="radio_mode_fixed" label="13 VS 24" groupName="radiogroup2" value="FIXED"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:VBox>
+		
+	</mx:HBox>
+</SetupBoard>

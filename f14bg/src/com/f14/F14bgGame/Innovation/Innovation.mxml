@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module:F14GameModule xmlns:module="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%" creationComplete="init()" xmlns:ui="com.f14.F14bgGame.Innovation.ui.*" resize="onResize(event)" >
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Innovation.ui.part.InnoSetupBoard;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.Innovation.player.InnoPlayerHandler;
+			import com.f14.F14bgGame.Innovation.player.InnoPlayer;
+			import com.f14.core.util.Version;
+			import com.f14.F14bgGame.bg.handler.InGameHandler;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgClient.room.ui.part.SetupBoard;
+			import com.f14.F14bgClient.room.RoomUtil;
+			
+			/**
+			 * 创建version对象
+			 */
+			override protected function createVersion():Version{
+				var v:Version = super.createVersion();
+				v.descr = "汉化版素材由铁丝猫及其朋友Danny提供,感谢他们~\n"
+					+ "感谢猴子猪的测试报告!\n"
+					+ "感谢所有朋友的测试和支持.";
+				return v;
+			}
+
+			override public function init():void{
+				this.loadVersionInfo();
+				super.init();
+				this.mainBoard = this.innoMainBoard;
+				
+				RoomUtil.gameModule = this;
+				InnoUtil.initGameModule(this);
+				
+				//初始化图片资源管理器
+				this.createLoadingMask();
+				InnoUtil.loadResources();
+				//检查图片管理器是否执行完成
+				InnoUtil.imageManager.checkImageLoadComplete();
+			}
+			
+			/**
+			 * 图片资源装载完成时的回调函数
+			 */
+			override public function onImageLoadComplete():void{
+				super.onImageLoadComplete();
+				InnoUtil.init();
+				InnoUtil.animManager.animCanvas = this.innoAnimBoard;
+				this.mainBoard.init();
+				
+				//装载房间信息
+				RoomUtil.actionManager.loadRoomInfo();
+			}
+			
+			override protected function createGameCommandHandler():InGameHandler{
+				return new InnoPlayerHandler();
+			}
+			
+			override protected function createSetupBoard():SetupBoard{
+				return new InnoSetupBoard();
+			}
+			
+			override public function createPlayer():Player{
+				return new InnoPlayer();
+			}
+			
+			public function get innoCommandHandler():InnoPlayerHandler{
+				return this._gameCommandHandler as InnoPlayerHandler;
+			}
+			
+			public function onResize(evt:Event):void{
+				//动画效果面版需要和游戏面板相同大小
+				this.innoAnimBoard.width = innoMainBoard.width;
+				this.innoAnimBoard.height = innoMainBoard.height;
+				var xs:Number = this.width/innoMainBoard.origWidth;
+				var ys:Number = this.height/innoMainBoard.origHeight;
+				var scale:Number = Math.min(xs, ys, 1);
+				innoMainBoard.scaleX = scale;
+				innoMainBoard.scaleY = scale;
+				innoAnimBoard.scaleX = scale;
+				innoAnimBoard.scaleY = scale;
+			}
+			
+		]]>
+	</mx:Script>
+	<ui:InnoMainBoard id="innoMainBoard" />
+	<mx:Canvas id="innoAnimBoard" />
+</module:F14GameModule>

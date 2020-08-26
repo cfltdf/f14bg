@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off" height="25">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.RFTG.RaceUtil;
+			import com.f14.F14bgGame.RFTG.consts.RaceConst;
+			import com.f14.F14bgGame.RFTG.ui.simple.GoalCard;
+			
+			public var imageWidth:int = 25;
+			public var imageHeight:int = 25;
+			
+			public function clear():void{
+				this.container_goal.removeAllChildren();
+			}
+			
+			/**
+			 * 添加目标
+			 */
+			public function addGoal(goalId:String):void{
+				var obj:Object = RaceUtil.cardManager.getGoal(goalId);
+				if(obj!=null){
+					var card:GoalCard = new GoalCard(0.2);
+					//card.imageWidth = imageWidth;
+					//card.imageHeight = imageHeight;
+					card.object = obj;
+					this.container_goal.addChild(card);
+				}
+			}
+			
+			/**
+			 * 移除目标
+			 */
+			public function removeGoal(goalId:String):void{
+				var goal:GoalCard = this.getGoal(goalId);
+				if(goal!=null){
+					this.container_goal.removeChild(goal);
+				}
+			}
+			
+			/**
+			 * 取得目标
+			 */
+			public function getGoal(goalId:String):GoalCard{
+				for each(var goal:GoalCard in this.container_goal.getChildren()){
+					if(goal.object.id==goalId){
+						return goal;
+					}
+				}
+				return null;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:HBox id="container_goal" horizontalGap="3">
+	</mx:HBox>
+</mx:Canvas>

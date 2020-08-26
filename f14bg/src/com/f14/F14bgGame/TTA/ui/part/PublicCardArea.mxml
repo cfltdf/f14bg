@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="360" height="130" backgroundColor="#ffffff" styleName="gameBoard">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.consts.PlayerColor;
+			protected var canvasBgs:Array;
+			protected var canvasCards:Array;
+			
+			/**
+			 * 初始化公共卡牌区
+			 */
+			public function init():void{
+				this.canvasBgs = [canvas_bg0, canvas_bg1, canvas_bg2, canvas_bg3];
+				this.canvasCards = [canvas_card0, canvas_card1, canvas_card2, canvas_card3];
+				//初始化卡牌区背景色
+				for(var i:int=0;i<this.canvasBgs.length;i++){
+					this.canvasBgs[i].setStyle("backgroundColor", PlayerColor.COLORS[i]);
+				}
+			}
+			
+			public function clear():void{
+				
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox horizontalCenter="0" verticalCenter="0">
+		<mx:Canvas id="canvas_bg0" width="80" height="120" styleName="gameBoard">
+			<mx:Canvas id="canvas_card0" width="72" height="108" horizontalCenter="0" verticalCenter="0" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+		</mx:Canvas>
+		<mx:Canvas id="canvas_bg1" width="80" height="120" styleName="gameBoard">
+			<mx:Canvas id="canvas_card1" width="72" height="108" horizontalCenter="0" verticalCenter="0" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+		</mx:Canvas>
+		<mx:Canvas id="canvas_bg2" width="80" height="120" styleName="gameBoard">
+			<mx:Canvas id="canvas_card2" width="72" height="108" horizontalCenter="0" verticalCenter="0" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+		</mx:Canvas>
+		<mx:Canvas id="canvas_bg3" width="80" height="120" styleName="gameBoard">
+			<mx:Canvas id="canvas_card3" width="72" height="108" horizontalCenter="0" verticalCenter="0" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+		</mx:Canvas>	
+	</mx:HBox>
+</mx:Canvas>

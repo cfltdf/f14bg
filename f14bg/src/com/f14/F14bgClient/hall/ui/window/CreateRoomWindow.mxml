@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="410" title="创建房间" xmlns:part="com.f14.F14bgClient.hall.ui.part.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgClient.hall.HallUtil;
+			import mx.collections.ArrayCollection;
+			import com.f14.f14bg.manager.ActionManager;
+			import com.f14.core.util.ApplicationUtil;
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			[Bindable]
+			protected var _gameTypes:ArrayCollection = new ArrayCollection();
+			
+			/**
+			 * 初始化
+			 */
+			override public function init():void{
+				super.init();
+			}
+			
+			override public function clear():void{
+				//this.combo_gameType.selectedIndex = 0;
+				this.gameListPart.clear();
+				this.text_name.text = ApplicationUtil.localUser.name + " 的房间";
+				this.text_descr.text = "一起来玩吧!";
+			}
+			
+			public function set gameTypes(gameTypes:ArrayCollection):void{
+				this._gameTypes = gameTypes;
+				for each(var gameType:Object in gameTypes.toArray()){
+					this.gameListPart.addGameType(gameType);
+				}
+			}
+			
+			public function get gameTypes():ArrayCollection{
+				return this._gameTypes;
+			}
+			
+			/**
+			 * 确认创建房间
+			 */
+			public function confirm():void{
+				var obj:Object = this.gameListPart.selectedGameType;
+				if(obj==null || !obj.label){
+					ApplicationUtil.alert("请选择要创建的房间类型!");
+					return;
+				}
+				var name:String = this.text_name.text;
+				if(!name){
+					ApplicationUtil.alert("请输入房间名称!");
+					return;
+				}
+				HallUtil.actionManager.createRoom(obj.value, name, text_password.text, text_descr.text);
+				this.cancel();
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox left="5" right="5" top="5" bottom="5" horizontalAlign="center">
+		<mx:Spacer />
+		<mx:Label text="选择房间类型" />
+		<part:GameListPart id="gameListPart" />
+		<mx:Form width="100%" height="100%">
+			<mx:FormItem label="房间名称" width="100%">
+				<mx:TextInput id="text_name" width="100%"/>
+			</mx:FormItem>
+			<mx:FormItem label="密码" width="100%">
+				<mx:TextInput id="text_password" width="100%" />
+			</mx:FormItem>
+			<mx:FormItem label="房间描述" width="100%">
+				<mx:TextArea id="text_descr" width="100%" height="75"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:HBox horizontalCenter="0">
+			<mx:Button label="确 定" click="confirm()"/>
+			<mx:Button label="取 消" click="cancel()"/>
+		</mx:HBox>
+	</mx:VBox>
+</FloatWindow>

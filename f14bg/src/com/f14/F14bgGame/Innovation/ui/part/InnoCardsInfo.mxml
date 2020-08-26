@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="165" height="42" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Label;
+			protected var _labels:Array = new Array();
+			public var selectable:Boolean = false;
+			
+			public function init():void{
+				_labels = new Array();
+				for(var i:int=1;i<=10;i++){
+					var label:Label = new Label();
+					label.width = 30;
+					label.height = 18;
+					label.x = 2 + 18 + 32*int((i-1)%5);
+					label.y = 2 + 20*int((i-1)/5);
+					label.styleName = "smallNumberText";
+					this._labels[i+""] = label;
+					this.addChild(label);
+				}
+			}
+			
+			public function getLabel(level:String):Label{
+				return this._labels[level] as Label;
+			}
+			
+			public function setLabelValue(level:String, value:String):void{
+				this.getLabel(level).text = value;
+			}
+			
+			public function loadParam(param:Object):void{
+				for(var level:String in param){
+					var value:int = param[level];
+					if(value!=0){
+						this.setLabelValue(level, value+"");
+					}else{
+						this.setLabelValue(level, "");
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Canvas width="160" height="38" horizontalCenter="0" verticalCenter="0" styleName="allLevelBoard"/>
+</mx:Canvas>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MDICanvas xmlns="flexmdi.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.F14bgClient.room.ui.part.*" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgClient.room.ui.window.F14MDIWindow;
+			import com.f14.F14bgClient.room.ui.part.F14MiniTile;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Button;
+			import flexmdi.events.MDIWindowEvent;
+			
+			protected var _miniTiles:ArrayCollection = new ArrayCollection();
+			
+			/**
+			 * 初始化
+			 */
+			public function init():void{
+				//this.contextMenu.customItems = new Array();
+			}
+			
+			/**
+			 * 清除所有内容
+			 */
+			public function clear():void{
+				//for each(var tile:F14MiniTile in this._miniTiles.toArray()){
+				//	this.removeWindow(tile.window);
+				//}
+				//this._miniTiles.removeAll();
+			}
+			
+			/**
+			 * 添加窗体
+			 */
+			public function addWindow(win:F14MDIWindow):void{
+				//win.contextMenu = new ContextMenu();
+				this.windowManager.add(win);
+				//win.addEventListener(MDIWindowEvent.MINIMIZE, onMinimize);
+				//创建一个最小化窗体对象
+				var tile:F14MiniTile = new F14MiniTile();
+				tile.window = win;
+				tile.addEventListener(MouseEvent.CLICK, onTileClick);
+				win.miniTile = tile;
+				this._miniTiles.addItem(tile);
+				//直接将最小化窗体对象添加到控制栏中
+				this.controlBar.addChild(tile);
+			}
+			
+			/**
+			 * 移除窗体
+			 */
+			public function removeWindow(win:F14MDIWindow):void{
+				this.windowManager.remove(win);
+				//win.removeEventListener(MDIWindowEvent.MINIMIZE, onMinimize);
+				//同时移除最小化版块
+				var tile:F14MiniTile = win.miniTile;
+				tile.removeEventListener(MouseEvent.CLICK, onTileClick);
+				this._miniTiles.removeItemAt(this._miniTiles.getItemIndex(tile));
+				this.controlBar.removeChild(tile);
+			}
+			
+			/**
+			 * 最小化窗体
+			 */
+			public function minimizWindow(win:F14MDIWindow):void{
+				win.minimize();
+			}
+			
+			/**
+			 * 最小化窗体时触发的方法
+			 */
+			//protected function onMinimize(evt:MDIWindowEvent):void{
+			//	//隐藏最小化的窗体
+				//evt.window.visible = false;
+				//取得表示该窗体的最小化版块
+				//var tile:F14MiniTile = this.getMiniTile(evt.window);
+				//this.controlBar.addChild(tile);
+			//}
+			
+			/**
+			 * 点击最小化窗体时触发的方法
+			 */
+			protected function onTileClick(evt:MouseEvent):void{
+				var tile:F14MiniTile = evt.target as F14MiniTile;
+				if(tile.window.visible){
+					//可见则隐藏窗口
+					this.minimizWindow(tile.window);
+				}else{
+					//不可见则显示窗口
+					this.showWindow(tile.window);
+				}
+				//tile.window.unMinimize();
+				//tile.window.visible = true;
+				//this.controlBar.removeChild(tile);
+			}
+			
+			/**
+			 * 取得窗体对应的最小化版块
+			 */
+			protected function getMiniTile(win:F14MDIWindow):F14MiniTile{
+				for each(var tile:F14MiniTile in this._miniTiles.toArray()){
+					if(tile!=null && tile.window==win){
+						return tile;
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * 显示窗口
+			 */
+			public function showWindow(window:F14MDIWindow):void{
+				//只有当不可见时才会触发该方法
+				if(!window.visible){
+					/*if(window.minimized){
+						window.unMinimize();
+					}*/
+					window.show();
+					this.windowManager.bringToFront(window);
+					//移除最小化版块
+					//this.controlBar.removeChild(this.getMiniTile(window));
+				}
+			}
+			
+			/**
+			 * 创建最小化版块
+			 */
+			public function createMiniTile(title:String, func:Function):void{
+				var tile:F14MiniTile = new F14MiniTile();
+				tile.addEventListener(MouseEvent.CLICK, func);
+				tile.label = title;
+				this._miniTiles.addItem(tile);
+				//直接将最小化窗体对象添加到控制栏中
+				this.controlBar.addChild(tile);
+			}
+		]]>
+	</mx:Script>
+	<ns1:F14ControlBar id="controlBar" width="100%" alpha="0.2" />
+</MDICanvas>

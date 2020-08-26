@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" minWidth="300" height="310">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TTA.ui.part.TTAPlayerInfo;
+			import com.f14.F14bgGame.TTA.TTAUtil;
+			import com.f14.F14bgGame.TTA.components.TTACard;
+			
+			override public function clear():void{
+				super.clear();
+				this.canvas_pact.removeAllChildren();
+				this.canvas_a.removeAllChildren();
+				this.canvas_b.removeAllChildren();
+			}
+			
+			/**
+			 * 从参数中装载卡牌信息
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				var card:TTACard = TTAUtil.resourceManager.createTTACard(param.cardId);
+				if(card!=null){
+					this.canvas_pact.addChild(card);
+				}
+			}
+			
+			/**
+			 * 装载条约双方的信息
+			 */
+			public function loadPactSide(param:Object):void{
+				var playerInfo:TTAPlayerInfo = new TTAPlayerInfo();
+				playerInfo.selectable = false;
+				this.canvas_a.addChild(playerInfo);
+				playerInfo.player = TTAUtil.getPlayer(param.A);
+				
+				playerInfo = new TTAPlayerInfo();
+				playerInfo.selectable = false;
+				this.canvas_b.addChild(playerInfo);
+				playerInfo.player = TTAUtil.getPlayer(param.B);
+			}
+			
+			/**
+			 * 选择盟约方
+			 */
+			protected function selectSide(pactSide:String):void{
+				var param:Object = new Object();
+				param.pactSide = pactSide;
+				this.doConfirm(param);
+			}
+			
+			/**
+			 * 禁用所有输入
+			 */
+			public function disableAllInput():void{
+				this.setInputState("DISABLE");
+			}
+			
+			/**
+			 * 设置界面的输入状态
+			 */
+			public function setInputState(state:String):void{
+				switch(state){
+					case "CHOOSE_SIDE": //选择条约方
+						this.button_a.visible = true;
+						this.button_b.visible = true;
+						this.hbox_accept_buttons.visible = false;
+						break;
+					case "CHOOSE_ACCEPT": //选择是否接收
+						this.button_a.visible = false;
+						this.button_b.visible = false;
+						this.hbox_accept_buttons.visible = true;
+						break;
+					default:
+						this.button_a.visible = false;
+						this.button_b.visible = false;
+						this.hbox_accept_buttons.visible = false;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Label y="10" text="{msg}" horizontalCenter="0"/>
+	<mx:Canvas width="350" height="180" horizontalCenter="0" top="40">
+		<mx:Canvas id="canvas_pact" width="72" height="108" horizontalScrollPolicy="off" verticalScrollPolicy="off"  horizontalCenter="0" verticalCenter="0"/>
+		<mx:Canvas id="canvas_a" width="100" height="145" horizontalScrollPolicy="off" verticalScrollPolicy="off" left="20" bottom="5"/>
+		<mx:Canvas id="canvas_b" width="100" height="145" horizontalScrollPolicy="off" verticalScrollPolicy="off" right="20" bottom="5"/>
+		<mx:Label text="A" textAlign="center" fontWeight="bold" fontSize="16" top="3" left="55"/>
+		<mx:Label text="B" fontWeight="bold" textAlign="center" fontSize="16" top="3" right="55"/>
+		<mx:Button id="button_a" label="A" width="70" height="70" verticalCenter="0" left="35" click="this.selectSide('A')"/>
+		<mx:Button id="button_b" label="B" width="70" height="70" verticalCenter="0" right="35" click="this.selectSide('B')"/>
+	</mx:Canvas>
+	<mx:HBox horizontalCenter="0" bottom="10" id="hbox_accept_buttons">
+		<mx:Button label="接受" click="this.doConfirm()"/>
+		<mx:Button label="拒绝" click="this.doCancel()"/>
+	</mx:HBox>
+</ConfirmWindow>

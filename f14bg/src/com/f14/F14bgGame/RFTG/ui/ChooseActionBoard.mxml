@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" borderStyle="solid" borderThickness="2" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.RFTG.manager.RaceGameManager;
+			import com.f14.F14bgGame.RFTG.manager.RaceImageManager;
+			import com.f14.F14bgGame.RFTG.RaceUtil;
+			import mx.containers.VBox;
+			import com.f14.F14bgGame.RFTG.component.RaceCard;
+			import com.f14.F14bgGame.RFTG.ui.simple.ImageCard;
+			import mx.containers.HBox;
+			
+			private var _position:int;
+			private var cards:Array = new Array();
+			private var acards:Array = new Array();
+			
+			public function get position():int{
+				return _position;
+			}
+			
+			public function initActionCard():void{
+				//先移除所有现有的行动
+				clearAllActions();
+				if(RaceUtil.gameManager.localPlayer!=null){
+					_position = RaceUtil.getLocalPlayer().position;
+				}
+				if(RaceGameManager.ACTION_NUM==2){
+					//双人游戏用的选择行动界面
+					acards = [
+						[
+							{id:"EXPLORE_1", imageIndex:1},
+							{id:"EXPLORE_2", imageIndex:2}
+						],
+						[
+							{id:"DEVELOP", imageIndex:3},
+							{id:"DEVELOP_2", imageIndex:4}
+						],
+						[
+							{id:"SETTLE", imageIndex:5},
+							{id:"SETTLE_2", imageIndex:6}
+						],
+						[
+							{id:"CONSUME_1", imageIndex:7},
+							{id:"CONSUME_2", imageIndex:8}
+						],
+						[
+							{id:"PRODUCE", imageIndex:9}
+						]
+					];
+				}else{
+					//其他选择行动界面
+					acards = [
+						[
+							{id:"EXPLORE_1", imageIndex:1},
+							{id:"EXPLORE_2", imageIndex:2}
+						],
+						[
+							{id:"DEVELOP", imageIndex:3},
+							//{id:"DEVELOP_2", imageIndex:4}
+						],
+						[
+							{id:"SETTLE", imageIndex:5},
+							//{id:"SETTLE_2", imageIndex:6}
+						],
+						[
+							{id:"CONSUME_1", imageIndex:7},
+							{id:"CONSUME_2", imageIndex:8}
+						],
+						[
+							{id:"PRODUCE", imageIndex:9}
+						]
+					];
+				}
+				
+				acards.forEach(function(phaseCards:Array, i:int, arr:Array):void{
+					var vbox:VBox = new VBox();
+					hbox_main.addChild(vbox);
+					phaseCards.forEach(function(obj:Object, i:int, arr:Array):void{
+						var card:RaceCard = RaceUtil.cardManager.convertToCard(obj);
+						card.imageIndex += RaceImageManager.IMAGE_INDEX_ACTION + position*10;
+						var icard: ImageCard = new ImageCard(RaceImageManager.DEFAULT_SCALE);
+						icard.object = card;
+						icard.selectable = true;
+						vbox.addChild(icard);
+						cards.push(icard);
+						icard.addEventListener(MouseEvent.CLICK, onMouseClick);
+					});
+				});
+				
+				addEventListener(MouseEvent.ROLL_OUT, onMouseOut);
+			}
+			
+			public function onMouseOut(evt:MouseEvent):void{
+				var point:Point = new Point(evt.stageX, evt.stageY);
+				var rgt:Rectangle = this.getBounds(ApplicationUtil.application);
+				if(point.x<rgt.left || point.x>rgt.right || point.y<rgt.top || point.y>rgt.bottom){
+					this.visible = false;
+				}
+			}
+			
+			public function onMouseClick(evt:MouseEvent):void{
+				var icard:ImageCard = evt.target as ImageCard;
+				icard.selected = !icard.selected;
+				//如果当前选中的行动符合游戏中允许的行动数量,则提交到服务器
+				var actions:Array = this.getSelectedActions();
+				if(actions.length>=RaceGameManager.ACTION_NUM){
+					clearSelection();
+					RaceUtil.actionManager.doChooseAction(actions);
+					this.visible = false;
+				}
+			}
+			
+			/**
+			 * 取得所有选中的指令
+			 * 
+			 * @return Array<String>
+			 */
+			public function getSelectedActions():Array{
+				var res:Array = new Array();
+				cards.forEach(function(icard:ImageCard, i:int, arr:Array):void{
+					if(icard.selected){
+						res.push(icard.object.id);
+					}
+				});
+				return res;
+			}
+			
+			/**
+			 * 清除所有的选择
+			 */
+			public function clearSelection():void{
+				cards.forEach(function(icard:ImageCard, i:int, arr:Array):void{
+					icard.selected = false;
+				});
+			}
+			
+			/**
+			 * 取得所有选中的指令卡牌对象
+			 * 
+			 * @return Array<ImageCard>
+			 */
+			public function getSelection():Array{
+				var res:Array = new Array();
+				cards.forEach(function(icard:ImageCard, i:int, arr:Array):void{
+					if(icard.selected){
+						res.push(icard);
+					}
+				});
+				return res;
+			}
+			
+			/**
+			 * 取得行动代码对应的图片对象
+			 */
+			public function getImageIndex(actionCode:String):int{
+				for(var i:int=0;i<acards.length;i++){
+					for(var j:int=0;j<acards[i].length;j++){
+						if(acards[i][j].id==actionCode){
+							return acards[i][j].imageIndex;
+						}
+					}
+				}
+				return 0;
+			}
+			
+			/**
+			 * 移除所有行动
+			 */
+			public function clearAllActions():void{
+				hbox_main.removeAllChildren();
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox id="hbox_main" left="5" right="5" bottom="5" top="5">
+	</mx:HBox>
+</mx:Canvas>

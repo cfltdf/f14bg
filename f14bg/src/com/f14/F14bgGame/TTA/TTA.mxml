@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module:F14GameModule xmlns:module="com.f14.F14bgGame.bg.ui.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%" creationComplete="init()" xmlns:ui="com.f14.F14bgGame.TTA.ui.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.Version;
+			import com.f14.F14bgGame.TTA.player.TTAPlayerHandler;
+			import com.f14.F14bgGame.bg.handler.InGameHandler;
+			import com.f14.F14bgGame.bg.player.Player;
+			import com.f14.F14bgGame.TTA.player.TTAPlayer;
+			import com.f14.F14bgClient.room.ui.part.SetupBoard;
+			import com.f14.F14bgGame.TTA.ui.part.TTASetupBoard;
+			import com.f14.F14bgClient.room.RoomUtil;
+			
+			/**
+			 * 创建version对象
+			 */
+			override protected function createVersion():Version{
+				var v:Version = super.createVersion();
+				v.descr = "感谢网友 xigema 提供汉化版素材.\n"
+					+ "感谢所有朋友的测试和支持.";
+				return v;
+			}
+		
+			override public function init():void{
+				this.loadVersionInfo();
+				super.init();
+				this.mainBoard = this.ttaMainBoard;
+				
+				RoomUtil.gameModule = this;
+				TTAUtil.initGameModule(this);
+				
+				//初始化图片资源管理器
+				this.createLoadingMask();
+				TTAUtil.initImageManager();
+				//检查图片管理器是否执行完成
+				TTAUtil.imageManager.checkImageLoadComplete();
+			}
+			
+			/**
+			 * 图片资源装载完成时的回调函数
+			 */
+			override public function onImageLoadComplete():void{
+				super.onImageLoadComplete();
+				TTAUtil.init();
+				
+				//装载资源字符串
+				TTAUtil.resourceManager.loadResourceString();
+				this.mainBoard.init();
+				
+				//装载房间信息
+				RoomUtil.actionManager.loadRoomInfo();
+			}
+			
+			override protected function createGameCommandHandler():InGameHandler{
+				return new TTAPlayerHandler();
+			}
+			
+			override protected function createSetupBoard():SetupBoard{
+				return new TTASetupBoard();
+			}
+			
+			override public function createPlayer():Player{
+				return new TTAPlayer();
+			}
+			
+		]]>
+	</mx:Script>
+	<ui:TTAMainBoard id="ttaMainBoard" width="100%" height="100%" />
+</module:F14GameModule>

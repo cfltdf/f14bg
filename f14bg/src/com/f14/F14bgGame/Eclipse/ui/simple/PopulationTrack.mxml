@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="440" height="34" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.player.EclipsePlayer;
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			protected var count:int = 12;
+			protected var cubes:Array = new Array();
+			protected var _num:int;
+			protected var _initialled:Boolean;
+			
+			public var player:EclipsePlayer;
+			
+			public function clear():void{
+				this.canvas_cube.removeAllChildren();
+				this.cubes = new Array();
+				this.player = null;
+				this._num = 0;
+				this._initialled = false;
+			}
+			
+			public function set num(num:int):void{
+				if(!this._initialled){
+					this._initialled = true;
+					this.initCubes();
+				}
+				this._num = num;
+				for(var i:int = 0;i<cubes.length;i++){
+					var c:PopulationCube = this.cubes[i] as PopulationCube;
+					if(i<num){
+						c.visible = true;
+					}else{
+						c.visible = false;
+					}
+				}
+			}
+			
+			/**
+			 * 初始化cube
+			 */
+			protected function initCubes():void{
+				cubes = new Array();
+				for(var i:int = 0;i<count;i++){
+					var c:PopulationCube = EclipseUtil.resourceManager.createPopulationCube(this.player.position);
+					c.x = 33 * i;
+					c.visible = false;
+					this.cubes.push(c);
+					this.canvas_cube.addChild(c);
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Canvas id="canvas_cube" width="100%" />
+</mx:Canvas>

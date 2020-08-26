@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TSConfirmWindow xmlns="com.f14.F14bgGame.TS.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300" title="选择行动" xmlns:ns1="com.f14.F14bgGame.TS.ui.simple.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import mx.collections.ArrayCollection;
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				this.cardMessage = this.local_cm;
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				this.clearChoice();
+			}
+			
+			/**
+			 * 装载选项参数
+			 */
+			public function loadChoiceParam(param:Object):void{
+				this.clearChoice();
+				if(param.choice1){
+					this.button_1.label = param.choice1;
+					this.button_1.enabled = true;
+				}
+				if(param.choice2){
+					this.button_2.label = param.choice2;
+					this.button_2.enabled = true;
+				}
+			}
+			
+			/**
+			 * 清除选项
+			 */
+			protected function clearChoice():void{
+				this.button_1.label = "-";
+				this.button_1.enabled = false;
+				this.button_2.label = "-";
+				this.button_2.enabled = false;
+			}
+				
+			
+		]]>
+	</mx:Script>
+	
+	<ns1:TSCardMessage id="local_cm" left="45" right="45" top="10" />
+	<mx:VBox id="vbox_choice" top="100" horizontalCenter="0">
+		<mx:Button id="button_1" width="150" click="this.doConfirm({'choice':1})" />
+		<mx:Button id="button_2" width="150" click="this.doConfirm({'choice':2})" />
+	</mx:VBox>
+	<mx:HBox horizontalCenter="0" bottom="10">
+		<mx:Button label="取 消" click="this.doCancel()"/>
+		<mx:Button label="放 弃" click="this.doPass()"/>
+	</mx:HBox>
+</TSConfirmWindow>

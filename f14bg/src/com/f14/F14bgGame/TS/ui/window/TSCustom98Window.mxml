@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TSConfirmWindow xmlns="com.f14.F14bgGame.TS.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="750" height="200" xmlns:ns1="com.f14.F14bgGame.TS.ui.simple.*" title="#98-阿尔德里希·阿姆斯" xmlns:part="com.f14.F14bgGame.TS.ui.part.*">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.bg.ui.simple.SimpleCard;
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				this.player_hand.clear();
+			}
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				if(param.cardIds){
+					this.player_hand.addCards(param.cardIds);
+					this.player_hand.selectable = true;
+				}
+			}
+			
+			/**
+			 * 初始化相关组件
+			 */
+			override public function initComponents():void{
+				super.initComponents();
+				this.cardMessage = this.local_cm;
+				this.player_hand.init();
+			}
+			
+			public function confirmParam():void{
+				var label:SimpleCard = this.player_hand.getSelectedCard();
+				if(label==null){
+					ApplicationUtil.alert("请选择要丢弃的牌!");
+				}
+				var param:Object = {};
+				param.cardId = label.object.object.id;
+				this.doConfirm(param);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox top="10" bottom="10" left="10" right="10" horizontalAlign="center">
+		<ns1:TSCardMessage id="local_cm" width="100%" />
+		<part:TSPlayerHand id="player_hand" width="100%" />
+		<mx:HBox>
+			<mx:Button label="弃 牌" width="100" click="this.confirmParam()" />
+			<mx:Button label="放 弃" width="100" click="this.doPass()" />
+		</mx:HBox>
+	</mx:VBox>
+</TSConfirmWindow>

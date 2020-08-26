@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="250" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.bg.ui.window.NewConfirmWindow;
+			
+			protected var _win:NewConfirmWindow;
+			
+			public function setConfirmWindow(win:NewConfirmWindow):void{
+				this._win = win;
+			}
+			
+			public function loadParam(param:Object):void{
+				this.button_confirm.visible = param.showConfirmButton;
+				this.button_cancel.visible = param.showCancelButton;
+				this.button_pass.visible = param.showPassButton;
+				this.layoutButtons();
+			}
+			
+			/**
+			 * 布局按钮
+			 */
+			private function layoutButtons():void{
+				var buttons:Array = new Array();
+				if(this.button_confirm.visible==true){
+					buttons.push(this.button_confirm);
+				}
+				if(this.button_cancel.visible==true){
+					buttons.push(this.button_cancel);
+				}
+				if(this.button_pass.visible==true){
+					buttons.push(this.button_pass);
+				}
+				if(buttons.length>0){
+					var gap:int = (this.width-buttons.length*60)/(buttons.length+1);
+					var i:int = 1;
+					for each(var button:Button in buttons){
+						button.x = i*gap + (i-1)*60;
+						i++;
+					}
+				}
+			}
+			
+			private function doConfirm():void{
+				if(this._win!=null){
+					this._win.doConfirm();
+				}
+			}
+			
+			private function doCancel():void{
+				if(this._win!=null){
+					this._win.doCancel();
+				}
+			}
+			
+			private function doPass():void{
+				if(this._win!=null){
+					this._win.doPass();
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Button id="button_confirm" label="确 定" width="60" click="this.doConfirm()" />
+	<mx:Button id="button_cancel" label="取 消" width="60" click="this.doCancel()" />
+	<mx:Button id="button_pass" label="放 弃" width="60" click="this.doPass()" />
+</mx:Canvas>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<F14MDIWindow xmlns="com.f14.F14bgClient.room.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.f14.F14bgClient.room.ui.part.*" width="950" height="550" title="得分表" resizable="false">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgClient.room.RoomUtil;
+			import com.f14.f14bg.manager.ActionManager;
+			import com.adobe.serialization.json.JSON;
+			import mx.collections.ArrayCollection;
+			
+			protected var boards:Array;
+			
+			public function initBoards():void{
+				boards = [board1, board2, board3, board4, board5, board6];
+			}
+			
+			/**
+			 * 清除所有玩家分数
+			 */
+			public function clear():void{
+				for each(var board:PlayerScoreBoard in this.boards){
+					board.clear();
+				}
+			}
+			
+			/**
+			 * 设置玩家的分数
+			 */
+			public function setScoreList(param:Object):void{
+				var i:int = 0;
+				for each(var vpc:Object in param.vps.vps){
+					var board:PlayerScoreBoard = boards[i];
+					board.playerName = vpc.userName;
+					board.rank = vpc.rank;
+					board.score = vpc.score;
+					board.rankPoint = vpc.rankPoint;
+					board.totalVP = vpc.totalVP;
+					board.vps = new ArrayCollection(vpc.vs);
+					i++;
+				}
+			}
+			
+			/**
+			 * 设置战报内容
+			 */
+			public function setReport(param:Object):void{
+				var messages:Object = JSON.decode(param.reportString);
+				var str:String = "";
+				for each(var o:Object in messages){
+					if(o.time){
+						str += o.time + " " + o.message + "\n";
+					}else{
+						str += o.message + "\n";
+					}
+				}
+				this.board_report.text = str;
+			}
+			
+			/**
+			 * 设置显示界面,score=得分表 report=战报
+			 */
+			public function showStage(stage:String):void{
+				switch(stage){
+					case "score":
+						this.board_score.visible = true;
+						this.board_report.visible = false;
+						break;
+					case "report":
+						this.board_score.visible = false;
+						this.board_report.visible = true;
+						//如果没有战报则读取战报
+						if(!this.board_report.text){
+							//暂时不读取战报了
+							//ActionManager.loadReport();
+						}
+						break;
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%">
+		<mx:HBox height="35" verticalAlign="middle">
+			<mx:Canvas width="5" />
+			<mx:Button label="得分表" click="this.showStage('score')" />
+			<mx:Button label="战报" click="this.showStage('report')" />
+			<mx:Button label="关闭" click="RoomUtil.stateManager.closeScoreWindow()" />
+		</mx:HBox>
+		<mx:Canvas width="100%" height="100%">
+			<mx:Grid id="board_score" width="100%" height="100%" >
+				<mx:GridRow width="100%" height="100%">
+					<mx:GridItem width="100%" height="100%">
+						<ns1:PlayerScoreBoard id="board1" width="100%" height="100%">
+						</ns1:PlayerScoreBoard>
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%">
+						<ns1:PlayerScoreBoard id="board2" width="100%" height="100%">
+						</ns1:PlayerScoreBoard>
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%">
+						<ns1:PlayerScoreBoard id="board3" width="100%" height="100%">
+						</ns1:PlayerScoreBoard>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%" height="100%">
+					<mx:GridItem width="100%" height="100%">
+						<ns1:PlayerScoreBoard id="board4" width="100%" height="100%">
+						</ns1:PlayerScoreBoard>
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%">
+						<ns1:PlayerScoreBoard id="board5" width="100%" height="100%">
+						</ns1:PlayerScoreBoard>
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%">
+						<ns1:PlayerScoreBoard id="board6" width="100%" height="100%">
+						</ns1:PlayerScoreBoard>
+					</mx:GridItem>
+				</mx:GridRow>
+			</mx:Grid>
+			<mx:TextArea id="board_report" top="5" bottom="5" right="5" left="5" editable="false"  wordWrap="true" visible="false"/>
+		</mx:Canvas>
+	</mx:VBox>
+</F14MDIWindow>

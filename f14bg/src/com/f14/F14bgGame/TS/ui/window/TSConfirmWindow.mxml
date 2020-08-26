@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.TS.ui.simple.TSCardMessage;
+			import com.f14.F14bgGame.TS.TSUtil;
+			import com.f14.F14bgGame.TS.components.TSCard;
+			import com.f14.core.util.ApplicationUtil;
+			import mx.collections.ArrayCollection;
+			
+			protected var cardMessage:TSCardMessage;
+			
+			/**
+			 * 按照参数装载窗口内容
+			 */
+			override public function loadParam(param:Object):void{
+				super.loadParam(param);
+				if(this.cardMessage!=null){
+					if(param.cardId){
+						this.cardMessage.setCard(param.cardId);
+					}else{
+						this.cardMessage.clear();
+					}
+					this.cardMessage.msg = this.msg;
+				}
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			override public function clear():void{
+				super.clear();
+				if(this.cardMessage!=null){
+					this.cardMessage.clear();
+				}
+			}
+		
+		]]>
+	</mx:Script>
+</NewConfirmWindow>

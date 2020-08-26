@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.PuertoRico.player.PrPlayer;
+			import com.f14.F14bgGame.PuertoRico.consts.Part;
+			
+			protected var resourceParts:Array = new Array();
+			protected var _player:PrPlayer;
+			
+			public function reset():void{
+				for each(var part:ResourceSingleChoose in resourceParts){
+					part.reset();
+				}
+			}
+			
+			/**
+			 * 设置资源选择器所属的玩家
+			 */
+			public function set player(player:PrPlayer):void{
+				this._player = player;
+				for each(var partType:String in Part.RESOURCE){
+					var part:ResourceSingleChoose = resourceParts[partType];
+					if(player==null){
+						part.totalNum = 0;
+					}else{
+						part.totalNum = player[partType.toLowerCase()];
+					}
+				}
+			}
+			
+			/**
+			 * 创建资源图标
+			 */
+			public function initResourceImage():void{
+				resourceParts = new Array();
+				
+				var part:ResourceSingleChoose;
+				for each(var partType:String in Part.RESOURCE){
+					part = new ResourceSingleChoose();
+					vbox_main.addChild(part);
+					part.partType = partType;
+					part.num = 0;
+					resourceParts[partType] = part;
+				}
+			}
+			
+			/**
+			 * 取得所选的资源信息
+			 */
+			public function getResource():Object{
+				var object:Object = {};
+				for each(var partType:String in Part.RESOURCE){
+					var part:ResourceSingleChoose = resourceParts[partType];
+					object[partType] = part.num;
+				}
+				return object;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox id="vbox_main" x="0" y="0" width="100%" height="100%">
+	</mx:VBox>
+</mx:Canvas>

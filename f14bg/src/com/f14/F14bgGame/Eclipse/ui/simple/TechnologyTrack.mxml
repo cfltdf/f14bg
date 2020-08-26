@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="560" height="60" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.components.EclipseTechnology;
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			protected var techs:Array = new Array();
+			
+			public function clear():void{
+				this.removeAllChildren();
+				this.techs = new Array();
+			}
+			
+			public function addTechnology(type:String):void{
+				var c:EclipseTechnology = EclipseUtil.resourceManager.createTechnology(type);
+				c.x = this.techs.length * (60 + 21);
+				this.techs.push(c);
+				this.addChild(c);
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

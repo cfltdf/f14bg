@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FloatWindow xmlns="com.f14.core.controls.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="700" height="300" title="设置窗口" showCloseButton="true">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.bg.consts.PlayingState;
+			import com.f14.f14bg.player.User;
+			import com.f14.F14bgClient.room.RoomUtil;
+			import com.f14.F14bgClient.room.ui.RunawayBoard;
+			import com.f14.F14bgClient.room.ui.part.SetupBoard;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.f14bg.event.BgEvent;
+			import com.f14.f14bg.manager.ActionManager;
+			import mx.events.ListEvent;
+			import mx.collections.ArrayCollection;
+			
+			protected var _setupBoard:SetupBoard;
+			protected var _selectable:Boolean;
+			[Bindable]
+			protected var users:ArrayCollection = new ArrayCollection();
+			
+			/**
+			 * 初始化设置面板
+			 */
+			public function initSetupBoard(setupBoard:SetupBoard):void{
+				this._setupBoard = setupBoard;
+				this.canvas_setup.addChild(setupBoard);
+			}
+			
+			/**
+			 * 重置输入选项
+			 */
+			public function reset():void{
+				this.users.removeAll();
+				//重置所有功能按键
+				this.state = "INIT";
+			}
+			
+			/**
+			 * 设置选项是否可选
+			 */
+			public function set selectable(selectable:Boolean):void{
+				this._selectable = selectable;
+				this._setupBoard.inputable = selectable;
+			}
+			
+			/**
+			 * 装载游戏配置信息
+			 */
+			public function loadConfig(param:Object):void{
+				//this.reset();
+				this._setupBoard.loadParam(param);
+				//this.loadLocalPlayers();
+				//this.state = param.playingState;
+			}
+			
+			/**
+			 * 添加列表中的用户
+			 */
+			public function addUser(user:Object):void{
+				var u:Object = this.getUser(user.userId);
+				if(u==null){
+					//如果不存在该id的用户,则添加
+					this.users.addItem(user);
+				}
+				//player.addEventListener(BgEvent.PLAYER_STATE_CHANGE, onPlayerStateChange);
+				//player.addEventListener(BgEvent.PLAYING_STATE_CHANGE, onPlayingStateChange);
+			}
+			
+			/**
+			 * 移除列表中的用户
+			 */
+			public function removeUser(user:Object):void{
+				var u:Object = this.getUser(user.userId);
+				if(u!=null){
+					this.users.removeItemAt(this.users.getItemIndex(u));
+				}
+			}
+			
+			/**
+			 * 设置用户的装备状态
+			 */
+			public function readyUser(param:Object):void{
+				var u:Object = this.getUser(param.user.userId);
+				if(u!=null){
+					u.ready = param.ready;
+					this.grid_players.invalidateList();
+				}
+			}
+			
+			/**
+			 * 取得用户对象
+			 */
+			public function getUser(userId:String):Object{
+				for(var i:int = this.users.length-1;i>=0;i--){
+					if(this.users.getItemAt(i).userId==userId){
+						return this.users.getItemAt(i);
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * 按照房间状态和用户状态,显示相应的按钮状态
+			 */
+			public function setShowState(roomState:String, userState:String):void{
+				if(roomState=="WAITING"){
+					if(userState=="PLAYING"){
+						this.state = PlayingState.INGAME;
+					}else{
+						this.state = PlayingState.WAITING;
+					}
+				}else if(roomState=="PLAYING"){
+					if(userState=="PLAYING"){
+						this.state = PlayingState.PLAYING;
+					}else{
+						this.state = PlayingState.AUDIENCE;
+					}
+				}else{
+					this.state = "INIT";
+				}
+			}
+			
+			/**
+			 * 设置该窗口的显示状态
+			 */
+			public function set state(state:String):void{
+				switch(state){
+					case PlayingState.WAITING:
+						//旁观等待游戏中
+						this.selectable = false;
+						this.buttons_waiting.visible = true;
+						this.buttons_ingame.visible = false;
+						this.buttons_playing.visible = false;
+						this.buttons_audience.visible = false;
+						break;
+					case PlayingState.INGAME:
+						//等待游戏中
+						this.selectable = true;
+						this.buttons_waiting.visible = false;
+						this.buttons_ingame.visible = true;
+						this.buttons_playing.visible = false;
+						this.buttons_audience.visible = false;
+						break;
+					case PlayingState.PLAYING:
+						//游戏进行中
+						this.selectable = false;
+						this.buttons_waiting.visible = false;
+						this.buttons_ingame.visible = false;
+						this.buttons_playing.visible = true;
+						this.buttons_audience.visible = false;
+						break;
+					case PlayingState.AUDIENCE:
+						//旁观中
+						this.selectable = false;
+						this.buttons_waiting.visible = false;
+						this.buttons_ingame.visible = false;
+						this.buttons_playing.visible = false;
+						this.buttons_audience.visible = true;
+						break;
+					default:
+						//其他情况
+						this.selectable = false;
+						this.buttons_waiting.visible = false;
+						this.buttons_ingame.visible = false;
+						this.buttons_playing.visible = false;
+						this.buttons_audience.visible = true;
+						break;
+				}
+			}
+			
+			/**
+			 * 逃跑
+			 */
+			public function runaway():void{
+				var win:RunawayBoard = new RunawayBoard();
+				win.show();
+			}
+			
+			/**
+			 * 玩家状态发生变化时触发的方法
+			 */
+			public function onPlayerStateChange(evt:BgEvent):void{
+				this.grid_players.invalidateList();
+			}
+			
+			/**
+			 * 玩家游戏进行状态发生变化时触发的方法
+			 */
+			public function onPlayingStateChange(evt:BgEvent):void{
+				//只有本地玩家的游戏状态变化时,才会影响到界面
+				if(ApplicationUtil.localUser.name==evt.param.player.name){
+					this.state = evt.param.playingState;
+				}
+			}
+			
+			/**
+			 * 装载加入游戏的玩家列表
+			 */
+			public function loadJoinUsers(param:Object):void{
+				this.users.removeAll();
+				for each(var obj:Object in param.joinUsers){
+					this.addUser(obj);
+				}
+				/*for each(var player:Player in ApplicationManager.gameManager.idPlayers){
+					if(player!=null){
+						this.addPlayer(player);
+					}
+				}*/
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox top="5" bottom="5" left="5" right="5">
+		<mx:VBox width="50%" height="100%" horizontalAlign="center">
+			<mx:Canvas id="canvas_setup" width="100%" height="100%">
+			</mx:Canvas>
+			<mx:Canvas width="100%">
+				<mx:Button horizontalCenter="0" verticalCenter="0" label="关 闭" click="this.cancel()"/>
+			</mx:Canvas>
+		</mx:VBox>
+		<mx:VBox width="50%" height="100%" horizontalAlign="center">
+			<mx:DataGrid id="grid_players" width="100%" height="100%" dataProvider="{users}" resizableColumns="false" >
+				<mx:columns>
+					<mx:DataGridColumn headerText="准备" width="40" sortable="false" textAlign="center" itemRenderer="com.f14.F14bgClient.room.ui.part.ReadyItemRender" dataField="ready" />
+					<mx:DataGridColumn headerText="用户名" dataField="name" sortable="false"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:Canvas width="100%">
+				<mx:HBox id="buttons_ingame" horizontalCenter="0" visible="false">
+					<mx:Button label="开始" click="RoomUtil.actionManager.doStart()" />
+					<mx:Button label="准备" click="RoomUtil.actionManager.doReady()" />
+					<mx:Button label="旁观" click="RoomUtil.actionManager.doLeavePlay()" />
+					<mx:Button label="邀请" click="RoomUtil.actionManager.doInvitePlay()" />
+					<mx:Button label="退出" click="RoomUtil.actionManager.doLeave()" />
+				</mx:HBox>
+				<mx:HBox id="buttons_playing" horizontalCenter="0" visible="false">
+					<mx:Button label="退出" click="RoomUtil.actionManager.doLeave()" />
+				</mx:HBox>
+				<mx:HBox id="buttons_waiting" horizontalCenter="0" visible="false">
+					<mx:Button label="加入" click="RoomUtil.actionManager.doJoinPlay()" />
+					<mx:Button label="退出" click="RoomUtil.actionManager.doLeave()" />
+				</mx:HBox>
+				<mx:HBox id="buttons_audience" horizontalCenter="0" visible="false">
+					<mx:Button label="退出" click="RoomUtil.actionManager.doLeave()" />
+				</mx:HBox>
+			</mx:Canvas>
+		</mx:VBox>
+	</mx:HBox>
+</FloatWindow>

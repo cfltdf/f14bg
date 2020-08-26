@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="swt-awt-win32-3449">
+    <CLASSES />
+    <JAVADOC />
+    <NATIVE>
+      <root url="jar://$PROJECT_DIR$/lib/swt.jar!/swt-awt-win32-3449.dll" />
+      <root url="jar://$PROJECT_DIR$/lib/swt.jar!/swt-gdip-win32-3449.dll" />
+      <root url="jar://$PROJECT_DIR$/lib/swt.jar!/swt-wgl-win32-3449.dll" />
+      <root url="jar://$PROJECT_DIR$/lib/swt.jar!/swt-win32-3449.dll" />
+      <root url="jar://$PROJECT_DIR$/lib/swt.jar!/swt-xulrunner-win32-3449.dll" />
+    </NATIVE>
+    <SOURCES />
+  </library>
+</component>

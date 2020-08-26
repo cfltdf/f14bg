@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgClient.room.RoomUtil;
+			protected var _inputable:Boolean;
+			
+			public function set inputable(inputable:Boolean):void{
+				this._inputable = inputable;
+			}
+			
+			public function get inputable():Boolean{
+				return this._inputable;
+			}
+			
+			/**
+			 * 装载参数
+			 */
+			public function loadParam(param:Object):void{
+				
+			}
+			
+			/**
+			 * 按照设置创建参数
+			 */
+			public function createParam():Object{
+				return new Object();
+			}
+			
+			/**
+			 * 提交选项修改
+			 */
+			public function confirm():void{
+				var config:Object = this.createParam();
+				RoomUtil.actionManager.setConfig(config);
+			}
+			
+			/**
+			 * 游戏模式变换时触发的方法
+			 */
+			protected function onGameModeChange():void{
+				this.confirm();
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

@@ -1,0 +1,15 @@
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory> 
+    	<mapping class="com.f14.f14bgdb.model.PkGenModel"/>
+      	<mapping class="com.f14.f14bgdb.model.UserModel"/>
+      	<mapping class="com.f14.f14bgdb.model.BoardGameModel"/>
+      	<mapping class="com.f14.f14bgdb.model.BgInstanceModel"/>
+      	<mapping class="com.f14.f14bgdb.model.BgInstanceRecordModel"/>
+      	<mapping class="com.f14.f14bgdb.model.RankingListModel"/>
+      	<mapping class="com.f14.f14bgdb.model.CodeDetailModel"/>
+      	<mapping class="com.f14.f14bgdb.model.BgReportModel"/>
+    </session-factory>
+</hibernate-configuration>

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ConfirmWindow xmlns="com.f14.F14bgGame.bg.ui.window.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="920" height="692" showCloseButton="true">
+	<mx:Script>
+		<![CDATA[
+			import com.f14.F14bgGame.Eclipse.components.EclipseShipPart;
+			import mx.core.UIComponent;
+			import mx.core.Application;
+			import com.f14.core.util.ApplicationUtil;
+			import com.f14.F14bgGame.Eclipse.ui.simple.TechnologyCounter;
+			import com.f14.F14bgGame.Eclipse.EclipseUtil;
+			import com.f14.F14bgGame.Eclipse.components.EclipseTechnology;
+			
+			protected var initialled:Boolean;
+			protected var teches:Array = new Array();
+			protected var shipParts:Array = new Array();
+			protected var _techSelectable:Boolean;
+			
+			[Bindable]
+			protected var section1:Object;
+			[Bindable]
+			protected var section2:Object;
+			[Bindable]
+			protected var section3:Object;
+			
+			public function set techSelectable(selectable:Boolean):void{
+				this._techSelectable = selectable;
+				/*for(var type:String in this.teches){
+					var o:EclipseTechnology = this.teches[type] as EclipseTechnology;
+					if(o!=null){
+						o.selectable = selectable;
+					}
+				}*/
+				for each(var o:TechnologyCounter in this.teches){
+					o.selectable = selectable;
+				}
+			}
+			
+			public function get techSelectable():Boolean{
+				return this._techSelectable;
+			}
+			
+			/**
+			 * 清除窗口内容
+			 */
+			public override function clear():void{
+				super.clear();
+				this.section1 = null;
+				this.section2 = null;
+				this.section3 = null;
+				
+				this.initialled = false;
+				this.teches = new Array();
+				this.shipParts = new Array();
+				
+				this.hbox_grid.removeAllChildren();
+				this.hbox_military.removeAllChildren();
+				this.hbox_nano.removeAllChildren();
+				
+				this.tile_sp_base.removeAllChildren();
+				this.tile_sp_tech.removeAllChildren();
+			}
+			
+			/**
+			 * 装载公共科技板块信息
+			 */
+			public function loadTechnologyInfo(param:Object):void{
+				if(!this.initialled){
+					this.initTechnologyPart(param);
+					this.initialled = true;
+				}
+				this.loadTechnologyNumber(param);
+			}
+			
+			/**
+			 * 读取板块信息
+			 */
+			public function loadHexInfo(param:Object):void{
+				this.section1 = param.section1;
+				this.section2 = param.section2;
+				this.section3 = param.section3;
+			}
+			
+			/**
+			 * 装载飞船配件信息
+			 */
+			public function loadShipPartInfo(param:Object):void{
+				for each(var o:Object in param.shipParts){
+					var category:String = o.shipPartCategory;
+					var container:UIComponent = this.getShipPartContainer(category);
+					if(container!=null){
+						var c:EclipseShipPart = EclipseUtil.resourceManager.createShipPart(o.cardIndex);
+						container.addChild(c);
+						shipParts[o.cardIndex+""] = c;
+					}
+				}
+			}
+			
+			/**
+			 * 读取所有科技板块的数量
+			 */
+			protected function loadTechnologyNumber(param:Object):void{
+				for each(var o:Object in param.technology){
+					var c:TechnologyCounter = this.getTechnologyCounter(o.type);
+					c.setNum(o.num);
+				}
+			}
+			
+			/**
+			 * 取得科技板块记数组件
+			 */
+			protected function getTechnologyCounter(type:String):TechnologyCounter{
+				return this.teches[type] as TechnologyCounter;
+			}
+			
+			/**
+			 * 初始化所有科技组件
+			 */
+			protected function initTechnologyPart(param:Object):void{
+				for each(var o:Object in param.technology){
+					var t:EclipseTechnology = EclipseUtil.resourceManager.createTechnology(o.type);
+					var c:TechnologyCounter = new TechnologyCounter();
+					c.technology = t;
+					teches[o.type] = c;
+					
+					var category:String = t.object.category;
+					this.getTechnologyContainer(category).addChild(c);
+					c.init();
+				}
+			}
+			
+			/**
+			 * 按照科技类型取得容器
+			 */
+			protected function getTechnologyContainer(type:String):HBox{
+				switch(type){
+					case "MILITARY":
+						return this.hbox_military;
+					case "GRID":
+						return this.hbox_grid;
+					default:
+						return this.hbox_nano;
+				}
+			}
+			
+			/**
+			 * 按照飞船配件类别取得容器
+			 */
+			protected function getShipPartContainer(category:String):UIComponent{
+				switch(category){
+					case "BASE":
+						return this.tile_sp_base;
+					case "TECHNOLOGY":
+						return this.tile_sp_tech;
+					default:
+						return null;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Canvas styleName="publicBoard" width="900" height="662">
+	</mx:Canvas>
+	<mx:Image source="com/f14/F14bgGame/Eclipse/images/publicBoard.jpg" width="900" height="662" autoLoad="true" visible="false">
+	</mx:Image>
+	<mx:HBox id="hbox_military" y="83" left="40" horizontalGap="5"/>
+	<mx:HBox id="hbox_grid" y="168" left="40" horizontalGap="5"/>
+	<mx:HBox id="hbox_nano" y="247" left="40" horizontalGap="5"/>
+	<mx:Label x="845" y="47" height="40" textAlign="center" id="label_s1" text="{section1.num}" styleName="textHexDeck"/>
+	<mx:Label x="845" y="95" height="30" textAlign="center" id="label_s1d" text="({section1.discardNum})" styleName="textHexDiscard"/>
+	<mx:Label x="845" y="160" height="40" textAlign="center" id="label_s2" text="{section2.num}" styleName="textHexDeck"/>
+	<mx:Label x="845" y="208" height="30" textAlign="center" id="label_s2d" text="({section2.discardNum})" styleName="textHexDiscard"/>
+	<mx:Label x="845" y="272" height="40" textAlign="center" id="label_s3" text="{section3.num}" styleName="textHexDeck"/>
+	<mx:Label x="845" y="320" height="30" textAlign="center" id="label_s3d" text="({section3.discardNum})" styleName="textHexDiscard"/>
+	<mx:Tile id="tile_sp_base" x="30" y="364" width="139" height="202" direction="horizontal" tileWidth="60" tileHeight="60" horizontalGap="10" verticalGap="10">
+	</mx:Tile>
+	<mx:Tile id="tile_sp_tech" x="238" y="389" width="320" height="276" direction="horizontal" tileWidth="60" tileHeight="60" horizontalGap="10" verticalGap="10">
+	</mx:Tile>
+</ConfirmWindow>

@@ -1,0 +1,5 @@
+package com.f14.Eclipse.consts;
+
+public enum RaceType {
+    TERRANS, ERIDANI_EMPIRE, HYDRAN_PROGRESS, PLANTA, DESCENDANTS_OF_DRACO, MECHANEMA, ORION_HEGEMONY,
+}
